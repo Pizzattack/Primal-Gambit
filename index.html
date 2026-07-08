@@ -18,7 +18,7 @@
      ║  Exemple pour version 27 → ElementalFury_v27.html               ║
      ╠══════════════════════════════════════════════════════════════════╣
      ║  VERSION    = 31                                                 ║
-     ║  BUILD      = 34                                                 ║
+     ║  BUILD      = 38                                                 ║
      ║  BUILD_DATE = 2026.07.01                                         ║
      ╚══════════════════════════════════════════════════════════════════╝ -->
 <html lang="fr">
@@ -4454,7 +4454,7 @@ body:has(#deck-panel.open) .float-toolbar{ display:none !important; }
        · incrémenter vX.YY → vX.(YY+1) + reset b1 pour une nouvelle version
        · mettre à jour la date (build YYYY.MM.DD) à la date du jour
        · renommer le fichier en index_vXX_bYY.html en cohérence -->
-  <p id="build-badge">v33 b34 &nbsp;·&nbsp; build 2026.07.04</p>
+  <p id="build-badge">v33 b38 &nbsp;·&nbsp; build 2026.07.04</p>
 </div>
 
 <!-- 2. ÉCRAN MULLIGAN -->
@@ -13747,8 +13747,12 @@ if(document.readyState !== 'loading'){
           <p>Each player starts at <b>50 HP</b>. Damage is dealt to HP whenever a lane is won. The match ends the instant a player's HP reaches 0.</p>
           <p>Flow: <b>Mulligan</b> (swap starting cards) → <b>Combat</b> (repeating rounds) → <b>End screen</b>.</p>
           <div class="rules-shot">
-            <img src="assets/screenshots/00.png" alt="">
-            <div class="rules-shot-cap">00 — Full combat screen: opponent HP circle (top), 3 lanes (middle), player hand + "End Round" button (bottom). Labels pointing to each zone.</div>
+            <img src="assets/screenshots/00.jpg" alt="">
+            <div class="rules-shot-cap">00 — Title screen in fullscreen portrait mode — TUTORIAL, RANDOM BATTLE and ROGUELIKE buttons.</div>
+          </div>
+          <div class="rules-shot">
+            <img src="assets/screenshots/00b.jpg" alt="">
+            <div class="rules-shot-cap">00b — Title screen as seen on iPhone.</div>
           </div>
         </div>
       </details>
@@ -13765,7 +13769,11 @@ if(document.readyState !== 'loading'){
           <p>A lane resolves once both slots are filled: the winning element makes the loser's card hit the discard, and the opponent loses HP equal to the lane's accumulated Risk (see ch.4). On a tie, both cards stay in the lane and nothing is lost — Risk keeps building for next time.</p>
           <div class="rules-shot">
             <img src="assets/screenshots/01.png" alt="">
-            <div class="rules-shot-cap">01 — Diagram of the 4 element icons arranged in a triangle with arrows showing who beats whom, Dust off to the side with an "always loses" note.</div>
+            <div class="rules-shot-cap">01 — Element predation diagram: Fire beats Water, Water beats Earth, Earth beats Fire. Dust loses to all elements.</div>
+          </div>
+          <div class="rules-shot">
+            <img src="assets/screenshots/03.jpg" alt="">
+            <div class="rules-shot-cap">03 — A lane in Deadlock: Rift Sorceress (Water, Risk 9) vs Void Kraken (Water, Risk 8). Same element = deadlock, accumulated risks carry over.</div>
           </div>
         </div>
       </details>
@@ -13783,12 +13791,20 @@ if(document.readyState !== 'loading'){
           <p>After SR7, all 3 lanes resolve left → center → right, then both hands redraw up to 4 cards.</p>
           <p><b>Powers:</b> at most one manual power per player per sub-round (including the bonus one). A card's manual power can only be used once per round, even if not activated yet.</p>
           <div class="rules-shot">
-            <img src="assets/screenshots/03.png" alt="">
-            <div class="rules-shot-cap">03 — Status bar showing "Round 4/6" text with a circled arrow indicating which side (player/opponent) is active.</div>
+            <img src="assets/screenshots/02.jpg" alt="">
+            <div class="rules-shot-cap">02 — Combat screen at SR5: AI has played 2 cards, player has played 3. End Round button is active.</div>
           </div>
           <div class="rules-shot">
-            <img src="assets/screenshots/04.png" alt="">
-            <div class="rules-shot-cap">04 — Bonus sub-round: status message "⭐ Bonus" visible, with a card's power button glowing/highlighted to show it's activatable.</div>
+            <img src="assets/screenshots/02b.jpg" alt="">
+            <div class="rules-shot-cap">02b — Combat screen on iPhone: 2 AI cards and 1 player card in play.</div>
+          </div>
+          <div class="rules-shot">
+            <img src="assets/screenshots/05.jpg" alt="">
+            <div class="rules-shot-cap">05 — Status button during an AI sub-round (black, purple glow matching AI HP color).</div>
+          </div>
+          <div class="rules-shot">
+            <img src="assets/screenshots/05b.jpg" alt="">
+            <div class="rules-shot-cap">05b — Status button "End Round" during a player sub-round (white background, red glow matching player HP color).</div>
           </div>
         </div>
       </details>
@@ -13802,18 +13818,27 @@ if(document.readyState !== 'loading'){
             <li><b>Tie:</b> no damage. Both cards remain in the lane, both Risk counters are kept (not reset) — the next clash in that lane will hit harder.</li>
           </ul>
           <p><b>×2 Lane:</b> one lane (center by default) is marked as the danger lane each round. If the designated side loses it, the damage is doubled. Ownership of who's "at risk" there alternates every round.</p>
+          <div class="rules-shot">
+            <img src="assets/screenshots/04.jpg" alt="">
+            <div class="rules-shot-cap">04 — Empty arena with the ×2 indicator in green (oriented toward the AI opponent).</div>
+          </div>
+          <div class="rules-shot">
+            <img src="assets/screenshots/04b.jpg" alt="">
+            <div class="rules-shot-cap">04b — Empty arena with the ×2 indicator in red (oriented toward the player — danger!).</div>
+          </div>
           <p><b>Permanent marks:</b> <i>Guard Mark</i> permanently reduces a slot's Risk by 2; <i>War Mark</i> permanently adds +3 Risk to the opposite slot. Marks persist across rounds until the match ends.</p>
           <div class="rules-shot">
-            <img src="assets/screenshots/02.png" alt="">
-            <div class="rules-shot-cap">02 — Close-up of a lane after a Deadlock: the small "+N risk" badges above and below the slots are circled, with an arrow noting "stays after a tie".</div>
+            <img src="assets/screenshots/08.jpg" alt="">
+            <div class="rules-shot-cap">08 — Thorn Warden has used Guard Mark: the lane's accumulated Risk is permanently reduced by 2.</div>
           </div>
           <div class="rules-shot">
-            <img src="assets/screenshots/05.png" alt="">
-            <div class="rules-shot-cap">05 — Center lane with its "×2" badge circled/highlighted to show the danger lane indicator.</div>
+            <img src="assets/screenshots/08b.jpg" alt="">
+            <div class="rules-shot-cap">08b — Leaf Serpent has used War Mark: the opponent's lane Risk is permanently +3. Tide Warrior base Risk 4 + 3 mark = 7 total damage if they lose.</div>
           </div>
+          <p><b>HP indicators:</b> each player's HP is displayed as a circle in the combat interface — purple for the AI, red for the human player.</p>
           <div class="rules-shot">
-            <img src="assets/screenshots/06.png" alt="">
-            <div class="rules-shot-cap">06 — A lane slot with a small Guard Mark (shield icon) or War Mark (sword icon) badge circled, showing the permanent Risk modifier.</div>
+            <img src="assets/screenshots/06.jpg" alt="">
+            <div class="rules-shot-cap">06 — AI HP indicator: purple container with the HP count displayed above.</div>
           </div>
         </div>
       </details>
@@ -13892,8 +13917,20 @@ if(document.readyState !== 'loading'){
                 <tr><td class="rsk-icon-cell"><img src="assets/icons/Power_Shift.png" alt=""></td><td><div class="rsk-name-desc"><span class="rsk-name-cell">Power Shift</span><span class="rsk-desc-cell">Moves the ×2 Risk Multiplier to a chosen column.</span></div></td></tr>
               </table>
               <div class="rules-shot">
-                <img src="assets/screenshots/08.png" alt="">
-                <div class="rules-shot-cap">08 — Targeting mode mid-activation: a golden curved arc linking the source card to a glowing valid target slot, other slots dimmed.</div>
+                <img src="assets/screenshots/07b.jpg" alt="">
+                <div class="rules-shot-cap">07b — Moon Leaper with its Maneuver skill activatable (golden circle border on the skill icon).</div>
+              </div>
+              <div class="rules-shot">
+                <img src="assets/screenshots/07.jpg" alt="">
+                <div class="rules-shot-cap">07 — Same card during an opponent sub-round: skill is active but not playable yet (icon visible, grayed).</div>
+              </div>
+              <div class="rules-shot">
+                <img src="assets/screenshots/07c.jpg" alt="">
+                <div class="rules-shot-cap">07c — Skill permanently disabled by an opponent's Void power (red cross on the icon).</div>
+              </div>
+              <div class="rules-shot">
+                <img src="assets/screenshots/07d.jpg" alt="">
+                <div class="rules-shot-cap">07d — Skill already used this round (icon grayed out — one use per round).</div>
               </div>
             </div>
           </details>
@@ -13907,10 +13944,14 @@ if(document.readyState !== 'loading'){
           <p>Hands hold 4 cards at all times; after each round, players redraw up to 4.</p>
           <p>Winning a lane returns your card to your hand. Losing sends it to the discard. A tie keeps both cards in the lane.</p>
           <p><b>Mulligan:</b> before the first round, drag any of your 4 opening cards onto the deck to swap it for a random new one. No limit on how many you swap.</p>
+          <div class="rules-shot">
+            <img src="assets/screenshots/09.jpg" alt="">
+            <div class="rules-shot-cap">09 — Mulligan screen: Ember Sprite sent back to deck (translucent). Click "Confirm Hand" to draw a replacement.</div>
+          </div>
           <p><b>Deck Manager:</b> in Custom mode or Roguelike, you can build and edit your own 25-card deck. Maximum 3 copies of the same card. The deck's total Risk is shown in the header.</p>
           <div class="rules-shot">
-            <img src="assets/screenshots/07.png" alt="">
-            <div class="rules-shot-cap">07 — Mulligan screen: drag any of your 4 opening cards onto the deck pile to swap it for a random new one.</div>
+            <img src="assets/screenshots/13.jpg" alt="">
+            <div class="rules-shot-cap">13 — Deck management screen: your current deck on the left, full card collection on the right.</div>
           </div>
         </div>
       </details>
@@ -13920,14 +13961,30 @@ if(document.readyState !== 'loading'){
         <div class="rules-chapter-body">
           <p><b>Random Battle:</b> a quick single match. Select your difficulty level before the fight — this adjusts both deck strength and AI anticipation depth.</p>
           <p><b>Roguelike:</b> a campaign of 20 consecutive fights against progressively stronger opponents. You begin with a starter collection and earn 2 new cards (always with a power) after each victory. You have 3 lives — lose 3 fights and the run ends. Win all 20 with at least one life remaining to complete the run. Between fights you can adjust your deck using the cards you've collected.</p>
+          <div class="rules-shot">
+            <img src="assets/screenshots/11.jpg" alt="">
+            <div class="rules-shot-cap">11 — Roguelike hub: 2 fights won (skull icons in yellow), 18 remaining, 1 life lost out of 3.</div>
+          </div>
+          <div class="rules-shot">
+            <img src="assets/screenshots/12.jpg" alt="">
+            <div class="rules-shot-cap">12 — Roguelike victory screen: 2 reward cards added to your collection (not yet in the deck).</div>
+          </div>
           <p><b>Tutorial:</b> a series of 8 self-contained puzzles of increasing difficulty. Each puzzle places you in a specific scenario with fixed cards on both sides, and guided hints from the cards themselves. Complete each puzzle to unlock the next. The tutorial is the best starting point if you are new to the game — it introduces the rules one mechanic at a time.</p>
+          <div class="rules-shot">
+            <img src="assets/screenshots/10.jpg" alt="">
+            <div class="rules-shot-cap">10 — Tutorial hub: challenges 1 and 2 completed (green text), challenge 3 unlocked, others still locked.</div>
+          </div>
         </div>
       </details>
 
       <details class="rules-chapter">
         <summary>8. Card Compendium</summary>
         <div class="rules-chapter-body">
-          <p>All cards currently in the pool, grouped by element. Each shows element, Risk value, and power.</p>
+          <p>All cards currently in the pool, grouped by element. Each shows element, Risk value, and power. Tap any card to open its full detail panel.</p>
+          <div class="rules-shot">
+            <img src="assets/screenshots/16.jpg" alt="">
+            <div class="rules-shot-cap">16 — Card detail panel: full art, element, Risk value, power name and description.</div>
+          </div>
 
           <details class="rules-chapter" style="margin-top:12px;">
             <summary>🔥 Fire</summary>
