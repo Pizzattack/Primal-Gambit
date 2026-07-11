@@ -103,9 +103,9 @@ It's been humbling, sometimes frustrating, occasionally magical. Wrangling AI to
 
 Card art was generated with **ChatGPT / DALL-E**.
 
-All sound FX are from the amazing resource site [pix](https://freesound.org/). The full credits list is in the repository.
+All sound FX are from the amazing resource site [FreeSound.org](https://freesound.org/). The full credits list is in the repository.
 
-All musics are from [pix](https://pixabay.com/) Credits go to Desifreemusic, Akoliks_aj and Nastelbom.
+All musics are from [Pixabay.com](https://pixabay.com/) Credits go to Desifreemusic, Akoliks_aj and Nastelbom.
 
 ---
 
