@@ -18,7 +18,7 @@
      ║  Exemple pour version 27 → ElementalFury_v27.html               ║
      ╠══════════════════════════════════════════════════════════════════╣
      ║  VERSION    = 31                                                 ║
-     ║  BUILD      = 11                                                 ║
+     ║  BUILD      = 13                                                 ║
      ║  BUILD_DATE = 2026.07.01                                         ║
      ╚══════════════════════════════════════════════════════════════════╝ -->
 <html lang="fr">
@@ -4649,7 +4649,7 @@ body:has(#deck-panel.open) .float-toolbar{ display:none !important; }
        · mettre à jour la date (build YYYY.MM.DD) à la date du jour
        · renommer le fichier en index_vXX_bYY.html en cohérence -->
   <!-- ⚠ Mettre à jour cette date à chaque nouvelle version / build -->
-  <p id="build-badge">v36 b11 &nbsp;·&nbsp; build 2026.07.11</p>
+  <p id="build-badge">v36 b13 &nbsp;·&nbsp; build 2026.07.11</p>
 </div>
 
 <!-- 2. ÉCRAN MULLIGAN -->
@@ -9459,7 +9459,8 @@ function openCardDetail(card){
   if(card._skillUsed || card._skillVoided){
     const defs = document.createElementNS('http://www.w3.org/2000/svg', 'defs');
     const filter = document.createElementNS('http://www.w3.org/2000/svg', 'filter');
-    filter.setAttribute('id', 'grayscale');
+    const filterId = 'f_' + (card.uid||card.id||Math.random().toString(36).slice(2));
+    filter.setAttribute('id', filterId);
     const cm = document.createElementNS('http://www.w3.org/2000/svg', 'feColorMatrix');
     cm.setAttribute('type', 'matrix');
     if(card._skillVoided){
@@ -9479,8 +9480,10 @@ function openCardDetail(card){
     ? `assets/icons/${skillSlug}.png`
     : `assets/icons/empty_${curElDir}.png`;
   const skillIconEl = svgImg(skillIconPath, 138, 486, 230, 230);
-  if(card._skillUsed || card._skillVoided)
-    skillIconEl.setAttribute('filter', 'url(#grayscale)');
+  if(card._skillUsed || card._skillVoided){
+    const filterId2 = 'f_' + (card.uid||card.id||Math.random().toString(36).slice(2));
+    skillIconEl.setAttribute('filter', `url(#${filterId2})`);
+  }
   svg.appendChild(skillIconEl);
 
   // Couche 3 (haut) : bordure élémentaire courante 625×625
@@ -10013,19 +10016,29 @@ function executeSkillLogic(card, laneIdx, isPlayer, targetLaneIdx, targetIsEnemy
 
     case 'regroup':{
       // Remplace TOUTES les cartes de la main par de nouvelles cartes du deck
+      // Les cartes en lane ne sont pas touchées
       const deck = isPlayer ? G.pDeck : G.eDeck;
       const hand = isPlayer ? G.pHand : G.eHand;
+      // Collecter les UIDs des cartes actuellement en lane (ne pas repiocher)
+      const laneUids = new Set(G.lanes.map(l => isPlayer ? l.pc?.uid : l.ec?.uid).filter(Boolean));
       if(deck.length === 0){
         addLog(`  → Empty deck, no card to draw.`, (isPlayer?'you':'opp'), [`   no effect`]);
         break;
       }
-      // Remettre toutes les cartes de la main dans le deck, mélanger, repiocher
-      const count = Math.min(hand.length, deck.length + hand.length);
-      const oldHand = hand.splice(0, hand.length); // vide la main
-      deck.push(...oldHand);                        // remet dans le deck
-      deck.sort(() => Math.random() - .5);          // mélange
-      const drawn = Math.min(count, deck.length);
-      for(let i = 0; i < drawn; i++) hand.push(deck.pop());
+      // Remettre les cartes de la main dans le deck (seulement celles pas en lane)
+      const count = hand.length;
+      const oldHand = hand.splice(0, hand.length);
+      const toReturn = oldHand.filter(c => !laneUids.has(c.uid));
+      deck.push(...toReturn);
+      // Fisher-Yates shuffle
+      for(let i=deck.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[deck[i],deck[j]]=[deck[j],deck[i]];}
+      // Piocher uniquement des cartes qui ne sont pas en lane
+      let drawn = 0;
+      const deckFiltered = deck.filter(c => !laneUids.has(c.uid));
+      // Rebuild deck sans les cartes en lane pour la pioche
+      deck.splice(0, deck.length, ...deckFiltered);
+      const toDraw = Math.min(count, deck.length);
+      for(let i = 0; i < toDraw; i++){ hand.push(deck.pop()); drawn++; }
       addLog(`  → ${drawn} card(s) replaced in hand.`, (isPlayer?'you':'opp'), [`   Hand +${drawn} card(s)`]);
       break;
     }
