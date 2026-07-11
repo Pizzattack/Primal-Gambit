@@ -105,7 +105,7 @@ Card art was generated with **ChatGPT / DALL-E**.
 
 All sound FX are from the amazing resource site [FreeSound.org](https://freesound.org/). The full credits list is in the repository.
 
-All musics are from [Pixabay.com](https://pixabay.com/) Credits go to Desifreemusic, Akoliks_aj and Nastelbom.
+All musics are from [Pixabay.com](https://pixabay.com/). Credits go to [Desifreemusic](https://pixabay.com/users/desifreemusic-28163210/), [Akoliks_aj](https://pixabay.com/users/ikoliks_aj-48415707/) and [Nastelbom](https://pixabay.com/users/nastelbom-48128234/).
 
 ---
 
