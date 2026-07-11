@@ -18,7 +18,7 @@
      ║  Exemple pour version 27 → ElementalFury_v27.html               ║
      ╠══════════════════════════════════════════════════════════════════╣
      ║  VERSION    = 31                                                 ║
-     ║  BUILD      = 39                                                 ║
+     ║  BUILD      = 11                                                 ║
      ║  BUILD_DATE = 2026.07.01                                         ║
      ╚══════════════════════════════════════════════════════════════════╝ -->
 <html lang="fr">
@@ -172,7 +172,7 @@ body:has(#s-fight.active){
   width:min(80%, clamp(200px,55vw,320px)); /* largeur proche du logo visuel */
   padding:0;
   font-size:clamp(12px,3vw,16px);
-  aspect-ratio:3.5/1;
+  aspect-ratio:5/1;
   display:flex; align-items:center; justify-content:center;
 }
 #s-title > .btn-back-title{ /* handled by .btn-back-title rule */ }
@@ -924,9 +924,9 @@ img.slot-skill-targeted{
 
 /* ─── ÉCRAN FIN ─── */
 #s-end{align-items:center;justify-content:center;gap:clamp(10px,3vw,18px);padding:clamp(16px,4vw,36px);text-align:center;overflow-y:auto;}
-.end-title{font-family:'Cinzel',serif;font-size:clamp(40px,10vw,64px);}
+.end-title{font-family:'Cinzel',serif;font-size:clamp(40px,10vw,64px);color:#000;text-shadow:0 0 12px rgba(255,255,255,0.95),0 0 4px rgba(255,255,255,0.8);}
 .end-title.win{color:#000; text-shadow:0 0 12px rgba(255,255,255,0.95), 0 0 4px rgba(255,255,255,0.8);}
-.end-title.lose{color:#ff2020;}
+.end-title.lose{color:#000; text-shadow:0 0 12px rgba(255,255,255,0.95), 0 0 4px rgba(255,255,255,0.8);}
 #rl-end-stats{color:#000;text-shadow:0 0 12px rgba(255,255,255,0.95),0 0 4px rgba(255,255,255,0.8);font-family:'Cinzel',serif;font-size:clamp(12px,3vw,15px);text-align:center;white-space:pre-line;line-height:1.8;}
 .esl{font-size:clamp(13px,3.5vw,18px);color:var(--dim);}
 .esv{font-family:'Cinzel',serif;font-size:clamp(18px,5vw,28px);color:#000;font-weight:700;text-shadow:0 0 12px rgba(255,255,255,0.95), 0 0 4px rgba(255,255,255,0.8);}
@@ -1031,7 +1031,7 @@ img.slot-skill-targeted{
 }
 #mull-deck-pile{
   position:relative;
-  width:var(--card-w); height:var(--card-h);
+  width:var(--card-w-mull); height:var(--card-w-mull);
   margin:0 auto;
   transition:transform 0.15s;
 }
@@ -1196,7 +1196,7 @@ img.slot-skill-targeted{
     min-height:0;
     width:clamp(160px,calc(38 * var(--ls-vmin)),280px) !important;
     font-size:clamp(11px,2.5vmin,18px) !important;
-    aspect-ratio:3.5/1 !important;
+    aspect-ratio:5/1 !important;
     padding:0 !important;
     display:flex !important; align-items:center !important; justify-content:center !important;
     /* padding géré par .btn-gold global */
@@ -3492,7 +3492,154 @@ body:has(#targeting-cancel) #btn-end-round{
 
 </style>
 <style>
-/* ═══════════════ STATS PANEL ═══════════════ */
+/* ── EXTERNAL LINK POPUP ─────────────────────────────────── */
+#ext-link-overlay{
+  position:fixed;inset:0;z-index:700;display:none;
+  background:rgba(4,5,8,.85);backdrop-filter:blur(2px);
+  align-items:center;justify-content:center;
+}
+#ext-link-overlay.open{ display:flex; }
+#ext-link-box{
+  width:min(88vw,320px);background:var(--surf);border:1px solid var(--bdr);
+  border-radius:10px;padding:20px 18px 16px;display:flex;flex-direction:column;
+  gap:14px;box-shadow:0 10px 40px rgba(0,0,0,.6);text-align:center;
+}
+#ext-link-box p{ font-size:13px;color:var(--dim);line-height:1.5;margin:0; }
+#ext-link-box .ext-link-title{
+  font-family:'Cinzel',serif;color:var(--gold);font-size:15px;letter-spacing:.06em;
+}
+#ext-link-box .ext-btns{ display:flex;gap:10px; }
+
+/* ── SAVE PANEL ──────────────────────────────────────────── */
+#save-overlay{
+  position:fixed; inset:0; z-index:600; display:none;
+  background:rgba(4,5,8,.82); backdrop-filter:blur(2px);
+  align-items:center; justify-content:center;
+}
+#save-overlay.open{ display:flex; }
+#save-panel{
+  width:min(92vw,360px);
+  background:var(--surf); border:1px solid var(--bdr);
+  border-radius:10px; display:flex; flex-direction:column;
+  box-shadow:0 10px 40px rgba(0,0,0,.6);
+  overflow:hidden; position:relative;
+}
+#save-panel::before{
+  content:''; position:absolute; inset:0; pointer-events:none; z-index:0;
+  background:url('assets/background/texture_black.png') top left/1254px 1254px repeat;
+  opacity:0.6;
+}
+#save-panel > *{ position:relative; z-index:1; }
+#save-head{
+  display:flex; align-items:center; justify-content:space-between;
+  padding:14px 16px; border-bottom:1px solid var(--bdr);
+}
+#save-head h2{
+  font-family:'Cinzel',serif; color:var(--gold);
+  font-size:clamp(14px,3.5vw,17px); letter-spacing:.04em;
+}
+#save-close{
+  background:none; border:1px solid var(--bdr); color:var(--text);
+  width:30px; height:30px; border-radius:6px; font-size:16px; cursor:pointer;
+}
+.save-section{
+  padding:14px 16px; border-bottom:1px solid rgba(255,255,255,0.06);
+}
+.save-section-title{
+  font-family:'Cinzel',serif; font-size:clamp(9px,2vw,11px);
+  color:var(--dim); letter-spacing:.08em; text-transform:uppercase;
+  margin-bottom:8px;
+}
+.save-section p{
+  font-size:clamp(10px,2.2vw,12px); color:var(--dim); line-height:1.5;
+  margin-bottom:10px;
+}
+.save-info{
+  font-size:10px; color:rgba(140,135,128,0.55); margin-top:6px;
+  font-family:'Cinzel',serif; letter-spacing:.04em;
+}
+.save-btn{
+  font-family:'Cinzel',serif; font-size:clamp(10px,2.4vw,12px);
+  letter-spacing:.08em; text-transform:uppercase; cursor:pointer;
+  border-radius:6px; padding:clamp(8px,2vw,11px) clamp(12px,3vw,18px);
+  width:100%; transition:background .15s;
+}
+/* Save panel: btn-gold/ghost fixed height, full width */
+#save-panel .btn-gold,
+#save-panel .btn-ghost{
+  font-size:clamp(9px,2.2vw,12px) !important;
+}
+.save-btn-gold{
+  background:rgba(212,175,55,0.1); color:var(--gold);
+  border:1px solid var(--gold-d);
+}
+.save-btn-gold:hover{ background:rgba(212,175,55,0.22); }
+.save-btn-red{
+  background:rgba(180,0,0,0.1); color:#f66;
+  border:1px solid rgba(244,67,54,0.35);
+}
+.save-btn-red:hover{ background:rgba(180,0,0,0.25); }
+
+
+#audio-overlay{
+  position:fixed; inset:0; z-index:600; display:none;
+  background:rgba(4,5,8,.82); backdrop-filter:blur(2px);
+  align-items:center; justify-content:center;
+}
+#audio-overlay.open{ display:flex; }
+#audio-panel{
+  width:min(92vw,340px);
+  background:var(--surf); border:1px solid var(--bdr);
+  border-radius:10px; display:flex; flex-direction:column;
+  box-shadow:0 10px 40px rgba(0,0,0,.6);
+  overflow:hidden; position:relative;
+}
+#audio-panel::before{
+  content:''; position:absolute; inset:0; pointer-events:none; z-index:0;
+  background:url('assets/background/texture_black.png') top left/1254px 1254px repeat;
+  opacity:0.6;
+}
+#audio-panel > *{ position:relative; z-index:1; }
+#audio-head{
+  display:flex; align-items:center; justify-content:space-between;
+  padding:14px 16px; border-bottom:1px solid var(--bdr);
+}
+#audio-head h2{
+  font-family:'Cinzel',serif; color:var(--gold);
+  font-size:clamp(14px,3.5vw,17px); letter-spacing:.04em;
+}
+#audio-close{
+  background:none; border:1px solid var(--bdr); color:var(--text);
+  width:30px; height:30px; border-radius:6px; font-size:16px; cursor:pointer;
+}
+.audio-row{
+  display:flex; align-items:center; gap:12px;
+  padding:14px 16px;
+  border-bottom:1px solid rgba(255,255,255,0.05);
+}
+.audio-row label{
+  font-family:'Cinzel',serif; font-size:clamp(9px,2vw,11px);
+  color:var(--dim); letter-spacing:.06em; text-transform:uppercase;
+  width:56px; flex-shrink:0;
+}
+.audio-row input[type=range]{
+  flex:1; accent-color:var(--gold);
+}
+.audio-val{
+  font-family:'Cinzel',serif; font-size:11px; color:var(--gold);
+  width:36px; text-align:right; flex-shrink:0;
+}
+#audio-toggle{
+  margin:14px 16px; width:calc(100% - 32px);
+  font-family:'Cinzel',serif; font-size:clamp(11px,2.5vw,14px);
+  letter-spacing:.08em; border:1px solid var(--bdr);
+  background:rgba(212,175,55,0.1); color:var(--gold);
+  border-radius:6px; padding:10px; cursor:pointer;
+  transition:background .15s;
+}
+#audio-toggle:hover{ background:rgba(212,175,55,0.2); }
+
+
 #stats-overlay{
   position:fixed; inset:0; z-index:600; display:none;
   background:rgba(4,5,8,.82); backdrop-filter:blur(2px);
@@ -3774,21 +3921,63 @@ body:has(#targeting-cancel) #btn-end-round{
 /* ── Floating action toolbar (rules + log + debug + quit, merged) ── */
 .float-toolbar{
   position:fixed; top:env(safe-area-inset-top,0px); right:0;
-  margin:10px; z-index:500;
-  display:flex; flex-direction:row; gap:6px;
+  margin:8px; z-index:500;
+  display:flex; flex-direction:row; align-items:center; gap:6px;
   background:transparent; border:none;
-  border-radius:10px; padding:6px;
-  box-shadow:none;
+  border-radius:10px; padding:4px;
 }
 .float-toolbar .btn-icon{
   width:clamp(30px,6.5vw,40px); height:clamp(30px,6.5vw,40px);
   font-size:clamp(13px,3vw,17px);
 }
-
-/* ── Title screen only: just the rules button + label ── */
-.toolbar-rules-label{
-  display:none;
+/* Quit: visible seulement pendant mulligan et combat */
+.btn-icon-quit{ display:none; }
+body:has(#s-fight.active) .float-toolbar .btn-icon-quit,
+body:has(#s-mulligan.active) .float-toolbar .btn-icon-quit{ display:flex; }
+/* More panel */
+.more-panel{
+  position:fixed; top:calc(env(safe-area-inset-top,0px) + clamp(58px,14vw,74px)); right:0;
+  margin:0 8px; z-index:501;
+  background:rgba(12,16,24,0.96); border:1px solid var(--bdr);
+  border-radius:10px; padding:8px 10px 10px;
+  box-shadow:0 8px 32px rgba(0,0,0,0.7);
+  display:none; flex-direction:column; gap:4px;
+  max-width:75vw; max-height:75vh; overflow-y:auto;
+  isolation:isolate;
 }
+.more-panel::before{
+  content:''; position:absolute; inset:0; pointer-events:none; z-index:0;
+  background:url('assets/background/texture_black.png') top left/1254px 1254px repeat;
+  opacity:0.6; border-radius:10px;
+}
+.more-panel > *{ position:relative; z-index:1; }
+.more-panel.open{ display:flex; }
+.more-panel-header{
+  display:flex; align-items:center; justify-content:space-between;
+  padding-bottom:6px; border-bottom:1px solid var(--bdr);
+  margin-bottom:4px;
+}
+.more-panel-title{
+  font-family:'Cinzel',serif; color:var(--gold);
+  font-size:clamp(12px,3vw,15px); letter-spacing:.06em;
+}
+.more-panel-rows{ display:flex; flex-direction:column; gap:4px; }
+.more-row{
+  display:flex; align-items:center; justify-content:flex-end;
+  gap:10px; padding:2px 0;
+}
+.more-label{
+  font-family:'Cinzel',serif; font-size:clamp(10px,2.5vw,13px);
+  color:#000; text-shadow:0 0 10px rgba(255,255,255,0.9),0 0 4px rgba(255,255,255,0.7);
+  white-space:nowrap; letter-spacing:.05em;
+}
+.more-row .btn-icon{
+  width:clamp(36px,7.8vw,49px) !important; height:clamp(36px,7.8vw,49px) !important;
+  flex-shrink:0;
+}
+
+/* ── Title screen: labels cachés par défaut ── */
+.toolbar-rules-label,.toolbar-stats-label,.toolbar-online-label,.toolbar-download-label{ display:none; }
 @keyframes rulesWiggle{
   0%,88%,100%{ transform:rotate(0deg) scale(1); }
   90%{ transform:rotate(-10deg) scale(1.05); }
@@ -3797,12 +3986,8 @@ body:has(#targeting-cancel) #btn-end-round{
   96%{ transform:rotate(5deg) scale(1.02); }
   98%{ transform:rotate(-2deg) scale(1); }
 }
-#s-title.active ~ .float-toolbar .btn-icon:not(.btn-icon-rules):not(.btn-icon-fullscreen):not(.btn-icon-quit):not(.btn-icon-stats){
-  display:none;
-}
-#s-title.active ~ .float-toolbar .btn-icon-quit{
-  display:none;
-}
+/* Title screen: on montre debug+audio+more, on cache quit */
+#s-title.active ~ .float-toolbar .btn-icon-quit{ display:none; }
 #s-title.active ~ .float-toolbar{
   flex-direction:row; align-items:center; gap:8px;
   top:env(safe-area-inset-top,0px); bottom:auto;
@@ -3821,11 +4006,11 @@ body:has(#targeting-cancel) #btn-end-round{
   white-space:nowrap;
 }
 /* Title screen: explicit order for correct visual sequence */
-#s-title.active ~ .float-toolbar .toolbar-stats-label { order:1; }
-#s-title.active ~ .float-toolbar .btn-icon-stats       { order:2; }
-#s-title.active ~ .float-toolbar .toolbar-rules-label  { order:3; }
-#s-title.active ~ .float-toolbar .btn-icon-rules       { order:4; }
-#s-title.active ~ .float-toolbar .btn-icon-fullscreen  { order:5; }
+/* Title screen: order debug | audio | more */
+#s-title.active ~ .float-toolbar .btn-icon-more      { order:1; }
+#s-title.active ~ .float-toolbar .btn-icon-rules     { order:2; }
+#s-title.active ~ .float-toolbar .btn-icon-audio     { order:3; }
+#s-title.active ~ .float-toolbar .btn-icon-fullscreen{ order:4; }
 /* Stats label: hidden in combat, visible on title screen */
 .toolbar-stats-label{ display:none; }
 #s-title.active ~ .float-toolbar .toolbar-stats-label{
@@ -3865,6 +4050,15 @@ body:has(#targeting-cancel) #btn-end-round{
   letter-spacing:.06em; text-transform:uppercase; padding:2px 10px;
   border:1px solid rgba(212,175,55,0.25); border-radius:4px;
 }
+#dp-el-counts{
+  font-family:'Cinzel',serif; font-size:clamp(9px,2vw,12px);
+  letter-spacing:.04em; display:flex; gap:6px; align-items:center; flex-wrap:wrap;
+}
+#dp-el-counts .el-f{ color:#ff5533; font-weight:700; }
+#dp-el-counts .el-w{ color:#44aaff; font-weight:700; }
+#dp-el-counts .el-e{ color:#44cc66; font-weight:700; }
+#dp-el-counts .el-d{ color:#ddaa22; font-weight:700; }
+#dp-el-counts .el-sep{ color:var(--dim); }
 #dp-count-label{
   font-size:clamp(12px,2vw,16px); color:var(--text); min-width:7em; text-align:right;
 }
@@ -4040,7 +4234,7 @@ body:has(#deck-panel.open) .float-toolbar{ display:none !important; }
   background:url('assets/background/button_l_white.png') center/100% 100% no-repeat;
   border:none; cursor:pointer;
   width:clamp(220px,56vw,320px);
-  aspect-ratio:3.5/1;
+  aspect-ratio:5/1;
   display:flex; align-items:center; justify-content:center;
   -webkit-tap-highlight-color:transparent;
   transition:transform .1s;
@@ -4259,7 +4453,7 @@ body:has(#deck-panel.open) .float-toolbar{ display:none !important; }
   border:1px solid rgba(255,255,255,0.18);
   overflow:hidden;
   display:grid;
-  grid-template-columns:repeat(5, clamp(26px,6vmin,48px));
+  grid-template-columns:repeat(5, clamp(32px,7.5vmin,56px));
   gap:clamp(4px,1.2vmin,8px); justify-content:center; margin:0 auto;
   width:fit-content;
 }
@@ -4277,11 +4471,11 @@ body:has(#deck-panel.open) .float-toolbar{ display:none !important; }
 }
 .rl-fight-pip, .rl-life-pip{ position:relative; z-index:1; }
 .rl-fight-pip{
-  width:clamp(26px,6vmin,48px); height:clamp(26px,6vmin,48px);
+  width:clamp(32px,7.5vmin,56px); height:clamp(32px,7.5vmin,56px);
   border-radius:4px; border:none; background:none;
   display:flex; align-items:center; justify-content:center;
   position:relative; overflow:visible;
-  font-size:clamp(10px,2.2vmin,16px); font-family:'Cinzel',serif; color:rgba(255,255,255,1);
+  font-size:clamp(15px,3.5vmin,24px); font-family:'Cinzel',serif; color:rgba(255,255,255,1);
 }
 .rl-fight-pip.win{ filter:drop-shadow(0 0 6px rgba(212,175,55,0.7)); color:transparent; }
 .rl-fight-pip.current{ filter:drop-shadow(0 0 8px rgba(255,255,255,0.5)); }
@@ -4300,7 +4494,7 @@ body:has(#deck-panel.open) .float-toolbar{ display:none !important; }
 #rl-buttons .btn-gold, #rl-buttons .btn-ghost{
   min-width:0 !important;
   padding:0 !important;
-  aspect-ratio:3.5/1;
+  aspect-ratio:5/1;
 }
 /* CHANGE DECK : ×1.5 */
 #rl-hub-deck{
@@ -4446,15 +4640,16 @@ body:has(#deck-panel.open) .float-toolbar{ display:none !important; }
   <img src="assets/background/logo.png"
        alt="Primal Gambit"
        id="home-logo">
-  <button class="btn-gold" onclick="goTutorial()" /* SOUND: ui_button_gold */>TUTORIAL</button>
-  <button class="btn-gold" onclick="clickStart()" /* SOUND: ui_button_gold */>RANDOM BATTLE</button>
-  <button class="btn-gold" onclick="clickRoguelike()" /* SOUND: ui_button_gold */>ROGUELIKE</button>
+  <button class="btn-gold" onclick="sfx(SFX.click2);goTutorial()">TUTORIAL</button>
+  <button class="btn-gold" onclick="sfx(SFX.click2);clickStart()">RANDOM BATTLE</button>
+  <button class="btn-gold" onclick="sfx(SFX.click2);clickRoguelike()">ROGUELIKE</button>
   <!-- ⚠️ VERSION — À METTRE À JOUR À CHAQUE MODIFICATION :
        · incrémenter bN → b(N+1) pour chaque build dans la même version
        · incrémenter vX.YY → vX.(YY+1) + reset b1 pour une nouvelle version
        · mettre à jour la date (build YYYY.MM.DD) à la date du jour
        · renommer le fichier en index_vXX_bYY.html en cohérence -->
-  <p id="build-badge">v33 b39 &nbsp;·&nbsp; build 2026.07.04</p>
+  <!-- ⚠ Mettre à jour cette date à chaque nouvelle version / build -->
+  <p id="build-badge">v36 b11 &nbsp;·&nbsp; build 2026.07.11</p>
 </div>
 
 <!-- 2. ÉCRAN MULLIGAN -->
@@ -4474,7 +4669,7 @@ body:has(#deck-panel.open) .float-toolbar{ display:none !important; }
     <div id="mull-deck-hint">← drag here to return</div>
   </div>
   <div class="mull-footer">
-    <button class="btn-gold" onclick="mulliganConfirm()">CONFIRM HAND</button>
+    <button class="btn-gold" onclick="sfx(SFX.click2);mulliganConfirm()">CONFIRM HAND</button>
   </div>
 </div>
 
@@ -4544,12 +4739,12 @@ body:has(#deck-panel.open) .float-toolbar{ display:none !important; }
 <!-- 4. ÉCRAN FIN -->
 <div id="s-end" class="screen" style="flex-direction:column;align-items:stretch;">
   <div class="screen-nav">
-    <button class="btn-back-title" onclick="goTitle()">← TITLE SCREEN</button>
+    <button class="btn-back-title" onclick="sfx(SFX.click2);goTitle()">← TITLE SCREEN</button>
   </div>
   <div class="screen-body">
     <h1 class="end-title" id="end-title">Game Over</h1>
     <div id="s-end-standard" style="display:flex; flex-direction:column; gap:14px; align-items:center; width:100%;">
-      <button class="btn-gold" onclick="clickStart()" style="align-self:center;">NEW RANDOM BATTLE</button>
+      <button class="btn-gold" onclick="sfx(SFX.click2);clickStart()" style="align-self:center;">NEW RANDOM BATTLE</button>
     </div>
     <div id="s-end-rl" style="display:none; flex-direction:column; gap:10px; align-items:center; width:100%;">
       <div id="rl-end-stats"></div>
@@ -4557,7 +4752,7 @@ body:has(#deck-panel.open) .float-toolbar{ display:none !important; }
         <div style="font-family:'Cinzel',serif;font-size:clamp(14.3px,3.25vw,18.2px);color:#000;text-shadow:0 0 12px rgba(255,255,255,0.95),0 0 4px rgba(255,255,255,0.8);letter-spacing:.06em;text-align:center;line-height:1.5;">Cards added to your collection :<br>go to the roguelike hub to update your deck</div>
         <div id="rl-rewards-cards" style="display:flex;gap:clamp(10px,3vw,20px);justify-content:center;align-items:flex-start;"></div>
       </div>
-      <button class="btn-gold" onclick="goRoguelike()" id="rl-btn-hub">ROGUELIKE HUB</button>
+      <button class="btn-gold" onclick="sfx(SFX.click2);goRoguelike()" id="rl-btn-hub">ROGUELIKE HUB</button>
     </div>
   </div>
 </div>
@@ -4565,7 +4760,7 @@ body:has(#deck-panel.open) .float-toolbar{ display:none !important; }
 <!-- 5. ÉCRAN TUTORIAL HUB -->
 <div id="s-tutorial" class="screen">
   <div id="tut-nav">
-    <button class="btn-back-title" onclick="goTitle()">← TITLE SCREEN</button>
+    <button class="btn-back-title" onclick="sfx(SFX.click2);goTitle()">← TITLE SCREEN</button>
   </div>
   <div id="tut-body">
     <div id="tut-header">
@@ -4579,13 +4774,13 @@ body:has(#deck-panel.open) .float-toolbar{ display:none !important; }
 <!-- ÉCRAN FIN TUTORIEL -->
 <div id="s-end-tutorial" class="screen" style="flex-direction:column;align-items:stretch;">
   <div class="screen-nav">
-    <button class="btn-back-title" onclick="goTitle()">← TITLE SCREEN</button>
+    <button class="btn-back-title" onclick="sfx(SFX.click2);goTitle()">← TITLE SCREEN</button>
   </div>
   <div class="screen-body">
     <div id="tut-end-result" style="font-family:'Cinzel',serif;font-size:clamp(28px,8vw,48px);font-weight:900;letter-spacing:.15em;"></div>
     <div id="tut-end-puzzle" style="font-family:'Cinzel',serif;font-size:clamp(15.6px,3.9vw,20.8px);color:#000;text-shadow:0 0 12px rgba(255,255,255,0.95),0 0 4px rgba(255,255,255,0.8);letter-spacing:.08em;"></div>
     <div id="tut-end-msg" style="font-family:'Cinzel',serif;font-size:clamp(15.6px,3.64vw,19.5px);color:#000;text-shadow:0 0 12px rgba(255,255,255,0.95),0 0 4px rgba(255,255,255,0.8);max-width:320px;line-height:1.6;"></div>
-    <button class="btn-gold" onclick="goTutorial()" style="margin-top:8px;">BACK TO TUTORIAL</button>
+    <button class="btn-gold" onclick="sfx(SFX.click2);goTutorial()" style="margin-top:8px;">BACK TO TUTORIAL</button>
   </div>
 </div>
 
@@ -4596,14 +4791,14 @@ body:has(#deck-panel.open) .float-toolbar{ display:none !important; }
     <div id="tut-puzzle-num"></div>
     <h3 id="tut-puzzle-name"></h3>
     <p id="tut-puzzle-desc"></p>
-    <button class="btn-gold" id="tut-puzzle-launch" onclick="tutLaunchPuzzle()">START CHALLENGE</button>
+    <button class="btn-gold" id="tut-puzzle-launch" onclick="sfx(SFX.click2);tutLaunchPuzzle()">START CHALLENGE</button>
   </div>
 </div>
 
 <!-- 6. ÉCRAN ROGUELIKE HUB -->
 <div id="s-roguelike" class="screen">
   <div class="screen-nav">
-    <button class="btn-back-title" onclick="goTitle()">← TITLE SCREEN</button>
+    <button class="btn-back-title" onclick="sfx(SFX.click2);goTitle()">← TITLE SCREEN</button>
   </div>
   <div id="rl-body" class="screen-body" style="justify-content:space-evenly;">
   <div id="rl-header">
@@ -4626,8 +4821,8 @@ body:has(#deck-panel.open) .float-toolbar{ display:none !important; }
     <div id="rl-end-big-subtitle"></div>
   </div>
   <div id="rl-buttons">
-    <button class="btn-gold" onclick="dpOpen('player')" id="rl-hub-deck">CHANGE DECK</button>
-    <button class="btn-gold" onclick="rlNextFight()" id="rl-hub-next">NEXT FIGHT</button>
+    <button class="btn-gold" onclick="sfx(SFX.click2);dpOpen('player')" id="rl-hub-deck">CHANGE DECK</button>
+    <button class="btn-gold" onclick="sfx(SFX.click2);rlNextFight()" id="rl-hub-next">NEXT FIGHT</button>
   </div>
   </div><!-- /rl-body -->
   <div id="rl-end-flash" style="display:none;position:absolute;inset:0;pointer-events:none;"></div>
@@ -4639,8 +4834,8 @@ body:has(#deck-panel.open) .float-toolbar{ display:none !important; }
     <h3>Roguelike in progress</h3>
     <p id="rl-resume-info"></p>
     <div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap;width:100%;">
-      <button class="btn-popup btn-popup-dark" onclick="rlResume()">RESUME</button>
-      <button class="btn-popup btn-popup-dark" onclick="rlNewGame()">NEW GAME</button>
+      <button class="btn-popup btn-popup-dark" onclick="sfx(SFX.click2);rlResume()">RESUME</button>
+      <button class="btn-popup btn-popup-dark" onclick="sfx(SFX.click2);rlNewGame()">NEW GAME</button>
       <button class="btn-popup btn-popup-light" onclick="rlCancelPopup()">CANCEL</button>
     </div>
   </div>
@@ -4652,6 +4847,7 @@ body:has(#deck-panel.open) .float-toolbar{ display:none !important; }
     <h2>Deck Manager</h2>
     <span id="dp-owner-label">Player</span>
     <span id="dp-count-label">0 / 25 cards</span>
+    <span id="dp-el-counts"></span>
   </div>
   <div id="dp-body">
     <!-- Colonne Deck actif -->
@@ -4676,8 +4872,8 @@ body:has(#deck-panel.open) .float-toolbar{ display:none !important; }
     </div>
   </div>
   <div id="dp-footer">
-    <button id="dp-save-btn" onclick="dpSave()">Save Deck</button>
-    <button id="dp-cancel-btn" onclick="dpClose()">Cancel</button>
+    <button id="dp-save-btn" onclick="sfx(SFX.click2);dpSave()">Save Deck</button>
+    <button id="dp-cancel-btn" onclick="sfx(SFX.click2);dpClose()">Cancel</button>
   </div>
 </div>
 <div id="dp-toast"></div>
@@ -5247,6 +5443,8 @@ function cleanGameUI(){
 
 function goTitle(){
   statsTimeEnterZone('title');
+  _stopAllHeartLoops();
+  musicPlayBg('title');
   const fightActive = document.getElementById('s-fight')?.classList.contains('active') ||
                       document.getElementById('s-mulligan')?.classList.contains('active');
   if(typeof _rlMode !== 'undefined' && _rlMode && typeof RL !== 'undefined' && RL && !RL.gameOver && fightActive){
@@ -5265,6 +5463,37 @@ function _doGoTitle(){
   document.getElementById('s-title').classList.add('active');
 }
 
+function _rlAbandon(){
+  rlPostFight('ai');
+  _stopAllHeartLoops();
+  musicStop();
+  if(RL && RL.gameOver){
+    sfx(RL.won ? SFX.fanfare : SFX.lose);
+    _rlMode = false;
+    goRoguelike();
+  } else {
+    sfx(SFX.lose);
+    cleanGameUI();
+    document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+    const endScreen = document.getElementById('s-end');
+    if(endScreen) endScreen.classList.add('active');
+    const title = document.getElementById('end-title');
+    if(title){ title.textContent='Defeat'; title.className='end-title lose'; }
+    const stdDiv = document.getElementById('s-end-standard');
+    const rlDiv  = document.getElementById('s-end-rl');
+    if(stdDiv) stdDiv.style.display = 'none';
+    if(rlDiv){
+      rlDiv.style.display = 'flex';
+      const livesLeft = Math.max(0, RL_LIVES - RL.losses);
+      const statsEl = document.getElementById('rl-end-stats');
+      if(statsEl) statsEl.textContent = 'Fight '+RL.fightsDone+' / '+RL_FIGHTS+'\nWins: '+RL.wins+'  ·  Losses: '+RL.losses+'\nLives remaining: '+livesLeft+' / '+RL_LIVES;
+      const rewardsSection = document.getElementById('rl-rewards-section');
+      if(rewardsSection) rewardsSection.style.display = 'none';
+    }
+    _rlMode = false;
+  }
+}
+
 function _rlShowAbandonModal(){
   const existing = document.getElementById('rl-abandon-modal');
   if(existing) existing.remove();
@@ -5278,9 +5507,9 @@ function _rlShowAbandonModal(){
         <div style="font-family:Cinzel,serif;color:#ff6060;font-size:18px;font-weight:700;margin-bottom:10px;">ROGUELIKE</div>
         <div style="color:#a8a095;font-size:14px;margin-bottom:20px;line-height:1.5;">Fight in progress.<br>Leaving will count as a <b style="color:#ff6060">LOSS</b> and cost you one life.<br><br>You cannot undo this.</div>
         <div style="display:flex;flex-direction:column;gap:10px;align-items:stretch;width:100%;">
-          <button onclick="document.getElementById('rl-abandon-modal').remove(); rlPostFight('ai'); rlSave(); _doGoTitle();"
+          <button onclick="sfx(SFX.tock);document.getElementById('rl-abandon-modal').remove(); _rlAbandon();"
             class="btn-popup btn-popup-dark">LEAVE — TAKE THE LOSS</button>
-          <button onclick="document.getElementById('rl-abandon-modal').remove();"
+          <button onclick="sfx(SFX.tock);document.getElementById('rl-abandon-modal').remove();"
             class="btn-popup btn-popup-light">STAY AND FIGHT</button>
         </div>
       </div>
@@ -5371,7 +5600,7 @@ function clickStart(){
         <div style="font-family:'Cinzel',serif;color:rgba(168,160,149,0.7);font-size:clamp(10px,2.2vw,12px);margin-bottom:16px;letter-spacing:.06em;">Select difficulty</div>
         <div style="display:flex;flex-direction:column;gap:clamp(6px,1.5vw,10px);align-items:center;">
           ${btns}
-          <button onclick="document.getElementById('difficulty-popup').remove();"
+          <button onclick="sfx(SFX.tock);document.getElementById('difficulty-popup').remove();"
             style="background:none;border:none;cursor:pointer;font-family:'Cinzel',serif;
                    font-size:clamp(10px,2vw,12px);color:rgba(168,160,149,0.5);
                    margin-top:4px;letter-spacing:.06em;text-transform:uppercase;
@@ -5384,7 +5613,7 @@ function clickStart(){
 
 function startWithDifficulty(level){
   const popup = document.getElementById('difficulty-popup');
-  if(popup) popup.remove();
+  if(popup){ sfx(SFX.tock); popup.remove(); }
   _difficulty = level;
   const cfg = _DIFFICULTIES[level] || _DIFFICULTIES['Medium'];
   _aiAnticipationLevel = cfg.aiDepth;
@@ -5449,7 +5678,7 @@ function startWithDifficulty(level){
   };
 
   for(let i=0;i<4;i++){
-    // SOUND: card_draw
+    sfx(SFX.card);
         G.pHand.push(G.pDeck.pop());
     G.eHand.push(G.eDeck.pop());
   }
@@ -5463,7 +5692,7 @@ function startWithDifficulty(level){
   // Changement d'écran sécurisé
   document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
   document.getElementById('s-mulligan').classList.add('active');
-  
+  sfx(SFX.deck, 0.5);
   renderMulligan();
 }
 
@@ -5562,6 +5791,7 @@ function _mullEndDrag(e){
   document.removeEventListener('pointercancel', _mullCancelDrag);
 
   if(droppedOnDeck){
+    sfx(SFX.paper, 0.7);
     if(G.mullSet.has(idx)) G.mullSet.delete(idx);
     else G.mullSet.add(idx);
     renderMulligan();
@@ -5580,6 +5810,7 @@ function _mullCancelDrag(){
 }
 
 function mulliganConfirm(){
+  sfx(SFX.deck, 0.5);
   const btn = document.querySelector('#s-mulligan .btn-gold');
   if(btn) btn.disabled = true; // empêche les double-clics
 
@@ -5639,6 +5870,7 @@ function mulliganConfirm(){
 
 function _startFight(){
   statsTimeEnterZone('combat');
+  musicPlayBattle();
   addLog("Battle begins!", "imp", ["Battle begins!"]);
   const startP = [...G.pHand];
   const startE = [...G.eHand];
@@ -6368,7 +6600,7 @@ function _aiEvaluateSkillMoves(){
         break;
       }
 
-      case 'overgrowth':{
+      case 'overgrowth':{ /* sfxElement called after transformation */
         // Convertit toutes les cartes d'un élément en Terre.
         // Gain = amélioration nette des outcomes IA sur tout le plateau.
         // On simule réellement chaque choix d'élément.
@@ -7030,6 +7262,8 @@ function tryAiSkillMidRound(){
     ? _captureOvergrowthAffectedSlots(aiTargetLaneIdx, aiTargetIsEnemy)
     : null;
   const _powerShiftFromAi = _skillNameAi === 'powerShift' ? G.multLaneIdx : -1;
+  sfx(SFX.click3);
+  sfxElement(card.el);
   addLog(`Opponent uses [${SKILLS[_skillNameAi].n}] (${card.name}).`, 'opp', [`OPP: activates ${SKILLS[_skillNameAi].n}`]);
   executeSkillLogic(card, bestLane, false, aiTargetLaneIdx, aiTargetIsEnemy);
   card._skillUsed = true;
@@ -7618,6 +7852,8 @@ function executeAiBonusSkill(){
         ? _captureOvergrowthAffectedSlots(bonusTargetLaneIdx, bonusTargetIsEnemy)
         : null;
       const _powerShiftFromBonus = _skillNameBonus === 'powerShift' ? G.multLaneIdx : -1;
+      sfx(SFX.click3);
+      sfxElement(ec.el);
       addLog(`Opponent uses [${SKILLS[_skillNameBonus].n}] at bonus SR7 (${ec.name}).`, 'opp', [`OPP: activates ${SKILLS[_skillNameBonus].n}`, `   bonus SR7`]);
       executeSkillLogic(ec, i, false, bonusTargetLaneIdx, bonusTargetIsEnemy);
       ec._skillUsed = true;
@@ -7783,6 +8019,7 @@ function _rerenderArenaOnly(){
 //   dans _afterFly(). Toute tentative de révélation carte-par-carte ou de fondu progressif
 //   crée un gap visible dont la durée est proportionnelle au délai avant le switch final.
 function _flyGhost(ghostHTML, ghostClass, srcRect, dstRect, tiltDir, onDone, onStart, fadeOut=true, keepAlive=false, duration=360){
+  sfxWoosh('fly');
   const ghost = document.createElement('div');
   ghost.className = `card card-fly-ghost ${ghostClass}`;
   ghost.style.width  = srcRect.width  + 'px';
@@ -8618,6 +8855,7 @@ function dropCardToLane(cardIdx, laneIdx){
 
   // ── Instant : Judgement — compare les éléments à la pose ──
   if(card.skill === 'judgement'){
+    sfxElement(card.el);
     executeSkillLogic(card, laneIdx, true);
     card._skillUsed = true;
     _animateSkillActivate(laneIdx, true);
@@ -8635,6 +8873,7 @@ function dropCardToLane(cardIdx, laneIdx){
     // NE PAS réinitialiser skillUsedThisRound : Refresh ne donne pas
     // un second skill dans le même sous-round, il réactive les cartes
     // pour les sous-rounds suivants.
+    sfxElement(card.el);
     addLog(`[Refresh] Skills restored on ${restored} allied card(s).`, 'you', [`YOU: activate Refresh`, `   Skills +${restored} card(s)`]);
     _animateSkillActivate(laneIdx, true);
   }
@@ -8652,6 +8891,7 @@ function dropCardToLane(cardIdx, laneIdx){
     } else {
       addLog(`[Mimic] No valid opposite card to copy. No effect.`, 'you', [`YOU: activate Mimic`, `   no effect`]);
     }
+    sfxElement(card.el);
     _animateSkillActivate(laneIdx, true);
   }
 
@@ -9339,6 +9579,7 @@ window.addEventListener('DOMContentLoaded', () => {
   // Bouton fin de round
   document.getElementById('btn-end-round').addEventListener('pointerdown', (e) => {
     e.preventDefault();
+    sfx(SFX.click2);
     onEndRoundClick();
   }, { passive: false });
 });
@@ -9495,6 +9736,8 @@ function confirmSkillTarget(targetLaneIdx, targetIsEnemy){
   // Exécuter le skill avec la cible choisie
   executeSkillLogic(pc, sourceLaneIdx, true, targetLaneIdx, targetIsEnemy);
 
+  sfx(SFX.click3);
+  sfxElement(pc.el);
   pc._skillUsed = true;
   G.skillUsedThisRound = true;
   statsOnSkillUsed?.(pc.skill, sourceLaneIdx, G.subRound);
@@ -9573,6 +9816,7 @@ function _executeDisguiseAlly(pc, sourceLaneIdx, allyLaneIdx, enemyLaneIdx, enem
 }
 
 function cancelSkillTarget(){
+  sfx(SFX.cancel);
   G.pendingSkill = null;
   G._pendingDisguiseAlly = null;
   renderFight();
@@ -9636,6 +9880,8 @@ function triggerPlayerSkill(laneIdx){
   const swapVisual      = _captureSkillSwapVisual(pc.skill, laneIdx, true);
   const swapVisualHand   = _captureSkillSwapVisualHand(pc.skill, true);
   const _skillNamePlayer = pc.skill; // capturé AVANT mutation (ex. morph → 'none')
+  sfx(SFX.click3);
+  sfxElement(pc.el);
   addLog(`You use [${SKILLS[_skillNamePlayer].n}] at bonus SR7 (${pc.name}).`, 'you', [`YOU: activate ${SKILLS[_skillNamePlayer].n}`, `   bonus SR7`]);
   executeSkillLogic(pc, laneIdx, true);
   pc._skillUsed = true;
@@ -9883,7 +10129,7 @@ function executeSkillLogic(card, laneIdx, isPlayer, targetLaneIdx, targetIsEnemy
       break;
     }
 
-    case 'overgrowth':{      // targetLaneIdx : lane de la carte choisie comme référence d'élément
+    case 'overgrowth':{ /* sfxElement called after transformation */      // targetLaneIdx : lane de la carte choisie comme référence d'élément
       // La carte de référence est elle-même convertie si elle partage l'élément.
       const refLane = (targetLaneIdx !== undefined) ? G.lanes[targetLaneIdx] : null;
       const refCard = refLane ? (targetIsEnemy ? refLane.ec : refLane.pc) : null;
@@ -10592,10 +10838,20 @@ function _animateHpLoss(isPlayer, fromHP, toHP){
   function tick(){
     current--;
     el.textContent = Math.max(0, current);
+    sfx(SFX.hit, 0.5 + Math.random()*0.3);
     _setHpImgClip(_imgElH, Math.max(0, current), isPlayer ? ((G && G.pMaxHP) ? G.pMaxHP : 50) : ((G && G.eMaxHP) ? G.eMaxHP : 50));
     if(current <= toHP){
       _hpCountdownActive[key] = false;
       updateHpDisplay();
+      // Heart loop : démarrer si HP dans la zone critique, stopper si HP = 0
+      const maxHP = isPlayer ? (G&&G.pMaxHP||50) : (G&&G.eMaxHP||50);
+      if(toHP <= 0){
+        _stopHeartLoop(isPlayer); // mort — pas de heartbeat
+      } else if(toHP <= maxHP * 0.25){
+        _startHeartLoop(isPlayer); // zone critique — démarrer
+      } else {
+        _stopHeartLoop(isPlayer);  // au dessus du seuil — stopper si actif
+      }
       return;
     }
     setTimeout(tick, stepMs);
@@ -10646,11 +10902,17 @@ function _animateDamageTransfer(proj, isPlayer, dmg, onDone, fromHPOverride){
     currentHP--;
     if(proj) proj.textContent = '-' + Math.max(0, remainingDmg);
     el.textContent = Math.max(0, currentHP);
+    sfx(SFX.hit, 0.5 + Math.random()*0.3);
     _setHpImgClip(_imgEl, Math.max(0, currentHP), isPlayer ? ((G && G.pMaxHP) ? G.pMaxHP : 50) : ((G && G.eMaxHP) ? G.eMaxHP : 50));
     if(remainingDmg <= 0){
       _hpCountdownActive[key] = false;
       updateHpDisplay();
       if(proj) proj.remove();
+      // Heart loop : même logique que _animateHpLoss
+      const maxHP = isPlayer ? (G&&G.pMaxHP||50) : (G&&G.eMaxHP||50);
+      if(toHP <= 0)                   _stopHeartLoop(isPlayer);
+      else if(toHP <= maxHP * 0.25)   _startHeartLoop(isPlayer);
+      else                            _stopHeartLoop(isPlayer);
       onDone && onDone();
       return;
     }
@@ -10770,7 +11032,9 @@ function _updateKillButtons(){
       rlWinBtn.addEventListener('pointerdown', e => {
         e.stopPropagation();
         RL.wins = 20; RL.history = Array(20).fill('w'); RL.gameOver = true; RL.won = true;
-        rlSave(); goRoguelike();
+        rlSave();
+        _stopAllHeartLoops(); musicStop(); sfx(SFX.fanfare);
+        goRoguelike();
       });
       document.body.appendChild(rlWinBtn);
     }
@@ -10782,7 +11046,9 @@ function _updateKillButtons(){
       rlLoseBtn.addEventListener('pointerdown', e => {
         e.stopPropagation();
         RL.losses = 3; RL.gameOver = true; RL.won = false;
-        rlSave(); goRoguelike();
+        rlSave();
+        _stopAllHeartLoops(); musicStop(); sfx(SFX.lose);
+        goRoguelike();
       });
       document.body.appendChild(rlLoseBtn);
     }
@@ -11172,7 +11438,7 @@ function renderFight(){
         const cancelBtn = document.createElement('button');
         cancelBtn.id = 'targeting-cancel';
         cancelBtn.textContent = 'CANCEL';
-        cancelBtn.addEventListener('pointerdown', (e)=>{ e.preventDefault(); cancelSkillTarget(); }, { passive:false });
+        cancelBtn.addEventListener('pointerdown', (e)=>{ e.preventDefault(); sfx(SFX.click2); cancelSkillTarget(); }, { passive:false });
         document.body.appendChild(cancelBtn);
         // Masquer btn-end-round pendant le ciblage
         const btnEnd = document.getElementById('btn-end-round');
@@ -11300,6 +11566,7 @@ function triggerAiSkillsIfSmart(){
       // nécessaire pour les skills qui déplacent une carte déjà posée (betrayal).
       const moveDescriptor = _captureSkillMoveRects(ec.skill, i, false);
       const _skillNameSmart = ec.skill; // capturé AVANT mutation (ex. morph → 'none')
+      sfxElement(ec.el);
       executeSkillLogic(ec, i, false);
       ec._skillUsed = true;
       G.aiSkillUsedThisRound = true;
@@ -11626,9 +11893,11 @@ function resolveLaneStep(laneIdx){
       // Charge + impact
       setTimeout(()=>{
         winnerSlot.classList.add('slot-clash-winner');
+        // Son d'impact au moment de la charge (puis au contact à 240ms)
 
         // Flash d'impact au moment du contact (38% de 0.65s ≈ 247ms)
         setTimeout(()=>{
+          sfx(SFX.card);
           const flash = document.createElement('div');
           flash.className = 'clash-flash-overlay';
           visualLane.style.position = 'relative';
@@ -11662,8 +11931,10 @@ function resolveLaneStep(laneIdx){
         slotA.classList.add('slot-tie-a');
         slotB.classList.add('slot-tie-b');
 
-        // Flash doré au moment de l'impact (≈20% de 0.75s ≈ 150ms)
+        // Flash doré au moment du contact (≈20% de 0.75s ≈ 150ms)
         setTimeout(()=>{
+          sfx(SFX.tap);
+          setTimeout(()=> sfx(SFX.tap, 0.7), 80); // second impact
           const flash = document.createElement('div');
           flash.className = 'tie-flash-overlay';
           visualLane.style.position = 'relative';
@@ -11692,7 +11963,6 @@ function resolveLaneStep(laneIdx){
     let _hpBeforeCapture = undefined; // PV réels AVANT soustraction (pour l'animation)
 
     if(tie){
-      // SOUND: lane_tie
       statsOnLaneResolved?.(laneIdx,'tie',0,0,lane.pc,lane.ec);
       addLog(`${['Left','Center','Right'][laneIdx]} lane: Deadlock — risks carry over (you ${lane.pDl} / opp ${lane.eDl}).`, 'resolve', [
         `${['Left','Center','Right'][laneIdx]} Lane: deadlock`,
@@ -11750,6 +12020,7 @@ function resolveLaneStep(laneIdx){
       // SEAL : si la carte perdante a seal, les dégâts = son Risk propre uniquement (pas pDl)
       if(lane.pc && lane.pc.skill === 'seal'){
         base = lane.pc.risk;
+        sfxElement(lane.pc.el);
         addLog(`  → [Seal] ${lane.pc.name} absorbs the loss — damage capped at its own Risk (${base}).`, 'sk', [`   seal active`]);
       }
       if(isMultLane && G.multOwner === 0){ base *= 2; isDoubled = true; }
@@ -11792,6 +12063,7 @@ function resolveLaneStep(laneIdx){
         const tgt = winnerOwner === 'player' ? 'enemy' : 'player';
         if(tgt === 'enemy'){ G.eHP = Math.max(0, G.eHP - dmg); _hpCountdownActive.enemy = true; }
         else               { G.pHP = Math.max(0, G.pHP - dmg); _hpCountdownActive.player = true; }
+        sfxElement(winningCard.el);
         addLog(`[Torment] ${winningCard.name} crushes ${losingCard.name} (Risk ${losingCard.risk} < ${winningCard.risk}) — +${dmg} damage!`, 'sk', [{ text: `   +${dmg} damage`, c: tgt === 'enemy' ? 'dmg-opp' : 'dmg-you' }]);
         animateDmgProjectile(dmg, tgt, false, false, 0, laneIdx, null);
         _checkSkillGameOver();
@@ -11806,6 +12078,7 @@ function resolveLaneStep(laneIdx){
           const tgt = cardOwner === 'player' ? 'enemy' : 'player';
           if(tgt === 'enemy'){ G.eHP = Math.max(0, G.eHP - dmg); _hpCountdownActive.enemy = true; }
           else               { G.pHP = Math.max(0, G.pHP - dmg); _hpCountdownActive.player = true; }
+          sfxElement(card.el);
           addLog(`[Backstab] ${card.name} Deadlocked — deals ${dmg} damage!`, 'sk', [{ text: `   +${dmg} damage`, c: tgt === 'enemy' ? 'dmg-opp' : 'dmg-you' }]);
           _animateAutoSkillDamage(laneIdx, cardOwner === 'player', dmg, tgt, laneIdx, () => _checkSkillGameOver());
         }
@@ -11823,6 +12096,7 @@ function resolveLaneStep(laneIdx){
         const tgt = losingOwner === 'player' ? 'enemy' : 'player';
         if(tgt === 'enemy'){ G.eHP = Math.max(0, G.eHP - dmg); _hpCountdownActive.enemy = true; }
         else               { G.pHP = Math.max(0, G.pHP - dmg); _hpCountdownActive.player = true; }
+        sfxElement(losingCard.el);
         addLog(`[Vendetta] ${losingCard.name} is defeated — retaliates for ${dmg} damage!`, 'sk', [{ text: `   +${dmg} damage`, c: tgt === 'enemy' ? 'dmg-opp' : 'dmg-you' }]);
         _animateAutoSkillDamage(laneIdx, losingOwner === 'player', dmg, tgt, laneIdx, () => _checkSkillGameOver());
       }
@@ -12167,6 +12441,7 @@ function completeRoundResolution(){
         ensureDeck(G.pDeck, buildDeck);
         const idx = G.pHand.length;
         G.pHand.push(G.pDeck.pop());
+        sfx(SFX.deck, 0.5);
         G.newlyDrawn.add(idx);
         G.newlyDrawnFromDeck.add(idx);
         renderHandOnly();
@@ -12564,15 +12839,17 @@ function executeEndGameTrigger(){
   const title = document.getElementById('end-title');
   if(endScreen) endScreen.classList.add('active');
 
+  _stopAllHeartLoops();
+  musicStop();
+
   if(winner === 'tie'){
-    title.textContent = "Perfect Deadlock!";
-    title.className = "end-title";
+    title.textContent = "Perfect Deadlock!"; title.className = "end-title";
   } else if(winner === 'player'){
-    title.textContent = "Epic Victory!";
-    title.className = "end-title win";
+    setTimeout(()=> sfx(SFX.win), 300);
+    title.textContent = "Victory!"; title.className = "end-title win";
   } else {
-    title.textContent = "You have fallen.";
-    title.className = "end-title lose";
+    setTimeout(()=> sfx(SFX.lose), 300);
+    title.textContent = "Defeat"; title.className = "end-title lose";
   }
 }
 
@@ -12589,10 +12866,13 @@ function addLog(m, c='', sLines=null){
 function toggleLog(){
   const d = document.getElementById('log-drawer');
   const o = document.getElementById('log-overlay');
+  const opening = d && !d.classList.contains('open');
   if(d) d.classList.toggle('open');
   if(o) o.classList.toggle('open', d && d.classList.contains('open'));
+  sfx(SFX.tock);
 }
 function closeLog(){
+  sfx(SFX.tock);
   const d = document.getElementById('log-drawer');
   const o = document.getElementById('log-overlay');
   if(d) d.classList.remove('open');
@@ -13679,16 +13959,124 @@ if(document.readyState !== 'loading'){
   </div>
 </div>
 
-<!-- ═══════════════ FLOATING TOOLBAR (log / debug / rules / quit) ═══════════════ -->
-<div class="float-toolbar">
-  <button class="btn-icon btn-icon-debug" id="btn-debug" onclick="toggleDebug()" title="Debug"><img src="assets/background/sqbutton_bug.png" alt="[D]"></button>
-  <button class="btn-icon btn-icon-stats" id="btn-stats" onclick="openStatsPanel()" title="Stats"><img src="assets/background/sqbutton_collection.png" alt="Stats"></button>
-  <div class="toolbar-stats-label">Stats</div>
-  <button class="btn-icon" onclick="toggleLog()" title="History"><img src="assets/background/sqbutton_log.png" alt="Log"></button>
-  <button class="btn-icon btn-icon-rules rules-wiggle" id="btn-rules" onclick="openRulesPanel()" title="Rules"><img src="assets/background/sqbutton_rules.png" alt="Rules"></button>
-  <div class="toolbar-rules-label">Rules</div>
-  <button class="btn-icon btn-icon-fullscreen" id="btn-fullscreen-toggle" onclick="document.fullscreenElement||document.webkitFullscreenElement?exitFullscreen():enterFullscreen()" title="Fullscreen"><img id="btn-fullscreen-img" src="assets/background/sqbutton_maximize.png" alt="⛶"></button>
-  <button class="btn-icon btn-icon-quit" onclick="goTitle()" title="Quitter"><img src="assets/background/sqbutton_cross.png" alt="✕"></button>
+<!-- ═══════════════ FLOATING TOOLBAR ═══════════════ -->
+<div class="float-toolbar" id="float-toolbar">
+  <button class="btn-icon btn-icon-more" id="btn-more" onclick="toggleMorePanel()" title="More"><img src="assets/background/sqbutton_more.png" alt="More"></button>
+  <button class="btn-icon btn-icon-rules rules-wiggle" id="btn-rules-tb" onclick="closeMorePanel();openRulesPanel();" title="Rules"><img src="assets/background/sqbutton_rules.png" alt="Rules"></button>
+  <button class="btn-icon btn-icon-audio" id="btn-audio" onclick="openAudioPanel()" title="Audio"><img src="assets/background/sqbutton_soundfxon.png" alt="Audio"></button>
+  <button class="btn-icon btn-icon-fullscreen" id="btn-fullscreen-toggle" onclick="sfx(SFX.tock);document.fullscreenElement||document.webkitFullscreenElement?exitFullscreen():enterFullscreen()" title="Fullscreen"><img id="btn-fullscreen-img" src="assets/background/sqbutton_maximize.png" alt="⛶"></button>
+  <button class="btn-icon btn-icon-quit" id="btn-quit" onclick="sfx(SFX.click2);goTitle()" title="Quit"><img src="assets/background/sqbutton_cross.png" alt="✕"></button>
+</div>
+
+<!-- ═══════════════ MORE PANEL ═══════════════ -->
+<div id="more-panel" class="more-panel">
+  <div class="more-panel-header">
+    <span class="more-panel-title">More…</span>
+    <button class="btn-icon" onclick="toggleMorePanel()" style="width:28px;height:28px;flex-shrink:0;"><img src="assets/background/sqbutton_more.png" alt="✕"></button>
+  </div>
+  <div class="more-panel-rows">
+    <div class="more-row">
+      <span class="more-label">Debug</span>
+      <button class="btn-icon btn-icon-debug" id="btn-debug" onclick="toggleDebug()" title="Debug"><img src="assets/background/sqbutton_bug.png" alt="[D]"></button>
+    </div>
+    <div class="more-row">
+      <span class="more-label">Rules</span>
+      <button class="btn-icon btn-icon-rules rules-wiggle" id="btn-rules" onclick="closeMorePanel();openRulesPanel();" title="Rules"><img src="assets/background/sqbutton_rules.png" alt="Rules"></button>
+    </div>
+    <div class="more-row">
+      <span class="more-label">Stats</span>
+      <button class="btn-icon btn-icon-stats" id="btn-stats" onclick="closeMorePanel();openStatsPanel();" title="Stats"><img src="assets/background/sqbutton_stats.png" alt="Stats"></button>
+    </div>
+    <div class="more-row">
+      <span class="more-label">Log</span>
+      <button class="btn-icon" onclick="closeMorePanel();toggleLog();" title="Log"><img src="assets/background/sqbutton_log.png" alt="Log"></button>
+    </div>
+    <div class="more-row">
+      <span class="more-label">Save / Load</span>
+      <button class="btn-icon btn-icon-save" id="btn-save" onclick="closeMorePanel();openSavePanel();" title="Save / Load"><img src="assets/background/sqbutton_save.png" alt="Save"></button>
+    </div>
+    <div class="more-row">
+      <span class="more-label">Online</span>
+      <button class="btn-icon btn-icon-online" id="btn-online" onclick="closeMorePanel();openExtLink('online');" title="Online"><img src="assets/background/sqbutton_online.png" alt="Online"></button>
+    </div>
+    <div class="more-row">
+      <span class="more-label">Get Latest</span>
+      <button class="btn-icon btn-icon-download" id="btn-download" onclick="closeMorePanel();openExtLink('download');" title="Download"><img src="assets/background/sqbutton_download.png" alt="Download"></button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════ EXTERNAL LINK POPUP ═══════════════ -->
+<div id="ext-link-overlay" onclick="if(event.target===this) closeExtLink()">
+  <div id="ext-link-box">
+    <div class="ext-link-title" id="ext-link-title"></div>
+    <p id="ext-link-desc"></p>
+    <div id="ext-link-url-wrap" style="display:none;flex-direction:column;gap:6px;">
+      <input id="ext-link-url-field" type="text" readonly onclick="this.select()"
+        style="width:100%;background:rgba(0,0,0,0.4);border:1px solid var(--bdr);color:var(--text);font-size:11px;padding:6px;border-radius:4px;box-sizing:border-box;font-family:monospace;">
+      <button class="btn-ghost" onclick="sfx(SFX.click2);document.getElementById('ext-link-url-field').select();try{navigator.clipboard.writeText(document.getElementById('ext-link-url-field').value).catch(()=>{})}catch(e){}" style="width:100%;aspect-ratio:3.5/1;padding:0;font-size:clamp(10px,2.5vw,13px);">COPY URL</button>
+    </div>
+    <div class="ext-btns">
+      <button id="ext-link-go" class="btn-gold" onclick="sfx(SFX.click2);_doExtLink()" style="flex:1;aspect-ratio:3.5/1;padding:0;font-size:clamp(10px,2.5vw,13px);">GO</button>
+      <button class="btn-ghost" onclick="sfx(SFX.tock);closeExtLink()" style="flex:1;aspect-ratio:3.5/1;padding:0;font-size:clamp(10px,2.5vw,13px);">CANCEL</button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════ SAVE / LOAD PANEL ═══════════════ -->
+<div id="save-overlay" onclick="if(event.target===this) closeSavePanel()">
+  <div id="save-panel">
+    <div id="save-head">
+      <h2>SAVE / LOAD</h2>
+      <button id="save-close" onclick="sfx(SFX.tock);closeSavePanel()">✕</button>
+    </div>
+    <div class="save-section">
+      <div class="save-section-title">Export</div>
+      <button onclick="sfx(SFX.click2);saveExport()" style="width:80%;margin:0 auto;display:block;background:none;border:none;cursor:pointer;padding:0;position:relative;"><img src="assets/background/button_l_black.png" style="width:100%;height:auto;display:block;" alt=""><span style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-family:Cinzel,serif;font-size:clamp(9px,2.2vw,12px);letter-spacing:.08em;color:#fff;pointer-events:none;">SAVE PROGRESS</span></button>
+      <div class="save-info" id="save-export-info"></div>
+    </div>
+    <div class="save-section">
+      <div class="save-section-title">Import</div>
+      <button onclick="sfx(SFX.click2);document.getElementById('save-file-input').click()" style="width:80%;margin:0 auto;display:block;background:none;border:none;cursor:pointer;padding:0;position:relative;"><img src="assets/background/button_l_white.png" style="width:100%;height:auto;display:block;" alt=""><span style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-family:Cinzel,serif;font-size:clamp(9px,2.2vw,12px);letter-spacing:.08em;color:#000;pointer-events:none;">LOAD FROM FILE</span></button>
+      <input id="save-file-input" type="file" accept=".json,.txt" style="display:none" onchange="saveImportFromFile(this)">
+    </div>
+    <div class="save-section">
+      <div class="save-section-title">Save Text</div>
+      <p style="margin-bottom:6px;">If your browser does not open a file picker, save your progress using the text below — copy it and store it in a file or note of your choice.</p>
+      <textarea id="save-paste-area" placeholder="Your save data appears here after export. Paste saved text here to reload it." style="width:100%;height:90px;background:rgba(0,0,0,0.4);border:1px solid var(--bdr);color:var(--text);font-size:9px;padding:6px;border-radius:4px;box-sizing:border-box;resize:none;font-family:monospace;line-height:1.3;"></textarea>
+      <div style="display:flex;gap:8px;margin-top:8px;">
+        <button onclick="sfx(SFX.click2);document.getElementById('save-paste-area').select()" style="flex:1;background:none;border:none;cursor:pointer;padding:0;position:relative;"><img src="assets/background/button_m_white.png" style="width:100%;height:auto;display:block;" alt=""><span style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-family:Cinzel,serif;font-size:clamp(8px,1.8vw,10px);letter-spacing:.06em;color:#000;pointer-events:none;">SELECT ALL</span></button>
+        <button onclick="sfx(SFX.click2);saveImportFromPaste()" style="flex:1;background:none;border:none;cursor:pointer;padding:0;position:relative;"><img src="assets/background/button_m_black.png" style="width:100%;height:auto;display:block;" alt=""><span style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-family:Cinzel,serif;font-size:clamp(8px,1.8vw,10px);letter-spacing:.06em;color:#fff;pointer-events:none;">LOAD TEXT</span></button>
+      </div>
+      <div class="save-info" id="save-import-info"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════ AUDIO PANEL ═══════════════ -->
+<div id="audio-overlay" onclick="if(event.target===this) closeAudioPanel()">
+  <div id="audio-panel">
+    <div id="audio-head">
+      <h2>AUDIO</h2>
+      <button id="audio-close" onclick="closeAudioPanel()">✕</button>
+    </div>
+    <div class="audio-row">
+      <button style="background:none;border:none;cursor:default;padding:0;flex-shrink:0;"><img src="assets/background/sqbutton_sound.png" style="width:42px;height:42px;object-fit:contain;" alt="Master"></button>
+      <input id="audio-master-slider" type="range" min="0" max="100" value="100" oninput="audioSetMaster(this.value)">
+      <span id="audio-master-val" class="audio-val">100%</span>
+    </div>
+    <div class="audio-row">
+      <button onclick="audioToggleFx()" id="audio-btn-fx" style="background:none;border:none;cursor:pointer;padding:0;flex-shrink:0;" title="Toggle FX"><img id="audio-img-fx" src="assets/background/sqbutton_soundfxon.png" style="width:42px;height:42px;object-fit:contain;" alt="FX"></button>
+      <input id="audio-fx-slider" type="range" min="0" max="100" value="30" oninput="audioSetFx(this.value)">
+      <span id="audio-fx-val" class="audio-val">30%</span>
+    </div>
+    <div class="audio-row">
+      <button onclick="audioToggleMusic()" id="audio-btn-music" style="background:none;border:none;cursor:pointer;padding:0;flex-shrink:0;" title="Toggle Music"><img id="audio-img-music" src="assets/background/sqbutton_musicon.png" style="width:42px;height:42px;object-fit:contain;" alt="Music"></button>
+      <input id="audio-mu-slider" type="range" min="0" max="100" value="19" oninput="audioSetMusic(this.value)">
+      <span id="audio-mu-val" class="audio-val">19%</span>
+    </div>
+
+  </div>
 </div>
 
 <!-- ═══════════════ STATS PANEL ═══════════════ -->
@@ -13697,15 +14085,15 @@ if(document.readyState !== 'loading'){
   <div id="stats-panel">
     <div id="stats-head">
       <h2>STATISTICS</h2>
-      <button id="stats-close" onclick="closeStatsPanel()">✕</button>
+      <button id="stats-close" onclick="sfx(SFX.tock);closeStatsPanel()">✕</button>
     </div>
     <div id="stats-tabs">
-      <button class="stats-tab active" onclick="switchStatsTab('overview',this)">Overview</button>
-      <button class="stats-tab" onclick="switchStatsTab('modes',this)">By Mode</button>
-      <button class="stats-tab" onclick="switchStatsTab('cards',this)">Cards</button>
-      <button class="stats-tab" onclick="switchStatsTab('skills',this)">Skills</button>
-      <button class="stats-tab" onclick="switchStatsTab('deck',this)">Deck</button>
-      <button class="stats-tab" onclick="switchStatsTab('history',this)">History</button>
+      <button class="stats-tab active" onclick="sfx(SFX.paper);switchStatsTab('overview',this)">Overview</button>
+      <button class="stats-tab" onclick="sfx(SFX.paper);switchStatsTab('modes',this)">By Mode</button>
+      <button class="stats-tab" onclick="sfx(SFX.paper);switchStatsTab('cards',this)">Cards</button>
+      <button class="stats-tab" onclick="sfx(SFX.paper);switchStatsTab('skills',this)">Skills</button>
+      <button class="stats-tab" onclick="sfx(SFX.paper);switchStatsTab('deck',this)">Deck</button>
+      <button class="stats-tab" onclick="sfx(SFX.paper);switchStatsTab('history',this)">History</button>
     </div>
     <div id="stats-body">
       <div id="stats-empty" style="display:none;">NO GAMES RECORDED YET<br><span style="font-size:10px;opacity:.5">Play a game to start tracking stats</span></div>
@@ -13725,7 +14113,7 @@ if(document.readyState !== 'loading'){
   <div id="rules-panel">
     <div id="rules-head">
       <h2>Primal Gambit — Rule of Three</h2>
-      <button id="rules-close" onclick="closeRulesPanel()">✕</button>
+      <button id="rules-close" onclick="sfx(SFX.tock);closeRulesPanel()">✕</button>
     </div>
     <div id="rules-body">
 
@@ -14230,6 +14618,8 @@ function rlResume(){
 // ── Écran hub roguelike ───────────────────────────────────────────
 function goRoguelike(){
   statsTimeEnterZone('hub');
+  _stopAllHeartLoops();
+  musicPlayBg('title');
   cleanGameUI();
   document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
   document.getElementById('s-roguelike').classList.add('active');
@@ -14337,10 +14727,10 @@ function rlRenderHub(){
     } else if(i === RL.wins && !RL.gameOver){
       pip.classList.add('current');
       pip.innerHTML = `<img src="assets/background/hp_empty.png" style="position:absolute;inset:0;width:100%;height:100%;object-fit:contain;pointer-events:none;">` +
-        `<span style="position:relative;z-index:1;font-size:clamp(7px,1.6vmin,11px);font-family:'Cinzel',serif;">${i+1}</span>`;
+        `<span style="position:relative;z-index:1;font-size:clamp(12px,2.7vmin,18px);font-family:'Cinzel',serif;">${i+1}</span>`;
     } else {
       pip.innerHTML = `<img src="assets/background/hp_empty.png" style="position:absolute;inset:0;width:100%;height:100%;object-fit:contain;pointer-events:none;">` +
-        `<span style="position:relative;z-index:1;font-size:clamp(7px,1.6vmin,11px);font-family:'Cinzel',serif;">${i+1}</span>`;
+        `<span style="position:relative;z-index:1;font-size:clamp(12px,2.7vmin,18px);font-family:'Cinzel',serif;">${i+1}</span>`;
     }
     fg.appendChild(pip);
   }
@@ -14366,8 +14756,7 @@ function rlRenderHub(){
   const livesLeft = RL_LIVES - RL.losses;
   document.getElementById('rl-subtitle').textContent =
     RL.gameOver
-      ? (RL.won ? // SOUND: roguelike_win
-      '🏆 You won the Roguelike!' : '💀 Game Over')
+      ? (RL.won ? '🏆 You won the Roguelike!' : '💀 Game Over')
       : `${remaining} fight${remaining!==1?'s':''} to win · ${livesLeft} ${livesLeft!==1?'lives':'life'} left`;
   const nbtn = document.getElementById('rl-hub-next');
   if(nbtn) nbtn.style.display = RL.gameOver ? 'none' : '';
@@ -14428,6 +14817,7 @@ function rlNextFight(){
 
   document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
   document.getElementById('s-mulligan').classList.add('active');
+  sfx(SFX.deck, 0.5);
   renderMulligan();
 }
 
@@ -14448,13 +14838,18 @@ function rlPostFight(winner){
       rewards.push({...card});
     }
     RL._lastRewards = rewards; // pour affichage dans l'écran de fin
-    if(RL.wins >= RL_FIGHTS){ RL.gameOver = true; RL.won = true; }
+    if(RL.wins >= RL_FIGHTS){ RL.gameOver = true; RL.won = true; sfx(SFX.fanfare); }
   } else {
     RL.losses++;
     RL._lastRewards = null;
     if(RL.losses >= RL_LIVES){ RL.gameOver = true; RL.won = false; }
   }
   rlSave();
+  // Son de fin de combat RL
+  _stopAllHeartLoops();
+  musicStop();
+  if(playerWon) sfx(SFX.win);
+  else sfx(SFX.lose);
 }
 
 // ── Pop-up reprise ────────────────────────────────────────────────
@@ -14465,6 +14860,7 @@ function clickRoguelike(){
     const popup = document.getElementById('rl-resume-popup');
     document.getElementById('rl-resume-info').textContent =
       `Fight ${saved.fightsDone+1}/${RL_FIGHTS} · ${saved.wins} wins · ${saved.losses} losses`;
+    sfx(SFX.tock);
     popup.classList.add('open');
   } else {
     RL = null;
@@ -14472,6 +14868,7 @@ function clickRoguelike(){
   }
 }
 function rlCancelPopup(){
+  sfx(SFX.tock);
   document.getElementById('rl-resume-popup').classList.remove('open');
 }
 
@@ -14541,11 +14938,16 @@ function executeEndGameTrigger(){
     rlDiv.style.display  = 'none';
   }
 
-  if(winner==='tie'){     title.textContent="Perfect Deadlock!"; title.className="end-title"; }
-  else if(winner==='player'){ // SOUND: match_win
-  title.textContent="Epic Victory!";     title.className="end-title win"; }
-  else{                   // SOUND: match_lose
-  title.textContent="You have fallen."; title.className="end-title lose"; }
+  _stopAllHeartLoops();
+  musicStop();
+  const _endWinner = winner;
+  setTimeout(()=>{
+    if(_endWinner==='player') sfx(SFX.win);
+    else if(_endWinner==='ai') sfx(SFX.lose);
+  }, 300);
+  if(winner==='player'){ title.textContent="Victory!"; title.className="end-title win"; }
+  else if(winner==='ai'){ title.textContent="Defeat"; title.className="end-title lose"; }
+  else { title.textContent="Perfect Deadlock!"; title.className="end-title"; }
 }
 
 
@@ -14884,7 +15286,7 @@ function tutRenderHub(){
       <span>${TUT_PUZZLES[i]?.name || '???'}</span>
       `;
     if(!locked){
-      btn.onclick = () => tutOpenPuzzlePopup(i+1);
+      btn.onclick = () => { sfx(SFX.click2); tutOpenPuzzlePopup(i+1); };
     }
     grid.appendChild(btn);
   }
@@ -14898,10 +15300,12 @@ function tutOpenPuzzlePopup(puzzleId){
   document.getElementById('tut-puzzle-name').textContent = p.name;
   document.getElementById('tut-puzzle-desc').textContent = p.desc;
   const popup = document.getElementById('tut-puzzle-popup');
+  sfx(SFX.tock);
   popup.classList.add('open');
   popup.style.display = 'flex';
 }
 function tutClosePuzzlePopup(){
+  sfx(SFX.tock);
   const popup = document.getElementById('tut-puzzle-popup');
   popup.classList.remove('open');
   popup.style.display = 'none';
@@ -15321,7 +15725,7 @@ function tutShowOneBubble(spec, onDone, persistent){
     bubble.style.top   = '80px';
   }
   bubble.style.display = 'flex';
-  // SOUND: tutorial_bubble_in
+  sfxAwawa();
   // Animation d'entrée
   bubble.style.animation = 'tutBubbleIn 0.2s ease both';
 
@@ -15419,9 +15823,11 @@ function tutPostFight(winner){
 
   // Afficher l'écran de fin tutoriel dédié
   const isWin = (winner === 'player');
-  // SOUND: isWin ? tutorial_success : tutorial_fail
-  document.getElementById('tut-end-result').textContent  = isWin ? 'CHALLENGE CLEARED!' : 'DEFEATED';
-  document.getElementById('tut-end-result').style.color  = isWin ? '#000' : '#cc2222';
+  _stopAllHeartLoops();
+  musicStop();
+  sfx(isWin ? SFX.win : SFX.lose);
+  document.getElementById('tut-end-result').textContent  = isWin ? 'CHALLENGE CLEARED!' : 'DEFEAT';
+  document.getElementById('tut-end-result').style.color  = '#000';
   document.getElementById('tut-end-result').style.textShadow = isWin ? '0 0 12px rgba(255,255,255,0.95),0 0 4px rgba(255,255,255,0.8)' : 'none';
   document.getElementById('tut-end-puzzle').textContent  = `Challenge ${_tutCurrentPuzzle.id} — ${_tutCurrentPuzzle.name}`;
   document.getElementById('tut-end-msg').textContent     = isWin
@@ -15539,11 +15945,25 @@ document.addEventListener('visibilitychange', function(){
   if(document.hidden){
     statsTimeFlush();
     _timePageHidden = true;
+    // Pause musique quand onglet caché
+    if(_musicEl && !_musicEl.paused) { _musicEl.pause(); _musicPausedByFocus = true; }
   } else {
     _timePageHidden = false;
     _timeZoneStart = Date.now();
+    // Reprendre musique si elle avait été mise en pause
+    if(_musicPausedByFocus && _musicEl) { _musicEl.play().catch(()=>{}); _musicPausedByFocus = false; }
   }
 });
+
+// Perte/regain de focus de fenêtre (alt-tab, autre application)
+let _musicPausedByFocus = false;
+window.addEventListener('blur', function(){
+  if(_musicEl && !_musicEl.paused){ _musicEl.pause(); _musicPausedByFocus = true; }
+});
+window.addEventListener('focus', function(){
+  if(_musicPausedByFocus && _musicEl){ _musicEl.play().catch(()=>{}); _musicPausedByFocus = false; }
+});
+
 setInterval(function(){ if(!document.hidden) statsTimeFlush(); }, 30000);
 
 // ── Session en cours (accumulé pendant la partie) ─────────────────
@@ -15700,11 +16120,12 @@ let _aiDifficultyKey = 'Medium';
 
 // ── UI : ouverture / fermeture / onglets ──────────────────────────
 function openStatsPanel(){
+  sfx(SFX.tock);
   statsLoad();
   document.getElementById('stats-overlay').classList.add('open');
   _statsRenderCurrentTab();
 }
-function closeStatsPanel(){ document.getElementById('stats-overlay').classList.remove('open'); }
+function closeStatsPanel(){ sfx(SFX.tock); document.getElementById('stats-overlay').classList.remove('open'); }
 function switchStatsTab(name, btn){
   document.querySelectorAll('.stats-tab').forEach(t=>t.classList.remove('active'));
   document.querySelectorAll('.stats-pane').forEach(p=>p.classList.remove('active'));
@@ -15969,12 +16390,565 @@ function statsReset(){
 // Initialiser au démarrage
 statsLoad();
 
+/* ═══════════════════════════════════════════════════════════════════════════
+   AUDIO ENGINE — Primal Gambit
+   ─────────────────────────────────────────────────────────────────────────
+   Architecture :
+   · FX  : AudioContext + AudioBuffer pools, volume global _fxVol (0-1)
+   · Music : <audio> tags avec fade in/out, volume global _musicVol (0-1)
+   · Seuils HP : pulse à ≤50% (danger), boucle heart à ≤25% (critical)
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+// ── Volumes ───────────────────────────────────────────────────────────────
+const AUDIO_LS_KEY = 'pg_audio_prefs';
+function _audioPrefsLoad(){ try{ return JSON.parse(localStorage.getItem(AUDIO_LS_KEY)||'{}'); }catch(e){ return {}; } }
+function _audioPrefsSave(){ try{ localStorage.setItem(AUDIO_LS_KEY, JSON.stringify({fxVol:_fxVol, musicVol:_musicVol, enabled:_audioEnabled, fxEnabled:_fxEnabled, musicEnabled:_musicEnabled, masterVol:_masterVol})); }catch(e){} }
+const _prefs = _audioPrefsLoad();
+let _fxVol        = _prefs.fxVol        !== undefined ? _prefs.fxVol        : 0.3;
+let _musicVol     = _prefs.musicVol     !== undefined ? _prefs.musicVol     : 0.1875;
+let _audioEnabled = _prefs.enabled      !== undefined ? _prefs.enabled      : true;
+let _fxEnabled    = _prefs.fxEnabled    !== undefined ? _prefs.fxEnabled    : true;
+let _musicEnabled = _prefs.musicEnabled !== undefined ? _prefs.musicEnabled : true;
+let _masterVol    = _prefs.masterVol    !== undefined ? _prefs.masterVol    : 1.0;
+
+// ── AudioContext (lazy init au premier geste utilisateur) ─────────────────
+let _audioCtx = null;
+function _getAudioCtx(){
+  if(!_audioCtx){ try{ _audioCtx = new (window.AudioContext || window.webkitAudioContext)(); }catch(e){} }
+  if(_audioCtx && _audioCtx.state === 'suspended') _audioCtx.resume();
+  return _audioCtx;
+}
+
+// ── Audio pool pour FX (compatible iOS local files) ──────────────────────
+// Utilise <audio> au lieu de fetch/AudioContext pour contourner la sandbox iOS
+const _sfxPool = {};
+
+function sfx(src, vol){
+  if(!_audioEnabled || !_fxEnabled) return;
+  if(!src) return;
+  const v = Math.min(1, Math.max(0, (vol !== undefined ? vol : 1) * _fxVol * (_masterVol||1)));
+  try{
+    // Réutiliser un élément audio en cache ou en créer un nouveau
+    if(!_sfxPool[src]) _sfxPool[src] = [];
+    // Chercher un élément disponible (ended ou paused)
+    let el = _sfxPool[src].find(a => a.ended || a.paused);
+    if(!el){
+      el = new Audio(src);
+      _sfxPool[src].push(el);
+    }
+    el.volume = v;
+    el.currentTime = 0;
+    el.play().catch(()=>{});
+  }catch(e){}
+}
+
+// ── Sons FX helper paths ──────────────────────────────────────────────────
+const SFX = {
+  click:    'assets/sounds/fx/click.mp3',
+  click2:   'assets/sounds/fx/click2.mp3',
+  click3:   'assets/sounds/fx/click3.mp3',   // skill activation
+  card:     'assets/sounds/fx/card.mp3',
+  deck:     'assets/sounds/fx/deck.mp3',
+  played:   'assets/sounds/fx/played.mp3',
+  woosh:    'assets/sounds/fx/woosh.mp3',
+  woosh2:   'assets/sounds/fx/woosh2.mp3',
+  woosh3:   'assets/sounds/fx/woosh3.mp3',
+  hit:      'assets/sounds/fx/hit.mp3',
+  open:     'assets/sounds/fx/open.mp3',
+  close:    'assets/sounds/fx/close.mp3',
+  cancel:   'assets/sounds/fx/cancel.mp3',
+  win:      'assets/sounds/fx/win.mp3',
+  lose:     'assets/sounds/fx/lose.mp3',
+  fanfare:  'assets/sounds/fx/fanfare.mp3',
+  fire:     'assets/sounds/fx/fire.mp3',
+  water:    'assets/sounds/fx/water.mp3',
+  leaves:   'assets/sounds/fx/leaves.mp3',
+  dust:     'assets/sounds/fx/dust.mp3',
+  heart:    'assets/sounds/fx/heart.mp3',
+  heart2:   'assets/sounds/fx/heart2.mp3',
+  tock:     'assets/sounds/fx/tock.mp3',
+  paper:    'assets/sounds/fx/paper.mp3',
+  tap:      'assets/sounds/fx/tap.mp3',  // alias: hit.mp3 if tap.mp3 missing
+};
+// awawa pool (bulles tutoriel)
+const _awawaSrcs = [1,2,3,4,5].map(i=>`assets/sounds/fx/awawa${i}.mp3`);
+function sfxAwawa(){ sfx(_awawaSrcs[Math.floor(Math.random()*_awawaSrcs.length)]); }
+
+// ── Élément → son de remplacement ────────────────────────────────────────
+function sfxElement(el){
+  if(el==='fire'||el===EL?.F)   sfx(SFX.fire, 0.5);
+  else if(el==='water'||el===EL?.W) sfx(SFX.water, 0.5);
+  else if(el==='earth'||el===EL?.E) sfx(SFX.leaves);
+  else if(el==='dust'||el===EL?.D)  sfx(SFX.dust, 0.5);
+}
+
+// ── Woosh : commun pour tous les vols ────────────────────────────────────
+// woosh=script/AI, woosh2=drag joueur→arène, woosh3=drag deck panel
+function sfxWoosh(type){
+  // woosh2 à 25% du volume FX
+  sfx(SFX.woosh2, 0.25);
+}
+
+// ── HP heart loop ─────────────────────────────────────────────────────────
+let _heartEls = { player: null, enemy: null };
+function _startHeartLoop(isPlayer){
+  const key = isPlayer ? 'player' : 'enemy';
+  if(_heartEls[key]) return;
+  if(!_audioEnabled) return;
+  try{
+    const el = new Audio(isPlayer ? SFX.heart : SFX.heart2);
+    el.loop = true;
+    el.volume = _fxVol * 0.6;
+    el.play().catch(()=>{});
+    _heartEls[key] = el;
+  }catch(e){}
+}
+function _stopHeartLoop(isPlayer){
+  const key = isPlayer ? 'player' : 'enemy';
+  if(!_heartEls[key]) return;
+  _heartEls[key].pause();
+  _heartEls[key] = null;
+}
+function _updateHeartLoops(){
+  if(!G) return;
+  const pCrit = G.pHP <= (G.pMaxHP||50) * 0.25;
+  const eCrit = G.eHP <= (G.eMaxHP||50) * 0.25;
+  if(pCrit) _startHeartLoop(true);  else _stopHeartLoop(true);
+  if(eCrit) _startHeartLoop(false); else _stopHeartLoop(false);
+}
+function _stopAllHeartLoops(){ _stopHeartLoop(true); _stopHeartLoop(false); }
+function fxUpdateVolume(){
+  if(_heartEls.player) _heartEls.player.volume = _fxVol * 0.6;
+  if(_heartEls.enemy)  _heartEls.enemy.volume  = _fxVol * 0.6;
+}
+// ── Musique ───────────────────────────────────────────────────────────────
+let _musicEl = null;       // <audio> courant
+let _musicFading = false;
+const MUSIC_FADE_MS = 800;
+
+const MUSIC_BATTLE = {
+  soft:    ['assets/sounds/battle/nbom1.mp3','assets/sounds/battle/nbom7.mp3'],
+  medium:  ['assets/sounds/battle/dfmusic4.mp3','assets/sounds/battle/nbom2.mp3','assets/sounds/battle/nbom3.mp3','assets/sounds/battle/nbom4.mp3','assets/sounds/battle/nbom5.mp3','assets/sounds/battle/nbom8.mp3','assets/sounds/battle/nbom9.mp3'],
+  intense: ['assets/sounds/battle/dfmusic1.mp3','assets/sounds/battle/dfmusic2.mp3','assets/sounds/battle/dfmusic3.mp3','assets/sounds/battle/nbom6.mp3'],
+};
+const MUSIC_BG = {
+  title:    ['assets/sounds/music/iko1.mp3','assets/sounds/music/iko2.mp3','assets/sounds/music/iko3.mp3','assets/sounds/music/iko4.mp3','assets/sounds/music/iko5.mp3','assets/sounds/music/iko6.mp3','assets/sounds/music/iko7.mp3'],
+  tutorial: ['assets/sounds/music/nabom1.mp3','assets/sounds/music/nabom2.mp3'],
+};
+
+function _pickRandom(arr){ return arr[Math.floor(Math.random()*arr.length)]; }
+
+function _getBattleCategory(){
+  // Détermine soft/medium/intense selon le contexte
+  if(_tutMode) return 'soft';
+  if(_rlMode && RL){
+    const fight = (RL.fightsDone||0) + 1;
+    if(fight >= 11) return 'intense';
+  }
+  const diff = _aiDifficultyKey || 'Medium';
+  if(diff==='Hard'||diff==='Very Hard') return 'intense';
+  if(diff==='Very Easy') return 'soft';
+  return 'medium';
+}
+
+function _fadeOut(el, cb){
+  if(!el){ cb&&cb(); return; }
+  const start = el.volume;
+  const step = start / (MUSIC_FADE_MS / 50);
+  const iv = setInterval(()=>{
+    el.volume = Math.max(0, el.volume - step);
+    if(el.volume <= 0){ clearInterval(iv); el.pause(); el.src=''; cb&&cb(); }
+  }, 50);
+}
+
+function _playMusic(src){
+  if(!_audioEnabled){ return; }
+  const _start = () => {
+    _musicEl = new Audio(src);
+    _musicEl.loop = true;
+    _musicEl.volume = 0;
+    _musicEl.play().catch(()=>{});
+    const target = _musicVol;
+    const step = target / (MUSIC_FADE_MS / 50);
+    const iv = setInterval(()=>{
+      _musicEl.volume = Math.min(target, (_musicEl.volume||0) + step);
+      if(_musicEl.volume >= target){ _musicEl.volume = target; clearInterval(iv); }
+    }, 50);
+  };
+  if(_musicEl && !_musicEl.paused){
+    _fadeOut(_musicEl, _start);
+  } else {
+    _start();
+  }
+}
+
+function musicPlayBg(zone){
+  if(!_musicEnabled) return;
+  const src = _pickRandom(MUSIC_BG[zone] || MUSIC_BG.title);
+  _playMusic(src);
+}
+function musicPlayBattle(){
+  if(!_musicEnabled) return;
+  const cat = _getBattleCategory();
+  const src = _pickRandom(MUSIC_BATTLE[cat]);
+  _playMusic(src);
+}
+function musicStop(){
+  if(_musicEl){ _fadeOut(_musicEl, ()=>{ _musicEl = null; }); }
+}
+function musicUpdateVolume(){
+  if(_musicEl) _musicEl.volume = _audioEnabled && _musicEnabled ? _musicVol * (_masterVol||1) : 0;
+}
+function fxUpdateVolume(){
+  // Met à jour les heart loops
+  if(_heartLoops.player) _heartLoops.player.gain.gain.setValueAtTime(_fxVol*0.6, _getAudioCtx()?.currentTime||0);
+  if(_heartLoops.enemy)  _heartLoops.enemy.gain.gain.setValueAtTime(_fxVol*0.6, _getAudioCtx()?.currentTime||0);
+}
+
+// ── Déblocage AudioContext iOS (autoplay policy) ──────────────────────────
+// Safari/iOS suspend l'AudioContext jusqu'au premier geste utilisateur.
+// On le débloque au premier touchstart/click sur toute la page.
+let _audioUnlocked = false;
+function _unlockAudio(){
+  if(_audioUnlocked) return;
+  const ctx = _getAudioCtx();
+  if(ctx && ctx.state === 'suspended'){
+    ctx.resume().then(() => { _audioUnlocked = true; });
+  } else {
+    _audioUnlocked = true;
+  }
+}
+document.addEventListener('touchstart', _unlockAudio, { once:false, passive:true });
+document.addEventListener('click',      _unlockAudio, { once:false, passive:true });
+
+// ── Démarrage musique titre au chargement ────────────────────────────────
+// La musique titre est déclenchée au premier geste utilisateur
+// (goTitle() n'est pas appelé au chargement initial)
+let _titleMusicStarted = false;
+function _startTitleMusicOnce(){
+  if(!_titleMusicStarted) _titleMusicStarted = true;
+  if(_musicEnabled && !_musicEl) musicPlayBg('title');
+}
+document.addEventListener('touchstart', _startTitleMusicOnce, { once:true, passive:true });
+document.addEventListener('click',      _startTitleMusicOnce, { once:true, passive:true });
+function openAudioPanel(){
+  sfx(SFX.tock);
+  const ov = document.getElementById('audio-overlay');
+  if(ov){ ov.classList.add('open'); _renderAudioPanel(); }
+}
+function closeAudioPanel(){
+  sfx(SFX.tock);
+  document.getElementById('audio-overlay')?.classList.remove('open');
+}
+function _renderAudioPanel(){
+  document.getElementById('audio-fx-slider').value   = Math.round(_fxVol*100);
+  document.getElementById('audio-mu-slider').value   = Math.round(_musicVol*100);
+  document.getElementById('audio-fx-val').textContent    = Math.round(_fxVol*100)+'%';
+  document.getElementById('audio-mu-val').textContent    = Math.round(_musicVol*100)+'%';
+  const masterSlider = document.getElementById('audio-master-slider');
+  if(masterSlider) masterSlider.value = Math.round((_masterVol||1)*100);
+  const masterVal = document.getElementById('audio-master-val');
+  if(masterVal) masterVal.textContent = Math.round((_masterVol||1)*100)+'%';
+  const imgFx = document.getElementById('audio-img-fx');
+  if(imgFx) imgFx.src = 'assets/background/sqbutton_soundfx'+(_fxEnabled?'on':'off')+'.png';
+  const imgMu = document.getElementById('audio-img-music');
+  if(imgMu) imgMu.src = 'assets/background/sqbutton_music'+(_musicEnabled?'on':'off')+'.png';
+}
+function audioSetMaster(v){
+  _masterVol = v/100;
+  document.getElementById('audio-master-val').textContent = v+'%';
+  musicUpdateVolume();
+  fxUpdateVolume();
+  _audioPrefsSave();
+}
+function audioSetFx(v){
+  _fxVol = v/100;
+  document.getElementById('audio-fx-val').textContent = v+'%';
+  fxUpdateVolume(); _audioPrefsSave();
+}
+function audioSetMusic(v){
+  _musicVol = v/100;
+  document.getElementById('audio-mu-val').textContent = v+'%';
+  if(_musicEnabled){
+    if(_musicEl) _musicEl.volume = _musicVol;
+    else _startTitleMusicOnce(); // relancer si rien ne joue
+  }
+  _audioPrefsSave();
+}
+function audioToggle(){
+  _audioEnabled = !_audioEnabled;
+  musicUpdateVolume();
+  if(!_audioEnabled) _stopAllHeartLoops();
+  _audioPrefsSave();
+}
+function audioToggleFx(){
+  _fxEnabled = !_fxEnabled;
+  const img = document.getElementById('audio-img-fx');
+  if(img) img.src = 'assets/background/sqbutton_soundfx'+(_fxEnabled?'on':'off')+'.png';
+  if(!_fxEnabled) _stopAllHeartLoops();
+  _audioPrefsSave();
+}
+function audioToggleMusic(){
+  _musicEnabled = !_musicEnabled;
+  const img = document.getElementById('audio-img-music');
+  if(img) img.src = 'assets/background/sqbutton_music'+(_musicEnabled?'on':'off')+'.png';
+  if(_musicEl) _musicEl.volume = _musicEnabled ? _musicVol : 0;
+  else if(_musicEnabled) _startTitleMusicOnce(); // relancer si rien ne joue
+  _audioPrefsSave();
+}
+// (sfx override removed — _fxEnabled checked directly in sfx() below)
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   SAVE / LOAD SYSTEM — Primal Gambit
+   ─────────────────────────────────────────────────────────────────────────
+   Périmètre : tutoriel, roguelike, stats, préférences audio.
+   L'état de combat en cours est couvert par la sauvegarde auto (localStorage).
+   ═══════════════════════════════════════════════════════════════════════════ */
+const SAVE_VERSION = 1;
+
+function _buildSaveObject(){
+  return {
+    version:    SAVE_VERSION,
+    exportedAt: new Date().toISOString(),
+    game:       'Primal Gambit',
+    tutorial:   (() => { try{ return JSON.parse(localStorage.getItem(TUT_LS_KEY)||'null'); }catch(e){ return null; } })(),
+    roguelike:  (() => { try{ return JSON.parse(localStorage.getItem(RL_LS_KEY)||'null');  }catch(e){ return null; } })(),
+    stats:      (() => { try{ return JSON.parse(localStorage.getItem(STATS_LS_KEY)||'null'); }catch(e){ return null; } })(),
+    audio:      { fxVol:_fxVol, musicVol:_musicVol, fxEnabled:_fxEnabled, musicEnabled:_musicEnabled },
+  };
+}
+
+function _saveRestoreData(data){
+  if(!data || data.game !== 'Primal Gambit') return false;
+  if(data.tutorial)  try{ localStorage.setItem(TUT_LS_KEY,   JSON.stringify(data.tutorial));  TUT = data.tutorial; }catch(e){}
+  if(data.roguelike) try{ localStorage.setItem(RL_LS_KEY,    JSON.stringify(data.roguelike)); RL  = data.roguelike; }catch(e){}
+  if(data.stats)     try{ localStorage.setItem(STATS_LS_KEY, JSON.stringify(data.stats));     _stats = data.stats; }catch(e){}
+  if(data.audio){
+    if(data.audio.fxVol    !== undefined) _fxVol    = data.audio.fxVol;
+    if(data.audio.musicVol !== undefined) _musicVol = data.audio.musicVol;
+    if(data.audio.fxEnabled    !== undefined) _fxEnabled    = data.audio.fxEnabled;
+    if(data.audio.musicEnabled !== undefined) _musicEnabled = data.audio.musicEnabled;
+    musicUpdateVolume(); fxUpdateVolume();
+  }
+  return true;
+}
+
+function _saveSummary(data){
+  if(!data) return '';
+  const parts = [];
+  if(data.tutorial)  parts.push((data.tutorial.solved||[]).filter(Boolean).length + '/8 puzzles');
+  if(data.roguelike && !data.roguelike.gameOver) parts.push('RL fight ' + ((data.roguelike.fightsDone||0)+1) + '/20');
+  if(data.stats)     parts.push((data.stats.totals && data.stats.totals.games || 0) + ' games');
+  return parts.join(' · ') || 'Progress saved';
+}
+
+function _isDesktopBrowser(){
+  const ua = navigator.userAgent || '';
+  // iOS explicite
+  if(/iP(hone|ad|od)/i.test(ua)) return false;
+  // Android
+  if(/Android/i.test(ua)) return false;
+  // WebView mobile (HTML Viewer Q sur iPad en mode desktop UA)
+  if(/AppleWebKit.*Mobile/i.test(ua)) return false;
+  // iPad en mode "Request Desktop Site" — pas de "Mobile" dans le UA
+  // mais navigator.maxTouchPoints > 1 trahit l'écran tactile
+  if(navigator.maxTouchPoints && navigator.maxTouchPoints > 1) return false;
+  // Garder seulement les vrais desktops
+  return typeof document.createElement('a').download !== 'undefined';
+}
+
+function _saveToClipboard(json, info){
+  // Afficher dans la textarea pour copie manuelle
+  const ta = document.getElementById('save-paste-area');
+  if(ta){
+    ta.value = json;
+    ta.focus();
+    ta.select();
+    // Essayer le clipboard en bonus
+    try{ navigator.clipboard.writeText(json).then(()=>{
+      if(info) info.textContent = 'Copied to clipboard. Also visible below — paste into Notes to keep it safe.';
+    }).catch(()=>{
+      if(info) info.textContent = 'Select all the text below and copy it into Notes to save your progress.';
+    }); }catch(e){
+      if(info) info.textContent = 'Select all the text below and copy it into Notes to save your progress.';
+    }
+  }
+}
+
+function saveExport(){
+  const data  = _buildSaveObject();
+  const json  = JSON.stringify(data, null, 2);
+  const fname = 'primal_gambit_save_' + new Date().toISOString().slice(0,10) + '.json';
+  const info  = document.getElementById('save-export-info');
+
+  // Desktop : téléchargement direct
+  if(_isDesktopBrowser()){
+    const blob = new Blob([json], {type:'application/json'});
+    const url  = URL.createObjectURL(blob);
+    const a    = document.createElement('a');
+    a.href = url; a.download = fname;
+    document.body.appendChild(a); a.click(); document.body.removeChild(a);
+    setTimeout(()=> URL.revokeObjectURL(url), 2000);
+    if(info) info.textContent = 'Downloaded: ' + fname;
+    const ta = document.getElementById('save-paste-area');
+    if(ta) ta.value = json;
+    sfx(SFX.deck, 0.5); return;
+  }
+
+  // iOS / tout le reste : afficher dans la textarea
+  sfx(SFX.deck, 0.5);
+  _saveToClipboard(json, info);
+}
+
+// (duplicate _saveToClipboard removed)
+
+// ── Import from file ──────────────────────────────────────────────────────
+function saveImportFromFile(input){
+  const file = input.files[0]; if(!file) return;
+  input.value = '';
+  const reader = new FileReader();
+  reader.onload = e => {
+    const ta = document.getElementById('save-paste-area');
+    if(ta) ta.value = e.target.result;
+    _saveParseAndRestore(e.target.result, 'file');
+  };
+  reader.readAsText(file);
+}
+
+// ── Import from pasted text ────────────────────────────────────────────────
+function saveImportFromPaste(){
+  const ta = document.getElementById('save-paste-area');
+  const text = ta ? ta.value.trim() : '';
+  if(!text){ alert('Please paste save data into the text box first.'); return; }
+  _saveParseAndRestore(text, 'paste');
+}
+
+function _saveParseAndRestore(text, source){
+  const info = document.getElementById('save-import-info');
+  let data;
+  try{ data = JSON.parse(text); }
+  catch(e){ if(info) info.textContent = 'Invalid data — could not parse.'; return; }
+  if(!data || data.game !== 'Primal Gambit'){
+    if(info) info.textContent = 'Not a Primal Gambit save file.'; return;
+  }
+  const date = data.exportedAt ? new Date(data.exportedAt).toLocaleString() : 'unknown date';
+  const summary = _saveSummary(data);
+
+  // Confirmation inline (confirm() peut être bloqué dans certains webviews)
+  if(info){
+    info.innerHTML =
+      '<div style="margin-top:8px;">' +
+      '<p style="font-size:11px;color:var(--text);margin-bottom:8px;">Load save from ' + date + '?<br><span style="color:var(--dim);font-size:10px;">' + summary + '</span></p>' +
+      '<div style="display:flex;gap:8px;">' +
+      '<button onclick="sfx(SFX.click2);_saveDoRestore()" style="flex:1;background:none;border:none;cursor:pointer;padding:0;position:relative;"><img src="assets/background/button_s_black.png" style="width:100%;height:auto;display:block;" alt=""><span style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-family:Cinzel,serif;font-size:clamp(14px,3.2vw,18px);font-weight:700;color:#fff;pointer-events:none;">YES</span></button>' +
+      '<button onclick="sfx(SFX.click2);document.getElementById(\'save-import-info\').innerHTML=\'\'" style="flex:1;background:none;border:none;cursor:pointer;padding:0;position:relative;"><img src="assets/background/button_s_white.png" style="width:100%;height:auto;display:block;" alt=""><span style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-family:Cinzel,serif;font-size:clamp(14px,3.2vw,18px);font-weight:700;color:#000;pointer-events:none;">CANCEL</span></button>' +
+      '</div></div>';
+  }
+  // Stocker les données en attente
+  window._pendingSaveData = data;
+}
+
+function _saveDoRestore(){
+  const data = window._pendingSaveData;
+  if(!data) return;
+  window._pendingSaveData = null;
+  const info = document.getElementById('save-import-info');
+  if(_saveRestoreData(data)){
+    sfx(SFX.win, 0.5);
+    const date = data.exportedAt ? new Date(data.exportedAt).toLocaleString() : 'unknown date';
+    if(info) info.textContent = 'Loaded from ' + date;
+    const ta = document.getElementById('save-paste-area');
+    if(ta) ta.value = '';
+    closeSavePanel();
+  }
+}
+
+const _EXT_LINKS = {
+  online:   { title:'Online Version', desc:'Open the deployed version of Primal Gambit in your browser. Requires an internet connection.', url:'https://pizzattack.github.io/Primal-Gambit/' },
+  download: { title:'Get Latest Version', desc:'To download the ZIP, open the URL below in Safari or your main browser (Code → Download ZIP).', url:'https://github.com/Pizzattack/Primal-Gambit' }
+};
+let _extLinkTarget = null;
+
+function openExtLink(type){
+  sfx(SFX.tock);
+  _extLinkTarget = type;
+  const info = _EXT_LINKS[type];
+  document.getElementById('ext-link-title').textContent = info.title;
+  document.getElementById('ext-link-desc').textContent  = info.desc;
+  // For download: show URL field for manual copy; for online: show GO button
+  const goBtn   = document.getElementById('ext-link-go');
+  const urlWrap = document.getElementById('ext-link-url-wrap');
+  const urlField = document.getElementById('ext-link-url-field');
+  if(type === 'download'){
+    if(goBtn) goBtn.style.display = 'none';
+    if(urlWrap) urlWrap.style.display = 'flex';
+    if(urlField) urlField.value = info.url;
+    // Try to copy automatically
+    try{ navigator.clipboard.writeText(info.url).catch(()=>{}); }catch(e){}
+  } else {
+    if(goBtn) goBtn.style.display = '';
+    if(urlWrap) urlWrap.style.display = 'none';
+  }
+  document.getElementById('ext-link-overlay').classList.add('open');
+}
+function closeExtLink(){
+  document.getElementById('ext-link-overlay').classList.remove('open');
+  _extLinkTarget = null;
+}
+function _doExtLink(){
+  if(!_extLinkTarget) return;
+  const url = _EXT_LINKS[_extLinkTarget].url;
+  closeExtLink();
+  window.open(url, '_blank');
+}
+
+function toggleMorePanel(){
+  const panel = document.getElementById('more-panel');
+  if(!panel) return;
+  const isOpen = panel.classList.contains('open');
+  if(isOpen){ closeMorePanel(); }
+  else { panel.classList.add('open'); sfx(SFX.tock); }
+}
+function closeMorePanel(){
+  const panel = document.getElementById('more-panel');
+  if(panel && panel.classList.contains('open')){
+    panel.classList.remove('open'); sfx(SFX.tock);
+  }
+}
+// Fermer le more-panel si on clique en dehors
+document.addEventListener('pointerdown', function(e){
+  const panel = document.getElementById('more-panel');
+  const btnMore = document.getElementById('btn-more');
+  if(panel && panel.classList.contains('open') &&
+     !panel.contains(e.target) && e.target !== btnMore && !btnMore?.contains(e.target)){
+    closeMorePanel();
+  }
+}, { passive:true });
+
+function openSavePanel(){
+  sfx(SFX.tock);
+  document.getElementById('save-overlay')?.classList.add('open');
+}
+function closeSavePanel(){
+  sfx(SFX.tock);
+  document.getElementById('save-overlay')?.classList.remove('open');
+}
+
+
 function openRulesPanel(){
+  sfx(SFX.tock);
   document.getElementById('rules-overlay').classList.add('open');
+  // Sound on accordion open/close
+  document.getElementById('rules-overlay').querySelectorAll('details').forEach(d=>{
+    if(!d._hasPaperSound){
+      d._hasPaperSound=true;
+      d.addEventListener('toggle',()=>sfx(SFX.paper));
+    }
+  });
   const rb=document.getElementById('btn-rules');
   if(rb) rb.classList.remove('rules-wiggle');
 }
-function closeRulesPanel(){ document.getElementById('rules-overlay').classList.remove('open'); }
+function closeRulesPanel(){ sfx(SFX.tock); document.getElementById('rules-overlay').classList.remove('open'); }
 
 /* ═══════════════════════════════════════════════════════════════════
    DECK PANEL — Gestionnaire de deck (v29 b2)
@@ -16152,6 +17126,15 @@ function dpRender(){
   document.getElementById('dp-deck-count').textContent = `${_dp.deck.length} cards · risk ${totalRisk}`;
   document.getElementById('dp-coll-count').textContent = `${_dp.coll.length} avail.`;
   document.getElementById('dp-count-label').textContent = `${_dp.deck.length} / ${DP_SIZE} · ⚡${totalRisk}`;
+  // Comptage par élément
+  const _elC = {fire:0,water:0,earth:0,dust:0};
+  _dp.deck.forEach(card=>{ if(_elC[card.el]!==undefined) _elC[card.el]++; });
+  const _elEl = document.getElementById('dp-el-counts');
+  if(_elEl) _elEl.innerHTML =
+    `<span class="el-f">🔥${_elC.fire}</span><span class="el-sep">/</span>` +
+    `<span class="el-w">💧${_elC.water}</span><span class="el-sep">/</span>` +
+    `<span class="el-e">🌿${_elC.earth}</span><span class="el-sep">/</span>` +
+    `<span class="el-d">◈${_elC.dust}</span>`;
 
   const err = dpValidate(_dp.deck);
   const btn = document.getElementById('dp-save-btn');
@@ -16252,6 +17235,7 @@ function dpMove(cardUid, fromZone, toZone){
   }
   fromArr.splice(idx, 1);
   toArr.push({...card, uid:uid()});
+  sfx(SFX.woosh2, 0.25);
   dpRender();
 }
 
@@ -16315,6 +17299,7 @@ function dpSave(){
 // ── Open / Close ──────────────────────────────────────────────────
 function dpOpen(owner){
   statsTimeEnterZone('deckBuilder');
+  sfx(SFX.tock);
   _dp.owner = owner || 'player';
   const fightActive = document.getElementById('s-fight')?.classList.contains('active') ||
                       document.getElementById('s-mulligan')?.classList.contains('active');
@@ -16376,6 +17361,7 @@ function dpOpen(owner){
 }
 
 function dpClose(){
+  sfx(SFX.tock);
   document.getElementById('deck-panel').classList.remove('open');
 }
 
