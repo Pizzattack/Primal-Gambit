@@ -18,16 +18,6 @@ This is **Primal Gambit: Rule of Three**. It's not a perfect replica. It's a fan
 
 ---
 
-## How it was built
-
-I'm a solo developer working on this in my spare time. I have no formal training in web development. The entire project was built through a conversation — literally. I described what I wanted, and **Claude Sonnet** (Anthropic's AI) wrote the code. Thousands of lines of JavaScript, CSS, and HTML, written iteratively over months of back-and-forth.
-
-Card art was generated with **ChatGPT / DALL-E**.
-
-It's been humbling, sometimes frustrating, occasionally magical. Wrangling AI tools to build something this complex is its own kind of challenge — you learn to describe things precisely, to debug by description, to hold an entire system in your head while asking a model to change one small piece of it. It doesn't always work. But when it does, it's remarkable.
-
----
-
 ## Features
 
 ### Game Modes
@@ -102,6 +92,20 @@ This project is a fan work, not affiliated with or endorsed by Tabletime. No ori
 This is an active personal project. Cards are added progressively — there are currently ~30 more cards designed and documented in the code, waiting to be implemented. Skills range from straightforward (Strike, Defender) to mechanically complex (Chants, Totems, Madness).
 
 Bugs exist. The AI doesn't always make the right call. Some features are rougher than others. But it's playable, it's fun, and it's getting better.
+
+---
+
+## How it was built and Credits
+
+I'm a solo developer working on this in my spare time. I have no formal training in web development. The entire project was built through a conversation — literally. I described what I wanted, and **Claude Sonnet** (Anthropic's AI) wrote the code. Thousands of lines of JavaScript, CSS, and HTML, written iteratively over months of back-and-forth.
+
+It's been humbling, sometimes frustrating, occasionally magical. Wrangling AI tools to build something this complex is its own kind of challenge — you learn to describe things precisely, to debug by description, to hold an entire system in your head while asking a model to change one small piece of it. It doesn't always work. But when it does, it's very satisfying.
+
+Card art was generated with **ChatGPT / DALL-E**.
+
+All sound FX are from the amazing resource site [pix](https://freesound.org/). The full credits list is in the repository.
+
+All musics are from [pix](https://pixabay.com/) Credits go to Desifreemusic, Akoliks_aj and Nastelbom.
 
 ---
 
