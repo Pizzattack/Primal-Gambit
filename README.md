@@ -126,4 +126,4 @@ Bugs exist. The AI doesn't always make the right call. Some features are rougher
 
 - **Bugs & suggestions** : This is a small project so your feedback is most welcome (report bugs, suggest new cards and features). Open a github issue if needed.
 
-- **May be a small tip ?** : This is a free game. You don't have to donate. That said, if you enjoyed it and if you think it is worth a small tip, your donation would help recoup the (small) dev costs. More importantly, it would be an excellent incentive to keep developing new features and cards. 
+- **May be a small tip ?** : This is a free game. You don't have to donate and I have not set up a donation link yet. That said, if you enjoyed it and if you think it is worth a small tip, let me know. Your donation would help recoup the (small) dev costs. More importantly, it would be an excellent incentive to keep developing new features and cards. 
