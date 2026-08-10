@@ -83,7 +83,7 @@ Open the file directly in Chrome or use a local server app like **HTTP Server by
 
 ## About EarthCore
 
-EarthCore: Shattered Elements was a mobile card game developed by Tabletime, released around 2014. It featured a unique three-lane battle system, elemental rock-paper-scissors mechanics, and a risk-accumulation system that rewarded patience and misdirection. It was shut down without notice.
+EarthCore: Shattered Elements was a mobile card game developed by Tequila Games, released around 2014. It featured a unique three-lane battle system, elemental rock-paper-scissors mechanics, and a risk-accumulation system that rewarded patience and misdirection. It was shut down without notice.
 
 This project is a fan work, not affiliated with or endorsed by Tabletime. No original assets are used. This is purely a labor of love and is non-commercial.
 
