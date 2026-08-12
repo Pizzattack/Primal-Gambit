@@ -17,9 +17,9 @@
      ║  ElementalFury_v{VERSION}.html                                   ║
      ║  Exemple pour version 27 → ElementalFury_v27.html               ║
      ╠══════════════════════════════════════════════════════════════════╣
-     ║  VERSION    = 39                                                 ║
-     ║  BUILD      = 20                                                 ║
-     ║  BUILD_DATE = 2026.07.25                                         ║
+     ║  VERSION    = 40                                                 ║
+     ║  BUILD      = 1                                                 ║
+     ║  BUILD_DATE = 2026.08.10                                         ║
      ╚══════════════════════════════════════════════════════════════════╝ -->
 <html lang="fr">
 <head>
@@ -3581,6 +3581,30 @@ body:has(#targeting-cancel) #btn-end-round{
   background:rgba(4,5,8,.82); backdrop-filter:blur(2px);
   align-items:center; justify-content:center;
 }
+/* v40 — overlay de préchargement d'assets (bloquant, court, sans animation). */
+#asset-loading-overlay{
+  position:fixed; inset:0; z-index:9999; display:none;
+  background:rgba(4,5,8,.90);
+  align-items:center; justify-content:center;
+}
+#asset-loading-overlay.active{ display:flex; }
+#alo-box{
+  width:min(90vw,380px); text-align:center;
+  background:var(--surf); border:1px solid var(--bdr); border-radius:10px;
+  padding:22px 20px; box-shadow:0 10px 40px rgba(0,0,0,.6);
+}
+#alo-label{
+  font-size:12px; letter-spacing:.08em; text-transform:uppercase;
+  color:var(--dim); margin-bottom:12px;
+}
+#alo-bar-track{
+  width:100%; height:7px; border-radius:4px; overflow:hidden;
+  background:rgba(255,255,255,.10); margin-bottom:14px;
+}
+#alo-bar-fill{ height:100%; width:0%; background:var(--gold); }
+#alo-tip{
+  font-size:12.5px; line-height:1.5; color:var(--text); min-height:2.8em;
+}
 #save-overlay.open{ display:flex; }
 #save-panel{
   width:min(92vw,360px);
@@ -4846,7 +4870,7 @@ body:has(#deck-panel.open) .float-toolbar{ display:none !important; }
        · renommer le fichier en index_vXX_bYY.html en cohérence -->
   <!-- ⚠ Mettre à jour cette date à chaque nouvelle version / build -->
   <!-- ⚠ Mettre à jour cette date à chaque nouvelle version / build -->
-  <p id="build-badge">v39 b20 &nbsp;·&nbsp; build 2026.07.25</p>
+  <p id="build-badge">v40 b1 &nbsp;·&nbsp; build 2026.08.10</p>
 </div>
 
 <!-- 2. ÉCRAN MULLIGAN -->
@@ -5986,7 +6010,7 @@ function clickStart(){
   document.body.appendChild(overlay);
 }
 
-function startWithDifficulty(level){
+async function startWithDifficulty(level){
   const popup = document.getElementById('difficulty-popup');
   if(popup){ sfx(SFX.tock); popup.remove(); }
   _difficulty = level;
@@ -6067,6 +6091,10 @@ function startWithDifficulty(level){
 
   // Changement d'écran sécurisé
   document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+  // v40 : précharge les illustrations des deux mains de départ AVANT de
+  // révéler le mulligan — c'est le tout premier affichage de cartes de la
+  // partie, donc le point le plus visible d'un chargement en couches.
+  await _gateWithPreload([...G.pHand, ...G.eHand].map(_cardArtUrl), 'Préparation du combat…');
   document.getElementById('s-mulligan').classList.add('active');
   sfx(SFX.deck, 0.5);
   renderMulligan();
@@ -6244,7 +6272,146 @@ function mulliganConfirm(){
   }, 500);
 }
 
+// ═══════════════════════════════════════════════════════════════════════
+// v40 — PRÉCHARGEMENT D'ASSETS + OVERLAY DE CHARGEMENT
+//
+// Principe : pas de gestion mémoire "maison" (pas de LRU/tracking d'octets) —
+// on s'appuie sur le cache HTTP + cache image natif du navigateur. Le rôle
+// de ce module est uniquement de forcer le fetch+decode AVANT d'afficher un
+// écran/panneau, avec une concurrence limitée (adaptée à une 4G lente) et un
+// garde-fou de temps pour ne jamais bloquer indéfiniment si le réseau est en
+// vrac. `_assetLoaded` est juste un cache mémoire léger de "déjà demandé
+// avec succès cette session" pour éviter de rejouer inutilement decode().
+//
+// Portée du préchargement (voir points d'accroche plus bas) :
+//  - Bordures (4 fichiers) + icônes de compétence (~40 fichiers) : petit
+//    ensemble réutilisé PARTOUT → précaché une fois au démarrage (global).
+//  - Illustrations de cartes (49 × ~250 Ko ≈ 12 Mo pour la totalité) :
+//    beaucoup trop lourd à charger d'un bloc sur mobile/4G → scopé par
+//    écran (main de départ au mulligan, deck complet au panneau deck,
+//    pool entier seulement pour le picker debug).
+// ═══════════════════════════════════════════════════════════════════════
+const _assetLoaded = new Set();
+const _ASSET_CONCURRENCY = 4;
+const _ASSET_TIMEOUT_MS = 7000; // garde-fou : n'attend jamais indéfiniment un réseau capricieux
+
+function _preloadOneAsset(url){
+  if(_assetLoaded.has(url)) return Promise.resolve(true);
+  return new Promise(resolve => {
+    const img = new Image();
+    img.onload = () => {
+      _assetLoaded.add(url);
+      if(img.decode) img.decode().then(()=>resolve(true)).catch(()=>resolve(true));
+      else resolve(true);
+    };
+    img.onerror = () => resolve(false); // asset manquant/en erreur : on ne bloque jamais dessus
+    img.src = url;
+  });
+}
+
+function preloadAssets(urls, onProgress){
+  const list = [...new Set(urls)].filter(u => !_assetLoaded.has(u));
+  const total = list.length;
+  if(total === 0){ if(onProgress) onProgress(1); return Promise.resolve(); }
+  let done = 0, idx = 0;
+  async function worker(){
+    while(idx < list.length){
+      await _preloadOneAsset(list[idx++]);
+      done++;
+      if(onProgress) onProgress(done/total);
+    }
+  }
+  const workers = Array.from({length: Math.min(_ASSET_CONCURRENCY, total)}, worker);
+  return Promise.all(workers);
+}
+
+function _cardArtUrl(card){
+  const elDir = _elDir(card.el);
+  const artTitle = (card.art || card.name).replace(/\s+/g,'_');
+  return `assets/illustrations/${elDir}/${artTitle}.png`;
+}
+function _allBorderUrls(){
+  return ['fire','water','nature','dust'].map(d => `assets/borders/big_${d}.png`);
+}
+function _allIconUrls(){
+  const slugs = new Set();
+  POOL.forEach(c => { if(c.skill && c.skill !== 'none') slugs.add(c.skill); });
+  const urls = [...slugs].map(s => `assets/icons/${_skillSlug(s)}.png`);
+  ['fire','water','nature','dust'].forEach(d => urls.push(`assets/icons/empty_${d}.png`));
+  return urls;
+}
+
+// ── Overlay de chargement (panneau flottant, messages à rotation) ──
+const _ALO_TIPS = [
+  "Rappel : le Feu bat la Terre, la Terre bat l'Eau, l'Eau bat le Feu.",
+  "La Poussière perd contre tout élément, même contre une carte déjà affaiblie.",
+  "Un Deadlock n'est pas une défaite : le risque s'accumule pour le round où la lane se décidera.",
+  "La lane ×2 double les dégâts infligés ET reçus — jouez-la avec soin.",
+  "Certaines cartes gagnent plus à perdre leur duel qu'à le remporter.",
+  "Le meilleur moment pour activer une compétence n'est pas toujours le premier qui se présente.",
+  "Une carte à haut risque n'est dangereuse que si elle finit par perdre.",
+  "Regardez toujours quelle lane porte le ×2 avant de jouer votre dernière carte.",
+  "On charge les illustrations, pas le suspense — celui-là reste entier.",
+];
+let _aloTipTimer = null;
+
+function _aloShow(label){
+  const el = document.getElementById('asset-loading-overlay');
+  if(!el) return;
+  const lbl = document.getElementById('alo-label');
+  if(lbl) lbl.textContent = label || 'Chargement…';
+  const bar = document.getElementById('alo-bar-fill');
+  if(bar) bar.style.width = '0%';
+  _aloNextTip();
+  if(_aloTipTimer) clearInterval(_aloTipTimer);
+  _aloTipTimer = setInterval(_aloNextTip, 2600);
+  el.classList.add('active');
+}
+function _aloNextTip(){
+  const tipEl = document.getElementById('alo-tip');
+  if(!tipEl) return;
+  tipEl.textContent = _ALO_TIPS[Math.floor(Math.random() * _ALO_TIPS.length)];
+}
+function _aloProgress(pct){
+  const bar = document.getElementById('alo-bar-fill');
+  if(bar) bar.style.width = Math.round(pct * 100) + '%';
+}
+function _aloHide(){
+  if(_aloTipTimer){ clearInterval(_aloTipTimer); _aloTipTimer = null; }
+  const el = document.getElementById('asset-loading-overlay');
+  if(el) el.classList.remove('active');
+}
+
+// Gate bloquant : affiche l'overlay UNIQUEMENT s'il reste des assets à
+// charger (sinon rien ne s'affiche, transition instantanée depuis le cache).
+async function _gateWithPreload(urls, label){
+  const toLoad = [...new Set(urls)].filter(u => !_assetLoaded.has(u));
+  if(toLoad.length === 0) return;
+  _aloShow(label);
+  await Promise.race([
+    preloadAssets(toLoad, _aloProgress),
+    new Promise(res => setTimeout(res, _ASSET_TIMEOUT_MS))
+  ]);
+  _aloHide();
+}
+
+// Préchargement global au démarrage (bordures + icônes) — arrière-plan,
+// non bloquant, aucun overlay. Rend les panneaux de règles/detail de carte
+// quasi instantanés dès qu'on y accède, quelle que soit la 4G du moment.
+function _bootstrapAssetPreload(){
+  preloadAssets([..._allBorderUrls(), ..._allIconUrls()]);
+}
+
+// Préchargement global (bordures + icônes) dès que le DOM est prêt — silencieux,
+// en tâche de fond, ne bloque jamais le menu principal.
+window.addEventListener('DOMContentLoaded', _bootstrapAssetPreload);
+
 function _startFight(){
+  // Préchargement arrière-plan (pas d'overlay) du reste des deux decks —
+  // la main de départ est déjà en cache depuis le mulligan (_gateWithPreload
+  // dans startWithDifficulty). Ça évite un micro-freeze à chaque pioche plus
+  // tard dans le combat sans jamais bloquer l'affichage ici.
+  preloadAssets([...G.pDeck, ...G.eDeck].map(_cardArtUrl));
   statsTimeEnterZone('combat');
   musicPlayBattle();
   addLog("Battle begins!", 'imp', ["Battle begins!"]);
@@ -13617,7 +13784,7 @@ function _dbgBtns(zone, idx){
        + `<button class="c-debug-risk-btn"    onclick="event.stopPropagation();debugOpenRiskPicker('${zone}',${idx})">🪲 risk</button>`;
 }
 
-function debugOpenPicker(zone, idx){
+async function debugOpenPicker(zone, idx){
   if(!_debugOn) return;
   _debugPickCtx = { zone, idx };
 
@@ -13629,6 +13796,11 @@ function debugOpenPicker(zone, idx){
     'lane-enemy':  `Lane ${['Left','Center','Right'][idx]} — AI card`
   };
   document.getElementById('dcp-subtitle').textContent = labels[zone] || '';
+
+  // v40 : le picker affiche TOUT le POOL (49 cartes, ~12 Mo) — précharge
+  // avant de révéler. Panneau debug uniquement, acceptable d'attendre un peu
+  // plus longtemps la première fois ; les fois suivantes sont depuis le cache.
+  await _gateWithPreload(POOL.map(_cardArtUrl), 'Chargement du picker debug…');
 
   // Construire la liste des cartes disponibles (toutes les cartes du POOL)
   const list = document.getElementById('dcp-list');
@@ -14965,6 +15137,15 @@ if(document.readyState !== 'loading'){
   </div>
 </div>
 
+<!-- ═══════════════ v40 : PRÉCHARGEMENT D'ASSETS ═══════════════ -->
+<div id="asset-loading-overlay">
+  <div id="alo-box">
+    <div id="alo-label">Chargement…</div>
+    <div id="alo-bar-track"><div id="alo-bar-fill"></div></div>
+    <div id="alo-tip"></div>
+  </div>
+</div>
+
 <!-- ═══════════════ SAVE / LOAD PANEL ═══════════════ -->
 <div id="save-overlay" onclick="if(event.target===this) closeSavePanel()">
   <div id="save-panel">
@@ -15099,7 +15280,7 @@ if(document.readyState !== 'loading'){
           <p data-i18n="rule_012">A lane resolves once both slots are filled: the winning element makes the loser's card hit the discard, and the opponent loses HP equal to the lane's accumulated Risk (see ch.4). On a tie, both cards stay in the lane and nothing is lost — Risk keeps building for next time.</p>
           <div class="rules-shot">
             <img src="assets/screenshots/01.png" loading="lazy" alt="">
-            <div class="rules-shot-cap" data-i18n="cap_01">01 — Element predation diagram: Fire beats Water, Water beats Earth, Earth beats Fire. Dust loses to all elements.</div>
+            <div class="rules-shot-cap" data-i18n="cap_01">01 — Element predation diagram: Fire beats Earth, Earth beats Water, Water beats Fire. Dust loses to all elements.</div>
           </div>
           <div class="rules-shot">
             <img src="assets/screenshots/03.jpg" loading="lazy" alt="">
@@ -18150,7 +18331,7 @@ const STRINGS = {
     "rule_064": "Load save from ' + date + '?' + summary + '",
     "cap_00": "00 — Title screen in fullscreen portrait mode — TUTORIAL, RANDOM BATTLE and ROGUELIKE buttons.",
     "cap_00b": "00b — Title screen as seen on iPhone.",
-    "cap_01": "01 — Element predation diagram: Fire beats Water, Water beats Earth, Earth beats Fire. Dust loses to all elements.",
+    "cap_01": "01 — Element predation diagram: Fire beats Earth, Earth beats Water, Water beats Fire. Dust loses to all elements.",
     "cap_03": "03 — A lane in Deadlock: Rift Sorceress (Water, Risk 9) vs Void Kraken (Water, Risk 8). Same element = deadlock, accumulated risks carry over.",
     "cap_02": "02 — Combat screen at SR5: AI has played 2 cards, player has played 3. End Round button is active.",
     "cap_02b": "02b — Combat screen on iPhone: 2 AI cards and 1 player card in play.",
@@ -18867,7 +19048,7 @@ const STRINGS = {
     "rule_064": "Charger depuis ' + date + '?' + résumé + '",
     "cap_00": "00 — Écran titre portrait plein écran — boutons TUTORIEL, COMBAT ALÉATOIRE et ROGUELIKE.",
     "cap_00b": "00b — Écran titre sur iPhone.",
-    "cap_01": "01 — Diagramme de prédation des éléments : Feu bat Eau, Eau bat Terre, Terre bat Feu. Poussière perd contre tout.",
+    "cap_01": "01 — Diagramme de prédation des éléments : Feu bat Terre, Terre bat Eau, Eau bat Feu. Poussière perd contre tout.",
     "cap_03": "03 — Couloir en Deadlock : Rift Sorceress (Eau, Risque 9) vs Void Kraken (Eau, Risque 8). Même élément = deadlock.",
     "cap_02": "02 — Écran de combat au SR5 : l'IA a joué 2 cartes, le joueur 3. Bouton Fin de Round actif.",
     "cap_02b": "02b — Écran de combat sur iPhone : 2 cartes IA et 1 carte joueur en jeu.",
@@ -19583,7 +19764,7 @@ const STRINGS = {
     "rule_064": "Laden von ' + date + '?' + Zusammenfassung + '",
     "cap_00": "00 — Titelbildschirm Hochformat — TUTORIAL, ZUFALLSKAMPF und ROGUELIKE.",
     "cap_00b": "00b — Titelbildschirm auf dem iPhone.",
-    "cap_01": "01 — Elementdiagramm: Feuer schlägt Wasser, Wasser schlägt Erde, Erde schlägt Feuer. Staub verliert immer.",
+    "cap_01": "01 — Elementdiagramm: Feuer schlägt Erde, Erde schlägt Wasser, Wasser schlägt Feuer. Staub verliert immer.",
     "cap_03": "03 — Spur im Deadlock: Rift Sorceress (Wasser, R9) vs Void Kraken (Wasser, R8). Gleiches Element = Deadlock.",
     "cap_02": "02 — Kampfbildschirm bei SR5: KI 2 Karten, Spieler 3. Runde-Beenden aktiv.",
     "cap_02b": "02b — Kampfbildschirm auf iPhone: 2 KI- und 1 Spielerkarte.",
@@ -20299,7 +20480,7 @@ const STRINGS = {
     "rule_064": "Cargar desde ' + date + '?' + resumen + '",
     "cap_00": "00 — Pantalla de título vertical — botones TUTORIAL, BATALLA ALEATORIA y ROGUELIKE.",
     "cap_00b": "00b — Pantalla de título en iPhone.",
-    "cap_01": "01 — Diagrama de elementos: Fuego vence Agua, Agua vence Tierra, Tierra vence Fuego. Polvo pierde siempre.",
+    "cap_01": "01 — Diagrama de elementos: Fuego vence Tierra, Tierra vence Agua, Agua vence Fuego. Polvo pierde siempre.",
     "cap_03": "03 — Carril en Deadlock: Rift Sorceress (Agua, R9) vs Void Kraken (Agua, R8). Mismo elemento = deadlock.",
     "cap_02": "02 — Pantalla de combate SR5: IA 2 cartas, jugador 3. Botón Fin de Ronda activo.",
     "cap_02b": "02b — Pantalla de combate iPhone: 2 cartas IA y 1 del jugador.",
@@ -21015,7 +21196,7 @@ const STRINGS = {
     "rule_064": "Caricare da ' + date + '?' + riepilogo + '",
     "cap_00": "00 — Schermata titolo verticale — pulsanti TUTORIAL, BATTAGLIA CASUALE e ROGUELIKE.",
     "cap_00b": "00b — Schermata titolo su iPhone.",
-    "cap_01": "01 — Diagramma elementi: Fuoco batte Acqua, Acqua batte Terra, Terra batte Fuoco. Polvere perde sempre.",
+    "cap_01": "01 — Diagramma elementi: Fuoco batte Terra, Terra batte Acqua, Acqua batte Fuoco. Polvere perde sempre.",
     "cap_03": "03 — Corsia in Deadlock: Rift Sorceress (Acqua, R9) vs Void Kraken (Acqua, R8). Stesso elemento = deadlock.",
     "cap_02": "02 — Schermata combattimento SR5: IA 2 carte, giocatore 3. Pulsante Fine Round attivo.",
     "cap_02b": "02b — Schermata combattimento iPhone: 2 carte IA e 1 giocatore.",
@@ -21731,7 +21912,7 @@ const STRINGS = {
     "rule_064": "从 ' + date + ' 加载？' + 摘要 + '",
     "cap_00": "00 — 竖屏标题画面 — 教程、随机对战和肉鸽模式按钮。",
     "cap_00b": "00b — iPhone上的标题画面。",
-    "cap_01": "01 — 元素克制图：火克水，水克土，土克火。尘埃输给所有元素。",
+    "cap_01": "01 — 元素克制图：火克土，土克水，水克火。尘埃输给所有元素。",
     "cap_03": "03 — 僵局通道：Rift Sorceress（水，风险9）vs Void Kraken（水，风险8）。相同元素=僵局。",
     "cap_02": "02 — SR5战斗画面：AI出2张牌，玩家出3张。结束回合按钮激活。",
     "cap_02b": "02b — iPhone上的战斗画面：2张AI牌和1张玩家牌。",
@@ -22447,7 +22628,7 @@ const STRINGS = {
     "rule_064": "' + date + 'からロード？' + サマリー + '",
     "cap_00": "00 — 縦向きタイトル画面 — チュートリアル、ランダム対戦、ローグライクボタン。",
     "cap_00b": "00b — iPhone上のタイトル画面。",
-    "cap_01": "01 — 元素相性図：火は水に、水は土に、土は火に強い。塵は全て負ける。",
+    "cap_01": "01 — 元素相性図：火は土に、土は水に、水は火に強い。塵は全て負ける。",
     "cap_03": "03 — デッドロック中のレーン：Rift Sorceress（水、R9）vs Void Kraken（水、R8）。同元素=デッドロック。",
     "cap_02": "02 — SR5の戦闘画面：AI2枚、プレイヤー3枚。ラウンド終了ボタン有効。",
     "cap_02b": "02b — iPhoneの戦闘画面：AI2枚、プレイヤー1枚。",
@@ -22694,6 +22875,10 @@ function closeComics(){
   if(iframe) iframe.src = '';
 }
 function _checkAutoOpenPrologue(){
+  // [v40 b03] Lecture automatique désactivée sur demande — le prologue ne se
+  // déclenche plus qu'à la main via le bouton #btn-prologue-title (openComics()).
+  // Fonction conservée (inutilisée) au cas où l'auto-lecture au 1er lancement
+  // serait réintroduite plus tard.
   try{
     if(localStorage.getItem(PROLOGUE_LS_KEY) !== '1'){
       openComics();
@@ -22743,7 +22928,9 @@ function _applyLang(){
 // Initialiser au démarrage
 statsLoad();
 setTimeout(_applyLang, 100); // after DOM ready
-setTimeout(_checkAutoOpenPrologue, 300); // after DOM ready, check first launch
+// [v40 b03] Auto-lecture du prologue désactivée — déclenchement manuel uniquement
+// (bouton #btn-prologue-title sur l'écran titre, appelle openComics() directement).
+// setTimeout(_checkAutoOpenPrologue, 300);
 
 /* ═══════════════════════════════════════════════════════════════════════════
    AUDIO ENGINE — Primal Gambit
@@ -23294,8 +23481,13 @@ function closeSavePanel(){
 }
 
 
-function openRulesPanel(){
+async function openRulesPanel(){
   sfx(SFX.tock);
+  // v40 : garde-fou — les icônes sont normalement déjà chaudes depuis le
+  // préchargement global au démarrage (_bootstrapAssetPreload), donc ce gate
+  // ne montre l'overlay que si ce panneau est ouvert avant que ce
+  // préchargement de fond ait fini (cas rare, ex. tout premier lancement).
+  await _gateWithPreload(_allIconUrls(), 'Ouverture des règles…');
   document.getElementById('rules-overlay').classList.add('open');
   // Sound on accordion open/close
   document.getElementById('rules-overlay').querySelectorAll('details').forEach(d=>{
@@ -23656,7 +23848,7 @@ function dpSave(){
 }
 
 // ── Open / Close ──────────────────────────────────────────────────
-function dpOpen(owner){
+async function dpOpen(owner){
   statsTimeEnterZone('deckBuilder');
   sfx(SFX.tock);
   _dp.owner = owner || 'player';
@@ -23693,9 +23885,7 @@ function dpOpen(owner){
   }
 
   _dp.deck     = currentDeck.map(c => ({...c, uid:uid()}));
-  _dp.original = _dp.deck.map(c => ({...c}));
-
-  // Roguelike : collection = RL.collection (pas 3× POOL)
+  _dp.original = _dp.deck.map(c => ({...c}));  // Roguelike : collection = RL.collection (pas 3× POOL)
   if(rlCollectionOverride){
     // Compter les copies dans la collection RL
     const collCounts = {};
@@ -23715,6 +23905,9 @@ function dpOpen(owner){
 
   document.getElementById('dp-owner-label').textContent =
     owner === 'player' ? 'Your Deck' : 'Opponent Deck';
+  // v40 : précharge les illustrations du deck ET de la collection affichée
+  // (jusqu'à 25 + le reste de la collection) avant de révéler le panneau.
+  await _gateWithPreload([..._dp.deck, ...(_dp.coll||[])].map(_cardArtUrl), 'Ouverture du deck…');
   document.getElementById('deck-panel').classList.add('open');
   requestAnimationFrame(() => dpRender());
 }
