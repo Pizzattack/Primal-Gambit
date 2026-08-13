@@ -4,7 +4,7 @@
 
 ---
 
-## What is this?
+## What is Primal Gambit?
 
 ![Title screen](assets/screenshots/00.jpg)
 
@@ -61,23 +61,40 @@ If you were an EarthCore player: hello, I hope this brings back some good memori
 
 ## How to play
 
-### Online (recommended)
-Just open the deployed link in your browser. **Safari on iOS works best** for the remote version.
+### Online basic (recommended)
 
-🔗 [Play online](https://pizzattack.github.io/Primal-Gambit/)
+Just open the links below in your browser for the remote version. Keep it as as bookmark if you want. Done.
+
+🔗 [Play online from github](https://pizzattack.github.io/Primal-Gambit/)
+
+🔗 [Play online from stitch.io](https://pizzattack.itch.io/primal-gambit)
+
+## Online as a Web App
+
+Primal Gambit can be installed on your phone or tablet's home screen and runs like a native app — no app store required. Once installed, the game runs in its own window/icon, independent of your browser tabs, and works the same way as before — installation just adds a shortcut, no extra download.
+
+**iOS (Safari)**
+1. Open the game in **Safari** (installation only works from Safari, not Chrome or other browsers on iOS).
+2. Tap the **Share** button (square with an arrow pointing up) in the toolbar.
+3. Scroll down and tap **Add to Home Screen**.
+4. Tap **Add** in the top-right corner.
+5. Launch the game from the new icon on your home screen — it opens full-screen, without Safari's address bar.
+
+**Android (Chrome)**
+1. Open the game in **Chrome**.
+2. Tap the **⋮** menu (top-right corner).
+3. Tap **Install app** (or **Add to Home screen**, depending on your Chrome version).
+4. Confirm by tapping **Install**.
+5. Launch the game from the new icon in your app drawer or home screen.
+
+**Desktop (Chrome / Edge)**
+1. Open the game in Chrome or Edge.
+2. Click the **install icon** (⊕ or a small monitor icon) in the address bar.
+3. Click **Install**.
 
 ### Local installation
 
-Download the ZIP from the repository (green **Code** button → **Download ZIP**), unzip it, and open `index.html`.
-
-**On desktop (Windows / Mac / Linux)**
-Open `index.html` directly in Chrome, Firefox, or Safari. No server needed.
-
-**On iOS**
-The built-in "Open in..." won't work reliably for local HTML files. Use **[HTML Viewer Q](https://apps.apple.com/app/html-viewer-q/id810042973)** — a free app by Spica that lets you load and run local HTML files with full JavaScript support. Load `index.html` from the Files app after unzipping.
-
-**On Android**
-Open the file directly in Chrome or use a local server app like **HTTP Server by pddl**. Chrome on Android handles local HTML files well.
+Download the ZIP from the github repository (green **Code** button → **Download ZIP**), unzip it, and open `index.html` with your browser
 
 ---
 
@@ -101,13 +118,23 @@ All sound FX are from the amazing resource site [FreeSound.org](https://freesoun
 
 All musics are from [Pixabay.com](https://pixabay.com/). Credits go to [Desifreemusic](https://pixabay.com/users/desifreemusic-28163210/), [Akoliks_aj](https://pixabay.com/users/ikoliks_aj-48415707/) and [Nastelbom](https://pixabay.com/users/nastelbom-48128234/).
 
+---
+
 ## Status
 
-This is an active personal project. Cards are added progressively — there are currently ~30 more cards designed and documented in the code, waiting to be implemented. Skills range from straightforward (Strike, Defender) to mechanically complex (Chants, Totems, Madness).
+This is an active personal project. Cards are added progressively — there are currently ~30 more cards theorycrafted and balanced with an AI-driven game simulator. Skills range from straightforward to mechanically complex. I will implement & upload more cards based on your feedback.
 
 Bugs exist. The AI doesn't always make the right call. Some features are rougher than others. But it's playable, it's fun, and it's getting better.
 
-## Changelog v39 build 20 (August 2026)
+---
+
+## Changelog 
+
+**v0.40 (August 2026)**
+- Added preloading of images for slow internet connections
+- Added favicon and manifest for a sweeter installation as a Web App
+
+**v0.39 (August 2026)**
 
 - Added localization in French, German, Spanish, Italian, Chinese, Japanese (AI made, feedback is welcome)
 - Added prologue (short animated comics)
@@ -115,7 +142,6 @@ Bugs exist. The AI doesn't always make the right call. Some features are rougher
 - Reworked difficulty levels for random and roguelike modes
 - Reworked tutorials for clarity
 
----
 ---
 
 ## Contributing
