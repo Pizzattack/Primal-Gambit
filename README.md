@@ -96,6 +96,12 @@ Primal Gambit can be installed on your phone or tablet's home screen and runs li
 
 Download the ZIP from the github repository (green **Code** button → **Download ZIP**), unzip it, and open `index.html` with your browser
 
+1. On desktop (Windows / Mac / Linux), open `index.html` directly in Chrome, Firefox, or Safari. No server needed.
+
+2. On iOS, the built-in "Open in..." won't work because Apple blocks local HTML files in safari. Use a local HTML viewer such as ([HTML Viewer Q](https://apps.apple.com/app/html-viewer-q/id810042973) ) — a free app by Spica that lets you load and run local HTML files with full JavaScript support. Load `index.html` from the Files app after unzipping.
+
+3. On Android, open the file directly in Chrome or use a local server app like **HTTP Server by pddl**. Chrome on Android handles local HTML files well.
+
 ---
 
 ## About EarthCore
