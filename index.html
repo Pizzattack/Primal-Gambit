@@ -18,7 +18,7 @@
      ║  Exemple pour version 27 → ElementalFury_v27.html               ║
      ╠══════════════════════════════════════════════════════════════════╣
      ║  VERSION    = 40                                                 ║
-     ║  BUILD      = 1                                                 ║
+     ║  BUILD      = 4                                                 ║
      ║  BUILD_DATE = 2026.08.10                                         ║
      ╚══════════════════════════════════════════════════════════════════╝ -->
 <html lang="fr">
@@ -26,6 +26,20 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>Primal Gambit</title>
+
+<!-- ═══ v40 b03 : favicon + installation écran d'accueil (iOS/Android) ═══ -->
+<!-- favicon.png (64px) : onglet navigateur uniquement, optimisé lisibilité en petit -->
+<link rel="icon" type="image/png" href="assets/background/favicon.png">
+<!-- manifest-icon.png (512px) : icône iOS/Android — source haute-res pour éviter le flou à 180px -->
+<link rel="apple-touch-icon" href="assets/background/manifest-icon.png">
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#d4af37">
+<!-- iOS : mode "app" sans barre Safari, titre court sous l'icône -->
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Primal Gambit">
+<!-- Android/Chrome : équivalent legacy, en plus du manifest.json -->
+<meta name="mobile-web-app-capable" content="yes">
 <style>
 @font-face {
   font-family: 'Cinzel';
@@ -4870,7 +4884,7 @@ body:has(#deck-panel.open) .float-toolbar{ display:none !important; }
        · renommer le fichier en index_vXX_bYY.html en cohérence -->
   <!-- ⚠ Mettre à jour cette date à chaque nouvelle version / build -->
   <!-- ⚠ Mettre à jour cette date à chaque nouvelle version / build -->
-  <p id="build-badge">v40 b1 &nbsp;·&nbsp; build 2026.08.10</p>
+  <p id="build-badge">v40 b4 &nbsp;·&nbsp; build 2026.08.10</p>
 </div>
 
 <!-- 2. ÉCRAN MULLIGAN -->

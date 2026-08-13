@@ -1,0 +1,17 @@
+{
+  "name": "Primal Gambit",
+  "short_name": "Primal Gambit",
+  "description": "Jeu de cartes tactique élémentaire — Feu, Eau, Terre.",
+  "start_url": "./",
+  "scope": "./",
+  "id": "./",
+  "display": "standalone",
+  "orientation": "any",
+  "background_color": "#06080c",
+  "theme_color": "#d4af37",
+  "lang": "fr",
+  "icons": [
+    { "src": "assets/background/manifest-icon.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "assets/background/manifest-icon.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ]
+}
