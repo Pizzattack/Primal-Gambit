@@ -8,7 +8,7 @@
   "display": "standalone",
   "orientation": "any",
   "background_color": "#06080c",
-  "theme_color": "#d4af37",
+  "theme_color": "#000000",
   "lang": "fr",
   "icons": [
     { "src": "assets/background/manifest-icon.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
