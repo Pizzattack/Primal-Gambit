@@ -18,13 +18,17 @@
      ║  Exemple pour version 27 → ElementalFury_v27.html               ║
      ╠══════════════════════════════════════════════════════════════════╣
      ║  VERSION    = 40                                                 ║
-     ║  BUILD      = 5                                                 ║
-     ║  BUILD_DATE = 2026.08.10                                         ║
+     ║  BUILD      = 6                                                 ║
+     ║  BUILD_DATE = 2026.08.25                                         ║
      ╚══════════════════════════════════════════════════════════════════╝ -->
 <html lang="fr">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<!-- [v40 b06] user-scalable=no / maximum-scale retirés : ils bloquaient le zoom
+     par pincement pour tout le monde, y compris les joueurs qui en ont besoin
+     pour lire. Le jeu gère déjà son propre dimensionnement (updateCardSize) et
+     empêche le double-tap-zoom via touch-action, donc rien ne le réclamait. -->
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <title>Primal Gambit</title>
 
 <!-- ═══ v40 b03 : favicon + installation écran d'accueil (iOS/Android) ═══ -->
@@ -4551,24 +4555,13 @@ body:has(#deck-panel.open) .float-toolbar{ display:none !important; }
   pointer-events:auto; white-space:nowrap;
 }
 
-<!-- ═══ ERUDA DEBUG CONSOLE — retirer avant release ═══ -->
-<script src="https://cdn.jsdelivr.net/npm/eruda@3/eruda.js"></script>
-<script>
-  eruda.init();
-</script>
-<style>
-  /* Eruda : masqué par défaut, visible seulement en mode debug (classe body.debug-active) */
-  .eruda-entry-btn{
-    display:none !important;
-  }
-  body.debug-active .eruda-entry-btn{
-    display:flex !important;
-    /* Haut à droite, au-dessus de tout */
-    top:4px !important;
-    bottom:auto !important;
-    right:4px !important;
-    left:auto !important;
-  }
+/* [v40 b06] Le bloc « ERUDA DEBUG CONSOLE » vivait ici, avec sa balise <script>
+   et un second <style> — le tout à l'INTÉRIEUR de ce bloc <style>, jamais
+   refermé depuis la ligne ~3565. Le navigateur lisait donc ces balises comme
+   du CSS : le script n'a jamais été exécuté, et le sélecteur invalide avalait
+   au passage la règle .eruda-entry-btn qui le suivait.
+   Le commentaire d'origine disait « retirer avant release » : c'est fait.
+   Effet de bord bienvenu : plus aucune dépendance CDN, le jeu est 100% local. */
 
 /* ── Sélecteur de langue title screen ── */
 /* Lang selector: title screen — top left, 50% plus grand que la toolbar */
@@ -4863,7 +4856,7 @@ body:has(#deck-panel.open) .float-toolbar{ display:none !important; }
 <!-- Overlay rotation landscape -->
 <div id="rotate-overlay" style="display:none;position:fixed;inset:0;z-index:9999;background:#000;flex-direction:column;align-items:center;justify-content:center;gap:20px;">
   <div style="font-size:64px;animation:rotPulse 1.5s ease-in-out infinite;">📱</div>
-  <div style="font-family:'Cinzel',serif;color:#d4af37;font-size:clamp(14px,4vw,20px);text-align:center;padding:0 24px;line-height:1.6;">Turn your device<br>to portrait mode<br>to play Primal Gambit</div>
+  <div data-i18n="rotate_msg" data-i18n-html style="font-family:'Cinzel',serif;color:#d4af37;font-size:clamp(14px,4vw,20px);text-align:center;padding:0 24px;line-height:1.6;">Turn your device<br>to portrait mode<br>to play Primal Gambit</div>
 </div>
 <style>
 @keyframes rotPulse{0%{transform:rotate(0deg);}50%{transform:rotate(-90deg);}100%{transform:rotate(0deg);}}
@@ -4884,7 +4877,7 @@ body:has(#deck-panel.open) .float-toolbar{ display:none !important; }
        · renommer le fichier en index_vXX_bYY.html en cohérence -->
   <!-- ⚠ Mettre à jour cette date à chaque nouvelle version / build -->
   <!-- ⚠ Mettre à jour cette date à chaque nouvelle version / build -->
-  <p id="build-badge">v40 b5 &nbsp;·&nbsp; build 2026.08.10</p>
+  <p id="build-badge">v40 b6 &nbsp;·&nbsp; build 2026.08.25</p>
 </div>
 
 <!-- 2. ÉCRAN MULLIGAN -->
@@ -4948,7 +4941,7 @@ body:has(#deck-panel.open) .float-toolbar{ display:none !important; }
     <div class="hp-val you" id="hpv-y-old">50</div>
     <div id="round-indicators-you" class="round-indicators" style="margin-left:18px;"></div>
     <!-- Statut déplacé ici : zone libre à droite des indicateurs -->
-    <div class="status-msg" id="status-msg">Chargement...</div>
+    <div class="status-msg" id="status-msg" data-i18n="status_loading">Loading…</div>
     <!-- Bouton Fin de Round intégré dans la zone de vie joueur -->
     <button id="btn-end-round" class="btn-end-round turn-player" style="display:none">
       <span data-i18n="arena_end_round">End Round</span>
@@ -4999,7 +4992,7 @@ body:has(#deck-panel.open) .float-toolbar{ display:none !important; }
   </div>
   <div id="tut-body">
     <div id="tut-header">
-      <h2 id="tut-title">TUTORIAL</h2>
+      <h2 id="tut-title" data-i18n="tut_hub_title">TUTORIAL</h2>
       <p id="tut-subtitle" data-i18n="scr_tut_subtitle">Master the basics through 8 challenges</p>
     </div>
     <div id="tut-grid"></div>
@@ -5108,7 +5101,7 @@ body:has(#deck-panel.open) .float-toolbar{ display:none !important; }
   </div>
   <div id="dp-footer">
     <button id="dp-save-btn" onclick="sfx(SFX.click2);dpSave()" data-i18n="btn_save_deck">Save Deck</button>
-    <button id="dp-cancel-btn" onclick="sfx(SFX.click2);dpClose()">Cancel</button>
+    <button id="dp-cancel-btn" onclick="sfx(SFX.click2);dpClose()" data-i18n="btn_cancel">CANCEL</button>
   </div>
 </div>
 <div id="dp-toast"></div>
@@ -5592,7 +5585,10 @@ const POOL=[
 
 let G={};
 
-function uid(){return Math.random().toString(36).substring(2,8);}
+// [v40 b06] Math.random().toString(36) peut renvoyer une chaîne courte (ex. "0.5"),
+// auquel cas substring(2,8) rendait 1 caractère au lieu de 6 — collisions possibles
+// sur les 147 cartes d'une collection. On complète par la droite.
+function uid(){return (Math.random().toString(36)+'000000').substring(2,8);}
 
 function buildCollection(){
   // Collection Random Battle : 3 exemplaires de chaque carte du POOL
@@ -5841,13 +5837,16 @@ function _rlShowAbandonModal(){
     <div style="background:rgba(10,12,18,0.98);border:1px solid rgba(219,44,44,0.5);border-radius:12px;padding:28px 24px;max-width:320px;width:100%;text-align:center;box-shadow:0 8px 40px rgba(0,0,0,0.9);position:relative;overflow:hidden;">
       <div style="position:absolute;inset:0;background:url('assets/background/texture_black.png') top left/1254px 1254px repeat;opacity:0.8;pointer-events:none;z-index:0;"></div>
       <div style="position:relative;z-index:1;">
-        <div style="font-family:Cinzel,serif;color:#ff6060;font-size:18px;font-weight:700;margin-bottom:10px;">ROGUELIKE</div>
-        <div style="color:#a8a095;font-size:14px;margin-bottom:20px;line-height:1.5;">Fight in progress.<br>Leaving will count as a <b style="color:#ff6060">LOSS</b> and cost you one life.<br><br>You cannot undo this.</div>
+        <!-- [v40 b06] Titre et corps étaient de l'anglais en dur, et les data-i18n
+             des boutons ne servaient à rien : _applyLang() ne balaie le DOM qu'au
+             changement de langue, or cette modale est injectée après. t() en direct. -->
+        <div style="font-family:Cinzel,serif;color:#ff6060;font-size:18px;font-weight:700;margin-bottom:10px;">${_esc(t('rl_abandon_title'))}</div>
+        <div style="color:#a8a095;font-size:14px;margin-bottom:20px;line-height:1.5;">${t('rl_abandon_body').replace('<b>','<b style="color:#ff6060">')}</div>
         <div style="display:flex;flex-direction:column;gap:10px;align-items:stretch;width:100%;">
           <button onclick="sfx(SFX.tock);document.getElementById('rl-abandon-modal').remove(); _rlAbandon();"
-            class="btn-popup btn-popup-dark" data-i18n="btn_leave_loss">LEAVE — TAKE THE LOSS</button>
+            class="btn-popup btn-popup-dark">${_esc(t('btn_leave_loss'))}</button>
           <button onclick="sfx(SFX.tock);document.getElementById('rl-abandon-modal').remove();"
-            class="btn-popup btn-popup-light" data-i18n="btn_stay_fight">STAY AND FIGHT</button>
+            class="btn-popup btn-popup-light">${_esc(t('btn_stay_fight'))}</button>
         </div>
       </div>
     </div>`;
@@ -6108,7 +6107,7 @@ async function startWithDifficulty(level){
   // v40 : précharge les illustrations des deux mains de départ AVANT de
   // révéler le mulligan — c'est le tout premier affichage de cartes de la
   // partie, donc le point le plus visible d'un chargement en couches.
-  await _gateWithPreload([...G.pHand, ...G.eHand].map(_cardArtUrl), 'Préparation du combat…');
+  await _gateWithPreload([...G.pHand, ...G.eHand].map(_cardArtUrl), t('alo_prep_fight'));
   document.getElementById('s-mulligan').classList.add('active');
   sfx(SFX.deck, 0.5);
   renderMulligan();
@@ -6356,16 +6355,12 @@ function _allIconUrls(){
 }
 
 // ── Overlay de chargement (panneau flottant, messages à rotation) ──
-const _ALO_TIPS = [
-  "Rappel : le Feu bat la Terre, la Terre bat l'Eau, l'Eau bat le Feu.",
-  "La Poussière perd contre tout élément, même contre une carte déjà affaiblie.",
-  "Un Deadlock n'est pas une défaite : le risque s'accumule pour le round où la lane se décidera.",
-  "La lane ×2 double les dégâts infligés ET reçus — jouez-la avec soin.",
-  "Certaines cartes gagnent plus à perdre leur duel qu'à le remporter.",
-  "Le meilleur moment pour activer une compétence n'est pas toujours le premier qui se présente.",
-  "Une carte à haut risque n'est dangereuse que si elle finit par perdre.",
-  "Regardez toujours quelle lane porte le ×2 avant de jouer votre dernière carte.",
-  "On charge les illustrations, pas le suspense — celui-là reste entier.",
+// [v40 b06] Les astuces étaient un tableau français en dur : tout joueur, quelle
+// que soit sa langue, lisait du français pendant le chargement. Elles passent
+// désormais par t() — et sont donc relues à chaque affichage, pas figées au boot.
+const _ALO_TIP_KEYS = [
+  'alo_tip_1','alo_tip_2','alo_tip_3','alo_tip_4','alo_tip_5',
+  'alo_tip_6','alo_tip_7','alo_tip_8','alo_tip_9',
 ];
 let _aloTipTimer = null;
 
@@ -6373,7 +6368,7 @@ function _aloShow(label){
   const el = document.getElementById('asset-loading-overlay');
   if(!el) return;
   const lbl = document.getElementById('alo-label');
-  if(lbl) lbl.textContent = label || 'Chargement…';
+  if(lbl) lbl.textContent = label || t('alo_loading');
   const bar = document.getElementById('alo-bar-fill');
   if(bar) bar.style.width = '0%';
   _aloNextTip();
@@ -6384,7 +6379,7 @@ function _aloShow(label){
 function _aloNextTip(){
   const tipEl = document.getElementById('alo-tip');
   if(!tipEl) return;
-  tipEl.textContent = _ALO_TIPS[Math.floor(Math.random() * _ALO_TIPS.length)];
+  tipEl.textContent = t(_ALO_TIP_KEYS[Math.floor(Math.random() * _ALO_TIP_KEYS.length)]);
 }
 function _aloProgress(pct){
   const bar = document.getElementById('alo-bar-fill');
@@ -6773,6 +6768,7 @@ function evaluateTurnState(){
 }
 
 function advancePlacementStructure(){
+  if(!G) return; // [v40 b06] appelée hors partie → TypeError sur G.placeLeft
   G.placeLeft--;
   if(G.placeLeft <= 0){
     G.placeStep++;
@@ -13679,27 +13675,12 @@ function _rcSetTooltip(text){
 })();
 
 
-function executeEndGameTrigger(){
-  const winner = G.eHP <= 0 && G.pHP > 0 ? 'player' : G.pHP <= 0 && G.eHP > 0 ? 'ai' : 'tie';
-  cleanGameUI();
-  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
-  const endScreen = document.getElementById('s-end');
-  const title = document.getElementById('end-title');
-  if(endScreen) endScreen.classList.add('active');
-
-  _stopAllHeartLoops();
-  musicStop();
-
-  if(winner === 'tie'){
-    title.textContent = t('scr_end_tie'); title.className = "end-title";
-  } else if(winner === 'player'){
-    setTimeout(()=> sfx(SFX.win), 300);
-    title.textContent = t('scr_end_win'); title.className = "end-title win";
-  } else {
-    setTimeout(()=> sfx(SFX.lose), 300);
-    title.textContent = t('scr_end_lose'); title.className = "end-title lose";
-  }
-}
+// [v40 b06] Une PREMIÈRE version de executeEndGameTrigger() vivait ici. Elle
+// était écrasée au chargement par celle du bloc <script> suivant (déclarations
+// de fonctions hoistées, dernier script gagnant) et n'a donc jamais tourné :
+// elle ignorait le mode tutoriel, le roguelike et les statistiques. Vingt lignes
+// mortes mais parfaitement plausibles pour qui vient déboguer une fin de partie.
+// La version vivante est la seule restante — chercher `function executeEndGameTrigger`.
 
 function addLog(m, c='', sLines=null){
   // sLines = tableau de lignes courtes pour la colonne paysage (null = utilise [m])
@@ -13814,7 +13795,7 @@ async function debugOpenPicker(zone, idx){
   // v40 : le picker affiche TOUT le POOL (49 cartes, ~12 Mo) — précharge
   // avant de révéler. Panneau debug uniquement, acceptable d'attendre un peu
   // plus longtemps la première fois ; les fois suivantes sont depuis le cache.
-  await _gateWithPreload(POOL.map(_cardArtUrl), 'Chargement du picker debug…');
+  await _gateWithPreload(POOL.map(_cardArtUrl), t('alo_loading'));
 
   // Construire la liste des cartes disponibles (toutes les cartes du POOL)
   const list = document.getElementById('dcp-list');
@@ -14587,7 +14568,10 @@ window.addEventListener('orientationchange', () => {
       updateCardSize();
     }
   }
-  setInterval(checkDpr, 500); // polling léger toutes les 500ms
+  // [v40 b06] on saute les réveils quand l'onglet est caché : le zoom système
+  // ne peut pas changer pendant que la page n'est pas affichée, et sur mobile
+  // ce timer représentait ~7000 réveils par heure en arrière-plan.
+  setInterval(() => { if(!document.hidden) checkDpr(); }, 500);
 })();
 
 // (bouton recalc permanent supprimé)
@@ -14855,11 +14839,16 @@ function _showResumeModal(savedAt, onResume, onNew, extraWarning=''){
   const existing = document.getElementById('resume-modal-overlay');
   if(existing) existing.remove();
 
+  // [v40 b06] Ce libellé — et tout le corps de la modale — étaient du français
+  // en dur : un joueur anglophone lisait « Partie en cours / Reprendre où vous
+  // en étiez ? ». C'est la toute première chose qu'il voit au retour dans le jeu.
   const age   = Date.now() - (savedAt || 0);
   const mins  = Math.floor(age / 60000);
-  const label = mins < 1 ? 'il y a moins d\'1 min'
-              : mins < 60 ? `il y a ${mins} min`
-              : `il y a ${Math.floor(mins/60)}h${mins%60 > 0 ? String(mins%60).padStart(2,'0') : ''}`;
+  const label = mins < 1  ? t('resume_ago_now')
+              : mins < 60 ? t('resume_ago_min').replace('{n}', mins)
+              : t('resume_ago_hour')
+                  .replace('{h}', Math.floor(mins/60))
+                  .replace('{m}', mins%60 > 0 ? String(mins%60).padStart(2,'0') : '');
 
   const overlay = document.createElement('div');
   overlay.id = 'resume-modal-overlay';
@@ -14874,11 +14863,14 @@ function _showResumeModal(savedAt, onResume, onNew, extraWarning=''){
     <div style="background:rgba(10,12,18,0.98);border:1px solid rgba(212,175,55,0.4);border-radius:12px;padding:28px 24px;max-width:min(90vw,380px);width:100%;text-align:center;box-shadow:0 8px 40px rgba(0,0,0,0.8);position:relative;overflow:hidden;">
       <div style="position:absolute;inset:0;background:url('assets/background/texture_black.png') top left/1254px 1254px repeat;opacity:0.8;pointer-events:none;z-index:0;"></div>
       <div style="position:relative;z-index:1;">
-        <div style="font-family:Cinzel,serif;color:#d4af37;font-size:20px;font-weight:700;margin-bottom:8px;">⚔ Partie en cours</div>
-        <div style="color:#a8a095;font-size:14px;margin-bottom:24px;line-height:1.5;">Sauvegardée ${label}<br>Reprendre où vous en étiez ?${extraWarning}</div>
+        <div style="font-family:Cinzel,serif;color:#d4af37;font-size:20px;font-weight:700;margin-bottom:8px;">${t('resume_title')}</div>
+        <div style="color:#a8a095;font-size:14px;margin-bottom:24px;line-height:1.5;">${t('resume_body').replace('{ago}', label)}${extraWarning}</div>
         <div style="display:flex;flex-direction:column;gap:10px;">
-          <button id="resume-btn-yes" class="btn-popup btn-popup-dark" data-i18n="btn_resume">RESUME</button>
-          <button id="resume-btn-no" class="btn-popup btn-popup-light" data-i18n="btn_new_game">NEW GAME</button>
+          <!-- [v40 b06] t() en direct, pas data-i18n : _applyLang() ne balaie le DOM
+               qu'au changement de langue, et cette modale est injectée après. Les
+               deux boutons restaient donc en anglais dans toutes les langues. -->
+          <button id="resume-btn-yes" class="btn-popup btn-popup-dark">${_esc(t('btn_resume'))}</button>
+          <button id="resume-btn-no" class="btn-popup btn-popup-light">${_esc(t('btn_new_game'))}</button>
         </div>
       </div>
     </div>`;
@@ -14935,7 +14927,7 @@ async function _resumeGame(data){
       setTimeout(executeAiBonusSkill, 800);
     }
   }
-  _showSaveToast('✦ Partie reprise');
+  _showSaveToast(t('toast_resumed'));
 }
 
 // ── Point d'entrée : appelé au chargement de la page ──
@@ -14951,7 +14943,7 @@ async function checkAndOfferResume(){
 
   const isRLFight = !!(data._isRLMode && data._rlState && !data._rlState.gameOver);
   const warningText = isRLFight
-    ? '<br><span style="color:#ff6060;font-size:12px;">⚠ Roguelike fight in progress — not resuming will count as a LOSS and cost you one life.</span>'
+    ? '<br><span style="color:#ff6060;font-size:12px;">' + _esc(t('resume_rl_warning')) + '</span>'
     : '';
 
   _showResumeModal(
@@ -14979,7 +14971,7 @@ function autoSave(){
   clearTimeout(_saveDebounceTimer);
   _saveDebounceTimer = setTimeout(async () => {
     await saveGame();
-    _showSaveToast('✦ Sauvegardé');
+    _showSaveToast(t('toast_saved'));
   }, 400);
 }
 
@@ -15233,7 +15225,7 @@ if(document.readyState !== 'loading'){
       <button class="stats-tab" onclick="sfx(SFX.paper);switchStatsTab('history',this)" data-i18n="tab_history">History</button>
     </div>
     <div id="stats-body">
-      <div id="stats-empty" style="display:none;">NO GAMES RECORDED YET<br><span style="font-size:10px;opacity:.5">Play a game to start tracking stats</span></div>
+      <div id="stats-empty" style="display:none;"><span data-i18n="stats_empty_title">NO GAMES RECORDED YET</span><br><span data-i18n="stats_empty_sub" style="font-size:10px;opacity:.5">Play a game to start tracking stats</span></div>
       <div id="sp-overview"  class="stats-pane active"></div>
       <div id="sp-modes"     class="stats-pane"></div>
       <div id="sp-cards"     class="stats-pane"></div>
@@ -15515,22 +15507,22 @@ if(document.readyState !== 'loading'){
             <summary data-i18n="ch_fire_compendium">🔥 Fire</summary>
             <div class="rules-chapter-body">
               <div class="rsk-card-grid">
-                <div class="rsk-card-entry" data-card-id="007" style="cursor:pointer;"><img src="assets/icons/Ember_Sprite.png" alt="" onerror="this.style.display='none'"><div><span class="rsk-card-name">Ember Sprite</span><span class="rsk-card-meta">Risk 3 · No power</span></div></div>
-                <div class="rsk-card-entry" data-card-id="008" style="cursor:pointer;"><img src="assets/icons/Cinder_Imp.png" alt="" onerror="this.style.display='none'"><div><span class="rsk-card-name">Cinder Imp</span><span class="rsk-card-meta">Risk 4 · No power</span></div></div>
-                <div class="rsk-card-entry" data-card-id="009" style="cursor:pointer;"><img src="assets/icons/Char_Sprite.png" alt="" onerror="this.style.display='none'"><div><span class="rsk-card-name">Char Sprite</span><span class="rsk-card-meta">Risk 5 · No power</span></div></div>
-                <div class="rsk-card-entry" data-card-id="011" style="cursor:pointer;"><img src="assets/icons/Ash_Golem.png" alt="" onerror="this.style.display='none'"><div><span class="rsk-card-name">Ash Golem</span><span class="rsk-card-meta">Risk 5 · ◉ Crush</span></div></div>
-                <div class="rsk-card-entry" data-card-id="015" style="cursor:pointer;"><img src="assets/icons/Char_Wraith.png" alt="" onerror="this.style.display='none'"><div><span class="rsk-card-name">Char Wraith</span><span class="rsk-card-meta">Risk 7 · ◉ Intimidate</span></div></div>
-                <div class="rsk-card-entry" data-card-id="018" style="cursor:pointer;"><img src="assets/icons/Lava_Eye.png" alt="" onerror="this.style.display='none'"><div><span class="rsk-card-name">Lava Eye</span><span class="rsk-card-meta">Risk 4 · ◉ Morph</span></div></div>
-                <div class="rsk-card-entry" data-card-id="019" style="cursor:pointer;"><img src="assets/icons/Ash_Colossus.png" alt="" onerror="this.style.display='none'"><div><span class="rsk-card-name">Ash Colossus</span><span class="rsk-card-meta">Risk 8 · ◉ Overpower</span></div></div>
-                <div class="rsk-card-entry" data-card-id="022" style="cursor:pointer;"><img src="assets/icons/Cinder_Baron.png" alt="" onerror="this.style.display='none'"><div><span class="rsk-card-name">Cinder Baron</span><span class="rsk-card-meta">Risk 4 · ✦ Refresh</span></div></div>
-                <div class="rsk-card-entry" data-card-id="025" style="cursor:pointer;"><img src="assets/icons/Ember_Brawler.png" alt="" onerror="this.style.display='none'"><div><span class="rsk-card-name">Ember Brawler</span><span class="rsk-card-meta">Risk 6 · ◉ Strike</span></div></div>
-                <div class="rsk-card-entry" data-card-id="026" style="cursor:pointer;"><img src="assets/icons/Ash_Predator.png" alt="" onerror="this.style.display='none'"><div><span class="rsk-card-name">Ash Predator</span><span class="rsk-card-meta">Risk 5 · ◉ Terrify</span></div></div>
-                <div class="rsk-card-entry" data-card-id="027" style="cursor:pointer;"><img src="assets/icons/Void_Reaper.png" alt="" onerror="this.style.display='none'"><div><span class="rsk-card-name">Void Reaper</span><span class="rsk-card-meta">Risk 8 · ⚙ Torment</span></div></div>
-                <div class="rsk-card-entry" data-card-id="034" style="cursor:pointer;"><img src="assets/icons/Void_Shade.png" alt="" onerror="this.style.display='none'"><div><span class="rsk-card-name">Void Shade</span><span class="rsk-card-meta">Risk 9 · ◉ Doppelganger</span></div></div>
-                <div class="rsk-card-entry" data-card-id="036" style="cursor:pointer;"><img src="assets/icons/Forge_Guard.png" alt="" onerror="this.style.display='none'"><div><span class="rsk-card-name">Forge Guard</span><span class="rsk-card-meta">Risk 7 · ◉ Exhaust</span></div></div>
-                <div class="rsk-card-entry" data-card-id="039" style="cursor:pointer;"><img src="assets/icons/Ember_Eye.png" alt="" onerror="this.style.display='none'"><div><span class="rsk-card-name">Ember Eye</span><span class="rsk-card-meta">Risk 9 · ◉ Ignite</span></div></div>
-                <div class="rsk-card-entry" data-card-id="057" style="cursor:pointer;"><img src="assets/icons/Flame_Deity.png" alt="" onerror="this.style.display='none'"><div><span class="rsk-card-name">Flame Deity</span><span class="rsk-card-meta">Risk 9 · ◉ Vampire Kiss</span></div></div>
-                <div class="rsk-card-entry" data-card-id="053" style="cursor:pointer;"><img src="assets/icons/Dusk_Fiend.png" alt="" onerror="this.style.display='none'"><div><span class="rsk-card-name">Dusk Fiend</span><span class="rsk-card-meta">Risk 5 · ◉ Disguise Ally</span></div></div>
+                <div class="rsk-card-entry" data-card-id="007" style="cursor:pointer;"><img data-src="assets/illustrations/fire/Ember_Sprite.png" loading="lazy" decoding="async" alt="" onerror="this.style.display='none'"><div><span class="rsk-card-name">Ember Sprite</span><span class="rsk-card-meta">Risk 3 · No power</span></div></div>
+                <div class="rsk-card-entry" data-card-id="008" style="cursor:pointer;"><img data-src="assets/illustrations/fire/Cinder_Imp.png" loading="lazy" decoding="async" alt="" onerror="this.style.display='none'"><div><span class="rsk-card-name">Cinder Imp</span><span class="rsk-card-meta">Risk 4 · No power</span></div></div>
+                <div class="rsk-card-entry" data-card-id="009" style="cursor:pointer;"><img data-src="assets/illustrations/fire/Char_Sprite.png" loading="lazy" decoding="async" alt="" onerror="this.style.display='none'"><div><span class="rsk-card-name">Char Sprite</span><span class="rsk-card-meta">Risk 5 · No power</span></div></div>
+                <div class="rsk-card-entry" data-card-id="011" style="cursor:pointer;"><img data-src="assets/illustrations/fire/Ash_Golem.png" loading="lazy" decoding="async" alt="" onerror="this.style.display='none'"><div><span class="rsk-card-name">Ash Golem</span><span class="rsk-card-meta">Risk 5 · ◉ Crush</span></div></div>
+                <div class="rsk-card-entry" data-card-id="015" style="cursor:pointer;"><img data-src="assets/illustrations/fire/Char_Wraith.png" loading="lazy" decoding="async" alt="" onerror="this.style.display='none'"><div><span class="rsk-card-name">Char Wraith</span><span class="rsk-card-meta">Risk 7 · ◉ Intimidate</span></div></div>
+                <div class="rsk-card-entry" data-card-id="018" style="cursor:pointer;"><img data-src="assets/illustrations/fire/Lava_Eye.png" loading="lazy" decoding="async" alt="" onerror="this.style.display='none'"><div><span class="rsk-card-name">Lava Eye</span><span class="rsk-card-meta">Risk 4 · ◉ Morph</span></div></div>
+                <div class="rsk-card-entry" data-card-id="019" style="cursor:pointer;"><img data-src="assets/illustrations/fire/Ash_Colossus.png" loading="lazy" decoding="async" alt="" onerror="this.style.display='none'"><div><span class="rsk-card-name">Ash Colossus</span><span class="rsk-card-meta">Risk 8 · ◉ Overpower</span></div></div>
+                <div class="rsk-card-entry" data-card-id="022" style="cursor:pointer;"><img data-src="assets/illustrations/fire/Cinder_Baron.png" loading="lazy" decoding="async" alt="" onerror="this.style.display='none'"><div><span class="rsk-card-name">Cinder Baron</span><span class="rsk-card-meta">Risk 4 · ✦ Refresh</span></div></div>
+                <div class="rsk-card-entry" data-card-id="025" style="cursor:pointer;"><img data-src="assets/illustrations/fire/Ember_Brawler.png" loading="lazy" decoding="async" alt="" onerror="this.style.display='none'"><div><span class="rsk-card-name">Ember Brawler</span><span class="rsk-card-meta">Risk 6 · ◉ Strike</span></div></div>
+                <div class="rsk-card-entry" data-card-id="026" style="cursor:pointer;"><img data-src="assets/illustrations/fire/Ash_Predator.png" loading="lazy" decoding="async" alt="" onerror="this.style.display='none'"><div><span class="rsk-card-name">Ash Predator</span><span class="rsk-card-meta">Risk 5 · ◉ Terrify</span></div></div>
+                <div class="rsk-card-entry" data-card-id="027" style="cursor:pointer;"><img data-src="assets/illustrations/fire/Void_Reaper.png" loading="lazy" decoding="async" alt="" onerror="this.style.display='none'"><div><span class="rsk-card-name">Void Reaper</span><span class="rsk-card-meta">Risk 8 · ⚙ Torment</span></div></div>
+                <div class="rsk-card-entry" data-card-id="034" style="cursor:pointer;"><img data-src="assets/illustrations/fire/Void_Shade.png" loading="lazy" decoding="async" alt="" onerror="this.style.display='none'"><div><span class="rsk-card-name">Void Shade</span><span class="rsk-card-meta">Risk 9 · ◉ Doppelganger</span></div></div>
+                <div class="rsk-card-entry" data-card-id="036" style="cursor:pointer;"><img data-src="assets/illustrations/fire/Forge_Guard.png" loading="lazy" decoding="async" alt="" onerror="this.style.display='none'"><div><span class="rsk-card-name">Forge Guard</span><span class="rsk-card-meta">Risk 7 · ◉ Exhaust</span></div></div>
+                <div class="rsk-card-entry" data-card-id="039" style="cursor:pointer;"><img data-src="assets/illustrations/fire/Ember_Eye.png" loading="lazy" decoding="async" alt="" onerror="this.style.display='none'"><div><span class="rsk-card-name">Ember Eye</span><span class="rsk-card-meta">Risk 9 · ◉ Ignite</span></div></div>
+                <div class="rsk-card-entry" data-card-id="057" style="cursor:pointer;"><img data-src="assets/illustrations/fire/Flame_Deity.png" loading="lazy" decoding="async" alt="" onerror="this.style.display='none'"><div><span class="rsk-card-name">Flame Deity</span><span class="rsk-card-meta">Risk 9 · ◉ Vampire Kiss</span></div></div>
+                <div class="rsk-card-entry" data-card-id="053" style="cursor:pointer;"><img data-src="assets/illustrations/fire/Dusk_Fiend.png" loading="lazy" decoding="async" alt="" onerror="this.style.display='none'"><div><span class="rsk-card-name">Dusk Fiend</span><span class="rsk-card-meta">Risk 5 · ◉ Disguise Ally</span></div></div>
               </div>
             </div>
           </details>
@@ -15539,22 +15531,22 @@ if(document.readyState !== 'loading'){
             <summary data-i18n="ch_water_compendium">💧 Water</summary>
             <div class="rules-chapter-body">
               <div class="rsk-card-grid">
-                <div class="rsk-card-entry" data-card-id="001" style="cursor:pointer;"><img src="assets/icons/Orb_Wisp.png" alt="" onerror="this.style.display='none'"><div><span class="rsk-card-name">Orb Wisp</span><span class="rsk-card-meta">Risk 3 · No power</span></div></div>
-                <div class="rsk-card-entry" data-card-id="002" style="cursor:pointer;"><img src="assets/icons/Tide_Monk.png" alt="" onerror="this.style.display='none'"><div><span class="rsk-card-name">Tide Monk</span><span class="rsk-card-meta">Risk 4 · No power</span></div></div>
-                <div class="rsk-card-entry" data-card-id="003" style="cursor:pointer;"><img src="assets/icons/Deep_Scout.png" alt="" onerror="this.style.display='none'"><div><span class="rsk-card-name">Deep Scout</span><span class="rsk-card-meta">Risk 5 · No power</span></div></div>
-                <div class="rsk-card-entry" data-card-id="010" style="cursor:pointer;"><img src="assets/icons/Dusk_Guard.png" alt="" onerror="this.style.display='none'"><div><span class="rsk-card-name">Dusk Guard</span><span class="rsk-card-meta">Risk 4 · ⚙ Backstab</span></div></div>
-                <div class="rsk-card-entry" data-card-id="016" style="cursor:pointer;"><img src="assets/icons/Deep_Spirit.png" alt="" onerror="this.style.display='none'"><div><span class="rsk-card-name">Deep Spirit</span><span class="rsk-card-meta">Risk 4 · ✦ Judgement</span></div></div>
-                <div class="rsk-card-entry" data-card-id="017" style="cursor:pointer;"><img src="assets/icons/Orb_Scout.png" alt="" onerror="this.style.display='none'"><div><span class="rsk-card-name">Orb Scout</span><span class="rsk-card-meta">Risk 7 · ◉ Mirror</span></div></div>
-                <div class="rsk-card-entry" data-card-id="020" style="cursor:pointer;"><img src="assets/icons/Tidal_Mage.png" alt="" onerror="this.style.display='none'"><div><span class="rsk-card-name">Tidal Mage</span><span class="rsk-card-meta">Risk 4 · ◉ Power Reverse</span></div></div>
-                <div class="rsk-card-entry" data-card-id="024" style="cursor:pointer;"><img src="assets/icons/Tide_Raider.png" alt="" onerror="this.style.display='none'"><div><span class="rsk-card-name">Tide Raider</span><span class="rsk-card-meta">Risk 5 · ◉ Retreat</span></div></div>
-                <div class="rsk-card-entry" data-card-id="028" style="cursor:pointer;"><img src="assets/icons/Tide_Warrior.png" alt="" onerror="this.style.display='none'"><div><span class="rsk-card-name">Tide Warrior</span><span class="rsk-card-meta">Risk 4 · ⚙ Vendetta</span></div></div>
-                <div class="rsk-card-entry" data-card-id="030" style="cursor:pointer;"><img src="assets/icons/Rift_Sorceress.png" alt="" onerror="this.style.display='none'"><div><span class="rsk-card-name">Rift Sorceress</span><span class="rsk-card-meta">Risk 9 · ◉ Betrayal</span></div></div>
-                <div class="rsk-card-entry" data-card-id="032" style="cursor:pointer;"><img src="assets/icons/Deep_Witch.png" alt="" onerror="this.style.display='none'"><div><span class="rsk-card-name">Deep Witch</span><span class="rsk-card-meta">Risk 9 · ◉ Chameleon</span></div></div>
-                <div class="rsk-card-entry" data-card-id="035" style="cursor:pointer;"><img src="assets/icons/Frost_Archer.png" alt="" onerror="this.style.display='none'"><div><span class="rsk-card-name">Frost Archer</span><span class="rsk-card-meta">Risk 7 · ◉ Dustshot</span></div></div>
-                <div class="rsk-card-entry" data-card-id="037" style="cursor:pointer;"><img src="assets/icons/Deep_Stalker.png" alt="" onerror="this.style.display='none'"><div><span class="rsk-card-name">Deep Stalker</span><span class="rsk-card-meta">Risk 8 · ◉ Extinguish</span></div></div>
-                <div class="rsk-card-entry" data-card-id="038" style="cursor:pointer;"><img src="assets/icons/Abyss_Crone.png" alt="" onerror="this.style.display='none'"><div><span class="rsk-card-name">Abyss Crone</span><span class="rsk-card-meta">Risk 9 · ⚙ Flow Change</span></div></div>
-                <div class="rsk-card-entry" data-card-id="043" style="cursor:pointer;"><img src="assets/icons/Void_Kraken.png" alt="" onerror="this.style.display='none'"><div><span class="rsk-card-name">Void Kraken</span><span class="rsk-card-meta">Risk 8 · ◉ Void</span></div></div>
-                <div class="rsk-card-entry" data-card-id="056" style="cursor:pointer;"><img src="assets/icons/Void_Ray.png" alt="" onerror="this.style.display='none'"><div><span class="rsk-card-name">Void Ray</span><span class="rsk-card-meta">Risk 6 · ◉ Power Shift</span></div></div>
+                <div class="rsk-card-entry" data-card-id="001" style="cursor:pointer;"><img data-src="assets/illustrations/water/Orb_Wisp.png" loading="lazy" decoding="async" alt="" onerror="this.style.display='none'"><div><span class="rsk-card-name">Orb Wisp</span><span class="rsk-card-meta">Risk 3 · No power</span></div></div>
+                <div class="rsk-card-entry" data-card-id="002" style="cursor:pointer;"><img data-src="assets/illustrations/water/Tide_Monk.png" loading="lazy" decoding="async" alt="" onerror="this.style.display='none'"><div><span class="rsk-card-name">Tide Monk</span><span class="rsk-card-meta">Risk 4 · No power</span></div></div>
+                <div class="rsk-card-entry" data-card-id="003" style="cursor:pointer;"><img data-src="assets/illustrations/water/Deep_Scout.png" loading="lazy" decoding="async" alt="" onerror="this.style.display='none'"><div><span class="rsk-card-name">Deep Scout</span><span class="rsk-card-meta">Risk 5 · No power</span></div></div>
+                <div class="rsk-card-entry" data-card-id="010" style="cursor:pointer;"><img data-src="assets/illustrations/water/Dusk_Guard.png" loading="lazy" decoding="async" alt="" onerror="this.style.display='none'"><div><span class="rsk-card-name">Dusk Guard</span><span class="rsk-card-meta">Risk 4 · ⚙ Backstab</span></div></div>
+                <div class="rsk-card-entry" data-card-id="016" style="cursor:pointer;"><img data-src="assets/illustrations/water/Deep_Spirit.png" loading="lazy" decoding="async" alt="" onerror="this.style.display='none'"><div><span class="rsk-card-name">Deep Spirit</span><span class="rsk-card-meta">Risk 4 · ✦ Judgement</span></div></div>
+                <div class="rsk-card-entry" data-card-id="017" style="cursor:pointer;"><img data-src="assets/illustrations/water/Orb_Scout.png" loading="lazy" decoding="async" alt="" onerror="this.style.display='none'"><div><span class="rsk-card-name">Orb Scout</span><span class="rsk-card-meta">Risk 7 · ◉ Mirror</span></div></div>
+                <div class="rsk-card-entry" data-card-id="020" style="cursor:pointer;"><img data-src="assets/illustrations/water/Tidal_Mage.png" loading="lazy" decoding="async" alt="" onerror="this.style.display='none'"><div><span class="rsk-card-name">Tidal Mage</span><span class="rsk-card-meta">Risk 4 · ◉ Power Reverse</span></div></div>
+                <div class="rsk-card-entry" data-card-id="024" style="cursor:pointer;"><img data-src="assets/illustrations/water/Tide_Raider.png" loading="lazy" decoding="async" alt="" onerror="this.style.display='none'"><div><span class="rsk-card-name">Tide Raider</span><span class="rsk-card-meta">Risk 5 · ◉ Retreat</span></div></div>
+                <div class="rsk-card-entry" data-card-id="028" style="cursor:pointer;"><img data-src="assets/illustrations/water/Tide_Warrior.png" loading="lazy" decoding="async" alt="" onerror="this.style.display='none'"><div><span class="rsk-card-name">Tide Warrior</span><span class="rsk-card-meta">Risk 4 · ⚙ Vendetta</span></div></div>
+                <div class="rsk-card-entry" data-card-id="030" style="cursor:pointer;"><img data-src="assets/illustrations/water/Rift_Sorceress.png" loading="lazy" decoding="async" alt="" onerror="this.style.display='none'"><div><span class="rsk-card-name">Rift Sorceress</span><span class="rsk-card-meta">Risk 9 · ◉ Betrayal</span></div></div>
+                <div class="rsk-card-entry" data-card-id="032" style="cursor:pointer;"><img data-src="assets/illustrations/water/Deep_Witch.png" loading="lazy" decoding="async" alt="" onerror="this.style.display='none'"><div><span class="rsk-card-name">Deep Witch</span><span class="rsk-card-meta">Risk 9 · ◉ Chameleon</span></div></div>
+                <div class="rsk-card-entry" data-card-id="035" style="cursor:pointer;"><img data-src="assets/illustrations/water/Frost_Archer.png" loading="lazy" decoding="async" alt="" onerror="this.style.display='none'"><div><span class="rsk-card-name">Frost Archer</span><span class="rsk-card-meta">Risk 7 · ◉ Dustshot</span></div></div>
+                <div class="rsk-card-entry" data-card-id="037" style="cursor:pointer;"><img data-src="assets/illustrations/water/Deep_Stalker.png" loading="lazy" decoding="async" alt="" onerror="this.style.display='none'"><div><span class="rsk-card-name">Deep Stalker</span><span class="rsk-card-meta">Risk 8 · ◉ Extinguish</span></div></div>
+                <div class="rsk-card-entry" data-card-id="038" style="cursor:pointer;"><img data-src="assets/illustrations/water/Abyss_Crone.png" loading="lazy" decoding="async" alt="" onerror="this.style.display='none'"><div><span class="rsk-card-name">Abyss Crone</span><span class="rsk-card-meta">Risk 9 · ⚙ Flow Change</span></div></div>
+                <div class="rsk-card-entry" data-card-id="043" style="cursor:pointer;"><img data-src="assets/illustrations/water/Void_Kraken.png" loading="lazy" decoding="async" alt="" onerror="this.style.display='none'"><div><span class="rsk-card-name">Void Kraken</span><span class="rsk-card-meta">Risk 8 · ◉ Void</span></div></div>
+                <div class="rsk-card-entry" data-card-id="056" style="cursor:pointer;"><img data-src="assets/illustrations/water/Void_Ray.png" loading="lazy" decoding="async" alt="" onerror="this.style.display='none'"><div><span class="rsk-card-name">Void Ray</span><span class="rsk-card-meta">Risk 6 · ◉ Power Shift</span></div></div>
               </div>
             </div>
           </details>
@@ -15563,22 +15555,22 @@ if(document.readyState !== 'loading'){
             <summary data-i18n="ch_earth_compendium">🌿 Earth</summary>
             <div class="rules-chapter-body">
               <div class="rsk-card-grid">
-                <div class="rsk-card-entry" data-card-id="004" style="cursor:pointer;"><img src="assets/icons/Fern_Sprite.png" alt="" onerror="this.style.display='none'"><div><span class="rsk-card-name">Fern Sprite</span><span class="rsk-card-meta">Risk 3 · No power</span></div></div>
-                <div class="rsk-card-entry" data-card-id="005" style="cursor:pointer;"><img src="assets/icons/Lantern_Sprite.png" alt="" onerror="this.style.display='none'"><div><span class="rsk-card-name">Lantern Sprite</span><span class="rsk-card-meta">Risk 4 · No power</span></div></div>
-                <div class="rsk-card-entry" data-card-id="006" style="cursor:pointer;"><img src="assets/icons/Teal_Sprite.png" alt="" onerror="this.style.display='none'"><div><span class="rsk-card-name">Teal Sprite</span><span class="rsk-card-meta">Risk 5 · No power</span></div></div>
-                <div class="rsk-card-entry" data-card-id="012" style="cursor:pointer;"><img src="assets/icons/Living_Isle.png" alt="" onerror="this.style.display='none'"><div><span class="rsk-card-name">Living Isle</span><span class="rsk-card-meta">Risk 3 · ◉ Defend</span></div></div>
-                <div class="rsk-card-entry" data-card-id="013" style="cursor:pointer;"><img src="assets/icons/Marsh_Mage.png" alt="" onerror="this.style.display='none'"><div><span class="rsk-card-name">Marsh Mage</span><span class="rsk-card-meta">Risk 6 · ◉ Dust Storm</span></div></div>
-                <div class="rsk-card-entry" data-card-id="014" style="cursor:pointer;"><img src="assets/icons/Thorn_Warden.png" alt="" onerror="this.style.display='none'"><div><span class="rsk-card-name">Thorn Warden</span><span class="rsk-card-meta">Risk 4 · ◉ Guard Mark</span></div></div>
-                <div class="rsk-card-entry" data-card-id="021" style="cursor:pointer;"><img src="assets/icons/Glow_Stalker.png" alt="" onerror="this.style.display='none'"><div><span class="rsk-card-name">Glow Stalker</span><span class="rsk-card-meta">Risk 4 · ◉ Purify</span></div></div>
-                <div class="rsk-card-entry" data-card-id="023" style="cursor:pointer;"><img src="assets/icons/Dusk_Stag.png" alt="" onerror="this.style.display='none'"><div><span class="rsk-card-name">Dusk Stag</span><span class="rsk-card-meta">Risk 5 · ◉ Regroup</span></div></div>
-                <div class="rsk-card-entry" data-card-id="029" style="cursor:pointer;"><img src="assets/icons/Leaf_Serpent.png" alt="" onerror="this.style.display='none'"><div><span class="rsk-card-name">Leaf Serpent</span><span class="rsk-card-meta">Risk 4 · ◉ War Mark</span></div></div>
-                <div class="rsk-card-entry" data-card-id="031" style="cursor:pointer;"><img src="assets/icons/Bird_Mage.png" alt="" onerror="this.style.display='none'"><div><span class="rsk-card-name">Bird Mage</span><span class="rsk-card-meta">Risk 5 · ◉ Cede &amp; Seed</span></div></div>
-                <div class="rsk-card-entry" data-card-id="033" style="cursor:pointer;"><img src="assets/icons/Moon_Scout.png" alt="" onerror="this.style.display='none'"><div><span class="rsk-card-name">Moon Scout</span><span class="rsk-card-meta">Risk 3 · ⚙ Determined</span></div></div>
-                <div class="rsk-card-entry" data-card-id="040" style="cursor:pointer;"><img src="assets/icons/Vine_Stalker.png" alt="" onerror="this.style.display='none'"><div><span class="rsk-card-name">Vine Stalker</span><span class="rsk-card-meta">Risk 8 · ◉ Leap</span></div></div>
-                <div class="rsk-card-entry" data-card-id="041" style="cursor:pointer;"><img src="assets/icons/Moon_Leaper.png" alt="" onerror="this.style.display='none'"><div><span class="rsk-card-name">Moon Leaper</span><span class="rsk-card-meta">Risk 10 · ◉ Maneuver</span></div></div>
-                <div class="rsk-card-entry" data-card-id="042" style="cursor:pointer;"><img src="assets/icons/Ancient_Oak.png" alt="" onerror="this.style.display='none'"><div><span class="rsk-card-name">Ancient Oak</span><span class="rsk-card-meta">Risk 9 · ◉ Overgrowth</span></div></div>
-                <div class="rsk-card-entry" data-card-id="055" style="cursor:pointer;"><img src="assets/icons/Lotus_Monk.png" alt="" onerror="this.style.display='none'"><div><span class="rsk-card-name">Lotus Monk</span><span class="rsk-card-meta">Risk 5 · ✦ Mimic</span></div></div>
-                <div class="rsk-card-entry" data-card-id="054" style="cursor:pointer;"><img src="assets/icons/Thorn_Keeper.png" alt="" onerror="this.style.display='none'"><div><span class="rsk-card-name">Thorn Keeper</span><span class="rsk-card-meta">Risk 5 · ⚙ Seal</span></div></div>
+                <div class="rsk-card-entry" data-card-id="004" style="cursor:pointer;"><img data-src="assets/illustrations/nature/Fern_Sprite.png" loading="lazy" decoding="async" alt="" onerror="this.style.display='none'"><div><span class="rsk-card-name">Fern Sprite</span><span class="rsk-card-meta">Risk 3 · No power</span></div></div>
+                <div class="rsk-card-entry" data-card-id="005" style="cursor:pointer;"><img data-src="assets/illustrations/nature/Lantern_Sprite.png" loading="lazy" decoding="async" alt="" onerror="this.style.display='none'"><div><span class="rsk-card-name">Lantern Sprite</span><span class="rsk-card-meta">Risk 4 · No power</span></div></div>
+                <div class="rsk-card-entry" data-card-id="006" style="cursor:pointer;"><img data-src="assets/illustrations/nature/Teal_Sprite.png" loading="lazy" decoding="async" alt="" onerror="this.style.display='none'"><div><span class="rsk-card-name">Teal Sprite</span><span class="rsk-card-meta">Risk 5 · No power</span></div></div>
+                <div class="rsk-card-entry" data-card-id="012" style="cursor:pointer;"><img data-src="assets/illustrations/nature/Living_Isle.png" loading="lazy" decoding="async" alt="" onerror="this.style.display='none'"><div><span class="rsk-card-name">Living Isle</span><span class="rsk-card-meta">Risk 3 · ◉ Defend</span></div></div>
+                <div class="rsk-card-entry" data-card-id="013" style="cursor:pointer;"><img data-src="assets/illustrations/nature/Marsh_Mage.png" loading="lazy" decoding="async" alt="" onerror="this.style.display='none'"><div><span class="rsk-card-name">Marsh Mage</span><span class="rsk-card-meta">Risk 6 · ◉ Dust Storm</span></div></div>
+                <div class="rsk-card-entry" data-card-id="014" style="cursor:pointer;"><img data-src="assets/illustrations/nature/Thorn_Warden.png" loading="lazy" decoding="async" alt="" onerror="this.style.display='none'"><div><span class="rsk-card-name">Thorn Warden</span><span class="rsk-card-meta">Risk 4 · ◉ Guard Mark</span></div></div>
+                <div class="rsk-card-entry" data-card-id="021" style="cursor:pointer;"><img data-src="assets/illustrations/nature/Glow_Stalker.png" loading="lazy" decoding="async" alt="" onerror="this.style.display='none'"><div><span class="rsk-card-name">Glow Stalker</span><span class="rsk-card-meta">Risk 4 · ◉ Purify</span></div></div>
+                <div class="rsk-card-entry" data-card-id="023" style="cursor:pointer;"><img data-src="assets/illustrations/nature/Dusk_Stag.png" loading="lazy" decoding="async" alt="" onerror="this.style.display='none'"><div><span class="rsk-card-name">Dusk Stag</span><span class="rsk-card-meta">Risk 5 · ◉ Regroup</span></div></div>
+                <div class="rsk-card-entry" data-card-id="029" style="cursor:pointer;"><img data-src="assets/illustrations/nature/Leaf_Serpent.png" loading="lazy" decoding="async" alt="" onerror="this.style.display='none'"><div><span class="rsk-card-name">Leaf Serpent</span><span class="rsk-card-meta">Risk 4 · ◉ War Mark</span></div></div>
+                <div class="rsk-card-entry" data-card-id="031" style="cursor:pointer;"><img data-src="assets/illustrations/nature/Bird_Mage.png" loading="lazy" decoding="async" alt="" onerror="this.style.display='none'"><div><span class="rsk-card-name">Bird Mage</span><span class="rsk-card-meta">Risk 5 · ◉ Cede &amp; Seed</span></div></div>
+                <div class="rsk-card-entry" data-card-id="033" style="cursor:pointer;"><img data-src="assets/illustrations/nature/Moon_Scout.png" loading="lazy" decoding="async" alt="" onerror="this.style.display='none'"><div><span class="rsk-card-name">Moon Scout</span><span class="rsk-card-meta">Risk 3 · ⚙ Determined</span></div></div>
+                <div class="rsk-card-entry" data-card-id="040" style="cursor:pointer;"><img data-src="assets/illustrations/nature/Vine_Stalker.png" loading="lazy" decoding="async" alt="" onerror="this.style.display='none'"><div><span class="rsk-card-name">Vine Stalker</span><span class="rsk-card-meta">Risk 8 · ◉ Leap</span></div></div>
+                <div class="rsk-card-entry" data-card-id="041" style="cursor:pointer;"><img data-src="assets/illustrations/nature/Moon_Leaper.png" loading="lazy" decoding="async" alt="" onerror="this.style.display='none'"><div><span class="rsk-card-name">Moon Leaper</span><span class="rsk-card-meta">Risk 10 · ◉ Maneuver</span></div></div>
+                <div class="rsk-card-entry" data-card-id="042" style="cursor:pointer;"><img data-src="assets/illustrations/nature/Ancient_Oak.png" loading="lazy" decoding="async" alt="" onerror="this.style.display='none'"><div><span class="rsk-card-name">Ancient Oak</span><span class="rsk-card-meta">Risk 9 · ◉ Overgrowth</span></div></div>
+                <div class="rsk-card-entry" data-card-id="055" style="cursor:pointer;"><img data-src="assets/illustrations/nature/Lotus_Monk.png" loading="lazy" decoding="async" alt="" onerror="this.style.display='none'"><div><span class="rsk-card-name">Lotus Monk</span><span class="rsk-card-meta">Risk 5 · ✦ Mimic</span></div></div>
+                <div class="rsk-card-entry" data-card-id="054" style="cursor:pointer;"><img data-src="assets/illustrations/nature/Thorn_Keeper.png" loading="lazy" decoding="async" alt="" onerror="this.style.display='none'"><div><span class="rsk-card-name">Thorn Keeper</span><span class="rsk-card-meta">Risk 5 · ⚙ Seal</span></div></div>
               </div>
             </div>
           </details>
@@ -15587,7 +15579,7 @@ if(document.readyState !== 'loading'){
             <summary data-i18n="ch_dust_compendium">◈ Dust</summary>
             <div class="rules-chapter-body">
               <div class="rsk-card-grid">
-                <div class="rsk-card-entry" data-card-id="000" style="cursor:pointer;"><img src="assets/icons/Rat.png" alt="" onerror="this.style.display='none'"><div><span class="rsk-card-name">Rat</span><span class="rsk-card-meta">Risk 2 · No power</span></div></div>
+                <div class="rsk-card-entry" data-card-id="000" style="cursor:pointer;"><img data-src="assets/illustrations/dust/Rat.png" loading="lazy" decoding="async" alt="" onerror="this.style.display='none'"><div><span class="rsk-card-name">Rat</span><span class="rsk-card-meta">Risk 2 · No power</span></div></div>
               </div>
             </div>
           </details>
@@ -15853,7 +15845,15 @@ function rlRenderHub(){
   document.getElementById('rl-subtitle').textContent =
     RL.gameOver
       ? (RL.won ? t('rl_won_title') : t('rl_game_over_title'))
-      : t('rl_fights_to_win').replace('{n}',remaining).replace('{lives}',livesLeft).replace('{life}', livesLeft!==1?'lives':'life').replace('{s2}','');
+      // [v40 b06] L'ancien modèle unique « {n} fight{s} to win · {lives} {life} left »
+      // ne marchait dans aucune langue : {s} n'était jamais remplacé, {s2} toujours
+      // vidé, et {life} recevait l'anglais 'life'/'lives' partout. Un suffixe ne
+      // peut de toute façon pas exprimer les pluriels allemands ou italiens
+      // (Kampf/Kämpfe, scontro/scontri) : chaque langue fournit donc ses deux
+      // formes complètes, et le code se contente de choisir laquelle utiliser.
+      : t(remaining === 1 ? 'rl_fights_left_1' : 'rl_fights_left_n').replace('{n}', remaining)
+        + ' · ' +
+        t(livesLeft === 1 ? 'rl_lives_left_1' : 'rl_lives_left_n').replace('{lives}', livesLeft);
   const nbtn = document.getElementById('rl-hub-next');
   if(nbtn) nbtn.style.display = RL.gameOver ? 'none' : '';
   const dbtn = document.getElementById('rl-hub-deck');
@@ -16092,7 +16092,7 @@ const TUT_PUZZLES = [
     ],
     // Script de bulles : { trigger, who:'ai'|'player'|cardId, laneOrHandIdx, text, after?ms }
     speechScript: [
-      { trigger:'afterAiSR1', who:'aiLane', lane:0, text:'I will defeat Nature and Dust cards.' },
+      { trigger:'afterAiSR1', who:'aiLane', lane:0, text:'I will defeat Earth and Dust cards.' },
       { trigger:'afterBubble1', who:'playerHand', idx:0, text:'I am a Water card.' },
       { trigger:'afterBubble1', who:'playerHand', idx:1, text:'I am an Earth card.' },
       { trigger:'afterBubble1', who:'playerHand', idx:2, text:'I am a Fire card.' },
@@ -16360,9 +16360,9 @@ const TUT_PUZZLES = [
       { trigger:'beforePlayerSR2', who:'playerHand', idx:3,
         text:'I have a powerful skill and a high risk. Plan this round around me.' },
       { trigger:'beforePlayerSR2b', who:'playerHand', idx:0,
-        text:'If you play me as bait, the opponent is likely going to use Nature against me.' },
+        text:'If you play me as bait, the opponent is likely going to use Earth against me.' },
       { trigger:'beforePlayerSR2c', who:'playerHand', idx:3,
-        text:'If the opponent plays a Nature card against the Orb Wisp, my Vampire Kiss ability could transform the Orb Wisp into a Fire and win the lane!' },
+        text:'If the opponent plays an Earth card against the Orb Wisp, my Vampire Kiss ability could transform the Orb Wisp into a Fire and win the lane!' },
       // Si Flame Deity joué au SR2 (lane quelconque), 2 messages séquentiels
       { trigger:'onFlameDeityPlacedSR2_a', who:'playerLane', lane:-1,
         text:'Playing me in an empty lane is risky because of my risk 9. If the opponent has a Water card, you will take 9 damage.' },
@@ -16377,7 +16377,7 @@ const TUT_PUZZLES = [
       { trigger:'beforePlayerSR5', who:'_findCard', cardId:'057',
         text:'At the Bonus Round, use Vampire Kiss on the Orb Wisp — Fire beats Earth!' },
       { trigger:'beforeBonus', who:'_findCard', cardId:'057',
-        text:'Activate my Vampire Kiss and target the Orb Wisp — she will become Fire and beat that Nature card!' },
+        text:'Activate my Vampire Kiss and target the Orb Wisp — she will become Fire and beat that Earth card!' },
       { trigger:'onFlameVsOrb', who:'_findInLane', cardId:'057',
         text:'You should have played me in a safer lane. You cannot win.' }
     ]
@@ -17747,24 +17747,38 @@ function _statsRenderDeck(el, st){
     ${botCards?`<div class="stats-section-title">${t('st_least_freq_cards')}</div><table class="stats-table"><thead><tr><th>${t('st_card')}</th><th class="num">${t('rule_063')}</th></tr></thead><tbody>${botCards}</tbody></table>`:''}`;
 }
 
+// [v40 b06] Échappement HTML. L'historique est reconstruit par concaténation
+// dans innerHTML, et son contenu peut venir d'un FICHIER DE SAUVEGARDE importé
+// (donc d'un tiers, le jour où des joueurs s'échangent des codes). Sans ceci,
+// un champ `mode` contenant du HTML s'exécutait.
+function _esc(v){
+  return String(v ?? '').replace(/[&<>"']/g, c => (
+    { '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#39;' }[c]
+  ));
+}
+// Entier sûr pour interpolation (aussi utilisé dans des attributs).
+function _int(v){ const n = Number(v); return Number.isFinite(n) ? Math.trunc(n) : 0; }
+
 function _statsRenderHistory(el, st){
-  if(!st.history.length){ el.innerHTML=`<div style="color:var(--dim);padding:20px;text-align:center;font-size:11px;">${t('st_no_history')}</div>`; return; }
+  if(!st.history.length){ el.innerHTML=`<div style="color:var(--dim);padding:20px;text-align:center;font-size:11px;">${_esc(t('st_no_history'))}</div>`; return; }
   const rows = st.history.map((h,i)=>{
     const rcls = h.result==='w'?'st-w':h.result==='l'?'st-l':'st-d';
     const rl = h.result==='w'?'W':h.result==='l'?'L':'D';
-    const modeLbl = h.mode.replace('random-','').replace('roguelike','RL').replace('tutorial','Tut');
+    // String(h.mode) : un `mode` non-chaîne (sauvegarde ancienne ou corrompue)
+    // faisait planter tout le panneau sur .replace().
+    const modeLbl = String(h.mode ?? '?').replace('random-','').replace('roguelike','RL').replace('tutorial','Tut');
     const skills = h.skillsUsed?.slice(0,3).map(s=>_skillName(s)).join(', ')||'—';
-    return `<div class="stats-history-row" onclick="statsToggleHistory(${i})">
+    return `<div class="stats-history-row" onclick="statsToggleHistory(${_int(i)})">
       <div class="stats-hist-result ${rcls}">${rl}</div>
-      <div class="stats-hist-mode">${modeLbl} · ${h.rounds||0}R</div>
-      <div class="stats-hist-hp">${h.pHP||0} vs ${h.eHP||0}</div>
-      <div class="stats-hist-skills">${skills}</div>
-      <div style="color:var(--dim);font-size:10px;">${_fmtDate(h.ts)}</div>
+      <div class="stats-hist-mode">${_esc(modeLbl)} · ${_int(h.rounds)}R</div>
+      <div class="stats-hist-hp">${_int(h.pHP)} vs ${_int(h.eHP)}</div>
+      <div class="stats-hist-skills">${_esc(skills)}</div>
+      <div style="color:var(--dim);font-size:10px;">${_esc(_fmtDate(h.ts))}</div>
     </div>
-    <div class="stats-hist-detail" id="shd-${i}">
-      ${t('st_dealt')}: ${_fmt(h.dmgDealt)} · ${t('st_received')}: ${_fmt(h.dmgReceived)}<br>
-      ${t('st_skills')}: ${h.skillsUsed?.map(s=>_skillName(s)).join(', ')||t('st_none')}<br>
-      ${t('st_most_dangerous_opp')}: ${h.topOppCard?_cardName(h.topOppCard):'—'}
+    <div class="stats-hist-detail" id="shd-${_int(i)}">
+      ${_esc(t('st_dealt'))}: ${_esc(_fmt(h.dmgDealt))} · ${_esc(t('st_received'))}: ${_esc(_fmt(h.dmgReceived))}<br>
+      ${_esc(t('st_skills'))}: ${_esc(h.skillsUsed?.map(s=>_skillName(s)).join(', ')||t('st_none'))}<br>
+      ${_esc(t('st_most_dangerous_opp'))}: ${_esc(h.topOppCard?_cardName(h.topOppCard):'—')}
     </div>`;
   }).join('');
   el.innerHTML = rows;
@@ -18051,7 +18065,7 @@ const STRINGS = {
     "sp_000": "Double-tap me to see my Strike skill! But remember — I must be on a lane for the skill to be activable.",
     "sp_001": "Once I am placed, double-tap to open my skill, then tap it to deal 5 direct damage to the opponent!",
     "sp_002": "Thanks to me you can activate the Ember Brawler twice!",
-    "sp_003": "I will defeat Nature and Dust cards.",
+    "sp_003": "I will defeat Earth and Dust cards.",
     "sp_004": "I am a Water card.",
     "sp_005": "I am an Earth card.",
     "sp_006": "I am a Fire card.",
@@ -18093,10 +18107,10 @@ const STRINGS = {
     "sp_042": "So you can activate my skill once, play the Cinder Baron, and re-activate my skill to deal 5 more damage!",
     "sp_043": "But remember: you can use only one Manual skill per turn. Plan your moves ahead.",
     "sp_044": "I have a powerful skill and a high risk. Plan this round around me.",
-    "sp_045": "If you play me as bait, the opponent is likely going to use Nature against me.",
+    "sp_045": "If you play me as bait, the opponent is likely going to use Earth against me.",
     "sp_046": "Bait successful! Now you can use the Flame Deity to turn me into Fire and win the lane.",
     "sp_047": "At the Bonus Round, use Vampire Kiss on the Orb Wisp — Fire beats Earth!",
-    "sp_048": "Activate my Vampire Kiss and target the Orb Wisp — she will become Fire and beat that Nature card!",
+    "sp_048": "Activate my Vampire Kiss and target the Orb Wisp — she will become Fire and beat that Earth card!",
     "sp_049": "You should have played me in a safer lane. You cannot win.",
     "sp_050": "My Vendetta skill never triggered — I must be placed in a lane to activate at resolution!",
     "sp_051": "I never used my Strike skill! Double-tap me and activate it to deal direct damage.",
@@ -18442,7 +18456,6 @@ const STRINGS = {
     "rl_hub_title": "ROGUELIKE",
     "rl_win_hearts": "Win 20 fights with<br>at least one heart left and you win!",
     "rl_hearts_desc": "You have 3 hearts.<br>Each battle lost removes one.",
-    "rl_fights_to_win": "{n} fight{s} to win · {lives} {life} left",
     "rl_won_title": "🏆 You won the Roguelike!",
     "rl_game_over_title": "💀 Game Over",
     "dp_owner_player": "Player",
@@ -18475,9 +18488,9 @@ const STRINGS = {
     "sp_072": "You cannot win this challenge without my Strike skill.",
     "sp_073": "If you play the Ember Brawler, THEN me, I will reactivate his Strike ability.",
     "sp_074": "But you can use only ONE manual skill every turn.",
-    "sp_075": "If the opponent plays a Nature card against the Orb Wisp, my Vampire Kiss ability could transform the Orb Wisp into a Fire and win the lane!",
+    "sp_075": "If the opponent plays an Earth card against the Orb Wisp, my Vampire Kiss ability could transform the Orb Wisp into a Fire and win the lane!",
     "sp_076": "Playing me in an empty lane is risky because of my risk 9. If the opponent has a Water card, you will take 9 damage.",
-    "sp_077": "Here it is safer to keep me for the LEFT lane, as I will beat the enemy nature card.",
+    "sp_077": "Here it is safer to keep me for the LEFT lane, as I will beat the enemy Earth card.",
     "tut_well_done": "Well done! Head back to the tutorial to continue.",
     "tut_not_quite": "Not quite — try again from the tutorial screen.",
     "tut_puzzle_label": "CHALLENGE {id} / {total}",
@@ -18496,7 +18509,39 @@ const STRINGS = {
     "focus_p2_embersprite": "This card has risk 3 only. Some cards can have risk 9+. Beating them does a lot of damage.",
     "focus_p3_x2": "Note this ×2 indicator. It means double damage is inflicted to one player in this lane if the arrow points toward them. It is an important mechanic of the game.",
     "focus_p4_x2": "Note that the double damage is pointing towards you. Be careful not to lose this lane.",
-    "focus_p5_x2": "Note that the indicator rotates every turn. You do double damage in this lane."
+    "focus_p5_x2": "Note that the indicator rotates every turn. You do double damage in this lane.",
+
+    /* [v40 b06] Chaînes qui étaient codées en dur dans le HTML/JS */
+    "save_load_from": "Load save from {date}?",
+    "rotate_msg": "Turn your device<br>to portrait mode<br>to play Primal Gambit",
+    "resume_title": "⚔ Game in progress",
+    "resume_body": "Saved {ago}<br>Resume where you left off?",
+    "resume_ago_now": "less than a minute ago",
+    "resume_ago_min": "{n} min ago",
+    "resume_ago_hour": "{h}h{m} ago",
+    "toast_saved": "✦ Saved",
+    "toast_resumed": "✦ Game resumed",
+    "alo_loading": "Loading…",
+    "alo_prep_fight": "Preparing the fight…",
+    "alo_open_rules": "Opening the rules…",
+    "alo_tip_1": "Reminder: Fire beats Earth, Earth beats Water, Water beats Fire.",
+    "alo_tip_2": "Dust loses to every element — even to a card that is already weakened.",
+    "alo_tip_3": "A Deadlock is not a defeat: Risk piles up for the round the lane finally resolves.",
+    "alo_tip_4": "The ×2 lane doubles the damage you deal AND the damage you take — play it carefully.",
+    "alo_tip_5": "Some cards gain more from losing their duel than from winning it.",
+    "alo_tip_6": "The best moment to trigger a power is rarely the first one available.",
+    "alo_tip_7": "A high-Risk card is only dangerous if it ends up losing.",
+    "alo_tip_8": "Always check which lane carries the ×2 before playing your last card.",
+    "alo_tip_9": "We are loading the artwork, not the suspense — that one stays intact.",
+    "stats_empty_title": "NO GAMES RECORDED YET",
+    "stats_empty_sub": "Play a game to start tracking stats",
+    "status_loading": "Loading…",
+    "resume_rl_warning": "⚠ Roguelike fight in progress — not resuming will count as a LOSS and cost you one life.",
+    "rl_fights_left_1": "{n} fight to win",
+    "rl_fights_left_n": "{n} fights to win",
+    "rl_lives_left_1": "{lives} life left",
+    "rl_lives_left_n": "{lives} lives left",
+    "rl_abandon_body": "Fight in progress.<br>Leaving will count as a <b>LOSS</b> and cost you one life.<br><br>You cannot undo this."
   },
   "fr": {
     "btn_tutorial": "TUTORIEL",
@@ -18615,12 +18660,12 @@ const STRINGS = {
     "arena_end_round": "FIN DU ROUND",
     "hint_button": "Petit indice ?",
     "hint_play_card": "Joue {card} sur le couloir {col}.",
-    "hint_activate_skill": "Active le skill de ta carte {card}.",
+    "hint_activate_skill": "Activez le skill de votre carte {card}.",
     "hint_col_left": "gauche",
     "hint_col_center": "central",
     "hint_col_right": "droite",
-    "hint_end_round_now": "Rien d'utile à activer — termine ton round.",
-    "hint_discovery": "Clique ici si tu veux un conseil de jeu.",
+    "hint_end_round_now": "Rien d'utile à activer — terminez votre round.",
+    "hint_discovery": "Cliquez ici si vous voulez un conseil de jeu.",
     "arena_your_turn": "Votre tour",
     "arena_round_label": "Round {n}",
     "arena_skill_label": "Utiliser Pouvoir",
@@ -18640,7 +18685,7 @@ const STRINGS = {
     "sk_judgement_tie": "→ [Jugement] Égalité — les deux deviennent Poussière.",
     "sk_no_opp": "→ Pas de carte opposée.",
     "sk_opp_deck_empty": "→ Deck adverse vide.",
-    "sk_torment_info": "→ [Tourment] se déclenche si cette carte gagne contre un Risk inférieur.",
+    "sk_torment_info": "→ [Tourment] se déclenche si cette carte gagne contre un Risque inférieur.",
     "sk_overgrowth_no_ref": "→ [Croissance] Pas de carte de référence.",
     "sk_determined_info": "→ [Déterminé] Se déclenche automatiquement sur Égalité.",
     "sk_cede_no_ally": "→ [Cède et Sème] Pas de carte alliée adjacente.",
@@ -18768,7 +18813,7 @@ const STRINGS = {
     "sp_000": "Double-tapez pour voir mon skill Strike ! Attention — je dois être sur un couloir pour l'activer.",
     "sp_001": "Une fois posé, double-tapez pour ouvrir mon skill, puis tapez pour infliger 5 dégâts directs à l'adversaire !",
     "sp_002": "Grâce à moi, vous pouvez activer l'Ember Brawler deux fois !",
-    "sp_003": "Je battrai les cartes Nature et Poussière.",
+    "sp_003": "Je battrai les cartes Terre et Poussière.",
     "sp_004": "Je suis une carte Eau.",
     "sp_005": "Je suis une carte Terre.",
     "sp_006": "Je suis une carte Feu.",
@@ -18792,9 +18837,9 @@ const STRINGS = {
     "sp_024": "Encore une carte Feu à droite. Me battre ici n'inflige que 3 dégâts — encore insuffisant.",
     "sp_025": "Jouez-moi au centre — Eau bat Feu, et ×2 donne 6 dégâts. C'est la victoire !",
     "sp_026": "J'ai joué en premier — SR1. Vous ne pouvez pas jouer sur ce couloir au SR2. C'est la règle d'ouverture !",
-    "sp_027": "Vous jouez en premier, donc votre adversaire peut contre votre élément. Évitez le couloir central et les ×2 dégâts !",
+    "sp_027": "Vous jouez en premier, donc votre adversaire peut contrer votre élément. Évitez le couloir central et les ×2 dégâts !",
     "sp_028": "L'adversaire a joué de nouveau — SR3. Remarquez l'alternance. Jouer en premier implique un engagement sans avoir vu la réponse.",
-    "sp_029": "L'indicateur ×2 pointe vers VOUS — si vous perdez le couloir central, vous recevez le double. Protégez-la ou dominez-la !",
+    "sp_029": "L'indicateur ×2 pointe vers VOUS — si vous perdez le couloir central, vous recevez le double. Protégez-le ou dominez-le !",
     "sp_030": "L'adversaire a pris le couloir central en dernier — il a vu votre carte et a choisi sa réponse. Jouer en dernier est un avantage tactique !",
     "sp_031": "Vous jouez en dernier ce sous-round. Utilisez cette info — vous savez ce qui est sur chaque couloir. Réagissez, ne devinez pas.",
     "sp_032": "Feu contre Feu — Deadlock ! Aucune carte ne gagne. Les deux restent dans le couloir et le Risque s'accumule au round suivant.",
@@ -18810,10 +18855,10 @@ const STRINGS = {
     "sp_042": "Vous pouvez donc activer mon skill, jouer le Cinder Baron, et réactiver mon skill pour 5 dégâts supplémentaires !",
     "sp_043": "Mais attention : vous ne pouvez utiliser qu'un skill Manuel par tour. Planifiez à l'avance.",
     "sp_044": "J'ai un skill puissant et un risque élevé. Planifiez ce round autour de moi.",
-    "sp_045": "Si vous me jouez comme appât, l'adversaire utilisera probablement la Nature contre moi.",
+    "sp_045": "Si vous me jouez comme appât, l'adversaire utilisera probablement la Terre contre moi.",
     "sp_046": "Appât réussi ! Utilisez maintenant le Flame Deity pour me transformer en Feu et gagner le couloir.",
     "sp_047": "Au Bonus Round, utilisez Vampire Kiss sur l'Orb Wisp — Feu bat Terre !",
-    "sp_048": "Activez mon Vampire Kiss et ciblez l'Orb Wisp — elle deviendra Feu et battra cette carte Nature !",
+    "sp_048": "Activez mon Vampire Kiss et ciblez l'Orb Wisp — elle deviendra Feu et battra cette carte Terre !",
     "sp_049": "Vous auriez dû me placer dans un couloir plus sûr. Vous ne pouvez pas gagner.",
     "sp_050": "Mon skill Vendetta ne s'est jamais déclenché — je dois être sur un couloir pour l'activer à la résolution !",
     "sp_051": "Je n'ai jamais utilisé mon skill Strike ! Double-tapez et activez-le pour infliger des dégâts directs.",
@@ -19159,7 +19204,6 @@ const STRINGS = {
     "rl_hub_title": "ROGUELIKE",
     "rl_win_hearts": "Gagnez 20 combats<br>avec au moins un cœur restant !",
     "rl_hearts_desc": "Vous avez 3 cœurs.<br>Chaque défaite en retire un.",
-    "rl_fights_to_win": "{n} combat{s} à gagner · {lives} {life} restant{s2}",
     "rl_won_title": "🏆 Vous avez gagné le Roguelike !",
     "rl_game_over_title": "💀 Partie Terminée",
     "dp_owner_player": "Joueur",
@@ -19192,9 +19236,9 @@ const STRINGS = {
     "sp_072": "Vous ne pouvez pas gagner ce défi sans mon skill Frappe.",
     "sp_073": "Si vous jouez l'Ember Brawler, PUIS moi, je réactiverai sa capacité Frappe.",
     "sp_074": "Mais vous ne pouvez utiliser qu'UN SEUL skill manuel par tour.",
-    "sp_075": "Si l'adversaire joue une carte Nature contre l'Orb Wisp, ma capacité Baiser Vampirique pourrait transformer l'Orb Wisp en Feu et gagner le couloir !",
+    "sp_075": "Si l'adversaire joue une carte Terre contre l'Orb Wisp, ma capacité Baiser Vampirique pourrait transformer l'Orb Wisp en Feu et gagner le couloir !",
     "sp_076": "Me jouer sur un couloir vide est risqué à cause de mon risque 9. Si l'adversaire a une carte Eau, vous subirez 9 dégâts.",
-    "sp_077": "Ici, il est plus sûr de me garder pour le couloir de GAUCHE, car je battrai la carte Nature ennemie.",
+    "sp_077": "Ici, il est plus sûr de me garder pour le couloir de GAUCHE, car je battrai la carte Terre ennemie.",
     "tut_well_done": "Bien joué ! Retournez au tutoriel pour continuer.",
     "tut_not_quite": "Pas tout à fait — réessayez depuis l'écran du tutoriel.",
     "rule_065": "3 couloirs. <span class=\"el-pill\">🔥Feu</span> bat <span class=\"el-pill\">🌿Terre</span>, qui bat <span class=\"el-pill\">💧Eau</span>, qui bat <span class=\"el-pill\">🔥Feu</span>. <span class=\"el-pill\">◈Poussière</span> perd toujours (sauf contre Poussière : égalité).",
@@ -19212,7 +19256,39 @@ const STRINGS = {
     "focus_p2_embersprite": "Cette carte n'a qu'un risque de 3. Certaines cartes peuvent avoir un risque de 9+. Les battre inflige beaucoup de dégâts.",
     "focus_p3_x2": "Notez cet indicateur ×2. Il signifie que des dégâts doublés sont infligés à un joueur dans ce couloir si la flèche pointe vers lui. C'est une mécanique importante du jeu.",
     "focus_p4_x2": "Notez que les dégâts doublés sont dirigés vers vous. Faites attention à ne pas perdre ce couloir.",
-    "focus_p5_x2": "Notez que l'indicateur tourne à chaque tour. Vous infligez des dégâts doublés sur ce couloir."
+    "focus_p5_x2": "Notez que l'indicateur tourne à chaque tour. Vous infligez des dégâts doublés sur ce couloir.",
+
+    /* [v40 b06] Chaînes qui étaient codées en dur dans le HTML/JS */
+    "save_load_from": "Charger la sauvegarde du {date} ?",
+    "rotate_msg": "Tournez votre appareil<br>en mode portrait<br>pour jouer à Primal Gambit",
+    "resume_title": "⚔ Partie en cours",
+    "resume_body": "Sauvegardée {ago}<br>Reprendre où vous en étiez ?",
+    "resume_ago_now": "il y a moins d'une minute",
+    "resume_ago_min": "il y a {n} min",
+    "resume_ago_hour": "il y a {h}h{m}",
+    "toast_saved": "✦ Sauvegardé",
+    "toast_resumed": "✦ Partie reprise",
+    "alo_loading": "Chargement…",
+    "alo_prep_fight": "Préparation du combat…",
+    "alo_open_rules": "Ouverture des règles…",
+    "alo_tip_1": "Rappel : le Feu bat la Terre, la Terre bat l'Eau, l'Eau bat le Feu.",
+    "alo_tip_2": "La Poussière perd contre tous les éléments, même contre une carte déjà affaiblie.",
+    "alo_tip_3": "Un Deadlock n'est pas une défaite : le Risque s'accumule pour le round où le couloir se décidera.",
+    "alo_tip_4": "Le couloir ×2 double les dégâts infligés ET reçus — jouez-le avec soin.",
+    "alo_tip_5": "Certaines cartes gagnent plus à perdre leur duel qu'à le remporter.",
+    "alo_tip_6": "Le meilleur moment pour activer une compétence n'est pas toujours le premier qui se présente.",
+    "alo_tip_7": "Une carte à haut Risque n'est dangereuse que si elle finit par perdre.",
+    "alo_tip_8": "Regardez toujours quel couloir porte le ×2 avant de jouer votre dernière carte.",
+    "alo_tip_9": "On charge les illustrations, pas le suspense — celui-là reste entier.",
+    "stats_empty_title": "AUCUNE PARTIE ENREGISTRÉE",
+    "stats_empty_sub": "Jouez une partie pour lancer le suivi des statistiques",
+    "status_loading": "Chargement…",
+    "resume_rl_warning": "⚠ Combat roguelike en cours — ne pas reprendre comptera comme une DÉFAITE et vous coûtera une vie.",
+    "rl_fights_left_1": "{n} combat à gagner",
+    "rl_fights_left_n": "{n} combats à gagner",
+    "rl_lives_left_1": "{lives} vie restante",
+    "rl_lives_left_n": "{lives} vies restantes",
+    "rl_abandon_body": "Combat en cours.<br>Quitter comptera comme une <b>DÉFAITE</b> et vous coûtera une vie.<br><br>C'est irréversible."
   },
   "de": {
     "btn_tutorial": "TUTORIAL",
@@ -19526,10 +19602,10 @@ const STRINGS = {
     "sp_042": "Du kannst meinen Skill aktivieren, Cinder Baron spielen und meinen Skill erneut nutzen!",
     "sp_043": "Achtung: nur ein Manuell-Skill pro Zug. Plan voraus.",
     "sp_044": "Ich habe starken Skill und hohes Risiko. Plan die Runde um mich.",
-    "sp_045": "Als Köder wird Gegner wahrscheinlich Natur gegen mich setzen.",
+    "sp_045": "Als Köder wird der Gegner wahrscheinlich Erde gegen mich setzen.",
     "sp_046": "Köder erfolgreich! Nutz jetzt Flame Deity um mich zu Feuer zu machen und die Spur zu gewinnen.",
     "sp_047": "Im Bonusround: Vampire Kiss auf Orb Wisp — Feuer schlägt Erde!",
-    "sp_048": "Aktiviere meinen Vampire Kiss und ziel auf Orb Wisp — sie wird Feuer und schlägt diese Naturkarte!",
+    "sp_048": "Aktiviere meinen Vampire Kiss und ziel auf Orb Wisp — sie wird Feuer und schlägt diese Erdkarte!",
     "sp_049": "Du hättest mich auf eine sicherere Spur legen sollen. Du kannst nicht gewinnen.",
     "sp_050": "Mein Vendetta-Skill wurde nie ausgelöst — ich muss auf einer Spur sein!",
     "sp_051": "Ich nutzte nie Strike! Doppeltippen und aktivieren für Direktschaden.",
@@ -19875,7 +19951,6 @@ const STRINGS = {
     "rl_hub_title": "ROGUELIKE",
     "rl_win_hearts": "Gewinne 20 Kämpfe<br>mit mindestens einem Herz übrig!",
     "rl_hearts_desc": "Du hast 3 Herzen.<br>Jede Niederlage kostet eines.",
-    "rl_fights_to_win": "{n} Kämpfe übrig · {lives} {life} übrig",
     "rl_won_title": "🏆 Du hast das Roguelike gewonnen!",
     "rl_game_over_title": "💀 Spiel Vorbei",
     "dp_owner_player": "Spieler",
@@ -19908,9 +19983,9 @@ const STRINGS = {
     "sp_072": "Du kannst diese Herausforderung ohne meine Schlag-Fähigkeit nicht gewinnen.",
     "sp_073": "Wenn du den Ember Brawler spielst, DANN mich, aktiviere ich seine Schlag-Fähigkeit erneut.",
     "sp_074": "Aber du kannst nur EINE manuelle Fähigkeit pro Zug nutzen.",
-    "sp_075": "Wenn der Gegner eine Naturkarte gegen den Orb Wisp spielt, könnte meine Vampirkuss-Fähigkeit den Orb Wisp in Feuer verwandeln und die Spur gewinnen!",
+    "sp_075": "Wenn der Gegner eine Erdkarte gegen den Orb Wisp spielt, könnte meine Vampirkuss-Fähigkeit den Orb Wisp in Feuer verwandeln und die Spur gewinnen!",
     "sp_076": "Mich auf eine leere Spur zu spielen ist wegen meines Risikos 9 gefährlich. Wenn der Gegner eine Wasserkarte hat, erhältst du 9 Schaden.",
-    "sp_077": "Hier ist es sicherer, mich für die LINKE Spur aufzuheben, da ich die gegnerische Naturkarte schlagen werde.",
+    "sp_077": "Hier ist es sicherer, mich für die LINKE Spur aufzuheben, da ich die gegnerische Erdkarte schlagen werde.",
     "tut_well_done": "Gut gemacht! Kehre zum Tutorial zurück, um fortzufahren.",
     "tut_not_quite": "Nicht ganz — versuche es erneut vom Tutorial-Bildschirm aus.",
     "rule_065": "3 Spuren. <span class=\"el-pill\">🔥Feuer</span> schlägt <span class=\"el-pill\">🌿Erde</span>, die schlägt <span class=\"el-pill\">💧Wasser</span>, das schlägt <span class=\"el-pill\">🔥Feuer</span>. <span class=\"el-pill\">◈Staub</span> verliert immer (außer gegen Staub: Gleichstand).",
@@ -19928,7 +20003,39 @@ const STRINGS = {
     "focus_p2_embersprite": "Diese Karte hat nur Risiko 3. Manche Karten können Risiko 9+ haben. Sie zu besiegen verursacht viel Schaden.",
     "focus_p3_x2": "Beachte diesen ×2-Indikator. Er bedeutet, dass doppelter Schaden in dieser Spur zugefügt wird, wenn der Pfeil auf einen Spieler zeigt. Das ist eine wichtige Spielmechanik.",
     "focus_p4_x2": "Beachte, dass der doppelte Schaden auf dich gerichtet ist. Achte darauf, diese Spur nicht zu verlieren.",
-    "focus_p5_x2": "Beachte, dass sich der Indikator jede Runde dreht. Du fügst in dieser Spur doppelten Schaden zu."
+    "focus_p5_x2": "Beachte, dass sich der Indikator jede Runde dreht. Du fügst in dieser Spur doppelten Schaden zu.",
+
+    /* [v40 b06] Chaînes qui étaient codées en dur dans le HTML/JS */
+    "save_load_from": "Spielstand vom {date} laden?",
+    "rotate_msg": "Drehe dein Gerät<br>ins Hochformat,<br>um Primal Gambit zu spielen",
+    "resume_title": "⚔ Laufende Partie",
+    "resume_body": "Gespeichert {ago}<br>Dort weitermachen, wo du aufgehört hast?",
+    "resume_ago_now": "vor weniger als einer Minute",
+    "resume_ago_min": "vor {n} Min.",
+    "resume_ago_hour": "vor {h}h{m}",
+    "toast_saved": "✦ Gespeichert",
+    "toast_resumed": "✦ Partie fortgesetzt",
+    "alo_loading": "Lädt…",
+    "alo_prep_fight": "Kampf wird vorbereitet…",
+    "alo_open_rules": "Regeln werden geöffnet…",
+    "alo_tip_1": "Erinnerung: Feuer schlägt Erde, Erde schlägt Wasser, Wasser schlägt Feuer.",
+    "alo_tip_2": "Staub verliert gegen jedes Element — auch gegen eine bereits geschwächte Karte.",
+    "alo_tip_3": "Ein Deadlock ist keine Niederlage: Das Risiko sammelt sich für die Runde, in der die Spur entschieden wird.",
+    "alo_tip_4": "Die ×2-Spur verdoppelt ausgeteilten UND erlittenen Schaden — spiele sie mit Bedacht.",
+    "alo_tip_5": "Manche Karten gewinnen mehr, wenn sie ihr Duell verlieren.",
+    "alo_tip_6": "Der beste Moment für eine Fähigkeit ist selten der erste, der sich bietet.",
+    "alo_tip_7": "Eine Karte mit hohem Risiko ist nur gefährlich, wenn sie am Ende verliert.",
+    "alo_tip_8": "Prüfe immer, welche Spur das ×2 trägt, bevor du deine letzte Karte spielst.",
+    "alo_tip_9": "Wir laden die Illustrationen, nicht die Spannung — die bleibt unangetastet.",
+    "stats_empty_title": "NOCH KEINE PARTIE AUFGEZEICHNET",
+    "stats_empty_sub": "Spiele eine Partie, um Statistiken zu sammeln",
+    "status_loading": "Lädt…",
+    "resume_rl_warning": "⚠ Roguelike-Kampf läuft — nicht fortzusetzen zählt als NIEDERLAGE und kostet ein Leben.",
+    "rl_fights_left_1": "{n} Kampf zu gewinnen",
+    "rl_fights_left_n": "{n} Kämpfe zu gewinnen",
+    "rl_lives_left_1": "{lives} Leben übrig",
+    "rl_lives_left_n": "{lives} Leben übrig",
+    "rl_abandon_body": "Kampf läuft.<br>Verlassen zählt als <b>NIEDERLAGE</b> und kostet dich ein Leben.<br><br>Das lässt sich nicht rückgängig machen."
   },
   "es": {
     "btn_tutorial": "TUTORIAL",
@@ -20200,7 +20307,7 @@ const STRINGS = {
     "sp_000": "¡Doble toque para ver mi skill Strike! Pero debo estar en un carril.",
     "sp_001": "Al colocarme, doble toque → abrir skill → toque → 5 daño directo.",
     "sp_002": "¡Gracias a mí puedes activar al Ember Brawler dos veces!",
-    "sp_003": "Derroto cartas de Naturaleza y Polvo.",
+    "sp_003": "Derroto cartas de Tierra y Polvo.",
     "sp_004": "Soy una carta de Agua.",
     "sp_005": "Soy una carta de Tierra.",
     "sp_006": "Soy una carta de Fuego.",
@@ -20242,10 +20349,10 @@ const STRINGS = {
     "sp_042": "¡Puedes activar mi skill, jugar al Cinder Baron y reusar mi skill para 5 daño extra!",
     "sp_043": "Ojo: solo un skill Manual por turno. Planifica con anticipación.",
     "sp_044": "Tengo skill poderoso y alto riesgo. Planifica el round alrededor de mí.",
-    "sp_045": "Como cebo, el adversario usará Naturaleza contra mí.",
+    "sp_045": "Como cebo, el adversario usará Tierra contra mí.",
     "sp_046": "¡Cebo exitoso! Usa ahora Flame Deity para hacerme Fuego y ganar el carril.",
     "sp_047": "En el Bonus Round: Vampire Kiss en Orb Wisp — ¡Fuego vence Tierra!",
-    "sp_048": "¡Activa mi Vampire Kiss y apunta a Orb Wisp — se volverá Fuego y vencerá esa carta de Naturaleza!",
+    "sp_048": "¡Activa mi Vampire Kiss y apunta a Orb Wisp — se volverá Fuego y vencerá esa carta de Tierra!",
     "sp_049": "Deberías haberme puesto en un carril más seguro. No puedes ganar.",
     "sp_050": "¡Mi skill Vendetta nunca se activó — debo estar en un carril para activarse en resolución!",
     "sp_051": "¡Nunca usé Strike! Doble toque y actívalo para daño directo.",
@@ -20591,7 +20698,6 @@ const STRINGS = {
     "rl_hub_title": "ROGUELIKE",
     "rl_win_hearts": "¡Gana 20 combates<br>con al menos un corazón restante!",
     "rl_hearts_desc": "Tienes 3 corazones.<br>Cada derrota quita uno.",
-    "rl_fights_to_win": "{n} combates para ganar · {lives} {life} restante(s)",
     "rl_won_title": "🏆 ¡Ganaste el Roguelike!",
     "rl_game_over_title": "💀 Fin del Juego",
     "dp_owner_player": "Jugador",
@@ -20624,9 +20730,9 @@ const STRINGS = {
     "sp_072": "No puedes ganar este reto sin mi habilidad Golpe.",
     "sp_073": "Si juegas al Ember Brawler, LUEGO a mí, reactivaré su habilidad Golpe.",
     "sp_074": "Pero solo puedes usar UNA habilidad manual por turno.",
-    "sp_075": "¡Si el adversario juega una carta de Naturaleza contra el Orb Wisp, mi habilidad Beso Vampírico podría transformar al Orb Wisp en Fuego y ganar el carril!",
+    "sp_075": "¡Si el adversario juega una carta de Tierra contra el Orb Wisp, mi habilidad Beso Vampírico podría transformar al Orb Wisp en Fuego y ganar el carril!",
     "sp_076": "Jugarme en un carril vacío es arriesgado por mi riesgo 9. Si el adversario tiene una carta de Agua, recibirás 9 de daño.",
-    "sp_077": "Aquí es más seguro guardarme para el carril IZQUIERDO, ya que venceré a la carta de Naturaleza enemiga.",
+    "sp_077": "Aquí es más seguro guardarme para el carril IZQUIERDO, ya que venceré a la carta de Tierra enemiga.",
     "tut_well_done": "¡Bien hecho! Vuelve al tutorial para continuar.",
     "tut_not_quite": "No del todo — inténtalo de nuevo desde la pantalla del tutorial.",
     "rule_065": "3 carriles. <span class=\"el-pill\">🔥Fuego</span> vence <span class=\"el-pill\">🌿Tierra</span>, que vence <span class=\"el-pill\">💧Agua</span>, que vence <span class=\"el-pill\">🔥Fuego</span>. <span class=\"el-pill\">◈Polvo</span> siempre pierde (excepto contra Polvo: empate).",
@@ -20644,7 +20750,39 @@ const STRINGS = {
     "focus_p2_embersprite": "Esta carta solo tiene riesgo 3. Algunas cartas pueden tener riesgo 9+. Derrotarlas causa mucho daño.",
     "focus_p3_x2": "Fíjate en este indicador ×2. Significa que se inflige daño doble a un jugador en este carril si la flecha apunta hacia él. Es una mecánica importante del juego.",
     "focus_p4_x2": "Nota que el daño doble apunta hacia ti. Ten cuidado de no perder este carril.",
-    "focus_p5_x2": "Nota que el indicador rota cada turno. Infliges daño doble en este carril."
+    "focus_p5_x2": "Nota que el indicador rota cada turno. Infliges daño doble en este carril.",
+
+    /* [v40 b06] Chaînes qui étaient codées en dur dans le HTML/JS */
+    "save_load_from": "¿Cargar la partida guardada del {date}?",
+    "rotate_msg": "Gira tu dispositivo<br>en modo vertical<br>para jugar a Primal Gambit",
+    "resume_title": "⚔ Partida en curso",
+    "resume_body": "Guardada {ago}<br>¿Retomar donde lo dejaste?",
+    "resume_ago_now": "hace menos de un minuto",
+    "resume_ago_min": "hace {n} min",
+    "resume_ago_hour": "hace {h}h{m}",
+    "toast_saved": "✦ Guardado",
+    "toast_resumed": "✦ Partida retomada",
+    "alo_loading": "Cargando…",
+    "alo_prep_fight": "Preparando el combate…",
+    "alo_open_rules": "Abriendo las reglas…",
+    "alo_tip_1": "Recuerda: el Fuego vence a la Tierra, la Tierra al Agua y el Agua al Fuego.",
+    "alo_tip_2": "El Polvo pierde contra todos los elementos, incluso contra una carta ya debilitada.",
+    "alo_tip_3": "Un Deadlock no es una derrota: el Riesgo se acumula para la ronda en que se decida el carril.",
+    "alo_tip_4": "El carril ×2 duplica el daño infligido Y el recibido — júgalo con cuidado.",
+    "alo_tip_5": "Algunas cartas ganan más perdiendo su duelo que ganándolo.",
+    "alo_tip_6": "El mejor momento para activar un poder rara vez es el primero disponible.",
+    "alo_tip_7": "Una carta de Riesgo alto solo es peligrosa si acaba perdiendo.",
+    "alo_tip_8": "Mira siempre qué carril lleva el ×2 antes de jugar tu última carta.",
+    "alo_tip_9": "Estamos cargando las ilustraciones, no la tensión — esa queda intacta.",
+    "stats_empty_title": "AÚN NO HAY PARTIDAS REGISTRADAS",
+    "stats_empty_sub": "Juega una partida para empezar a registrar estadísticas",
+    "status_loading": "Cargando…",
+    "resume_rl_warning": "⚠ Combate roguelike en curso — no retomarlo contará como DERROTA y te costará una vida.",
+    "rl_fights_left_1": "{n} combate para ganar",
+    "rl_fights_left_n": "{n} combates para ganar",
+    "rl_lives_left_1": "{lives} vida restante",
+    "rl_lives_left_n": "{lives} vidas restantes",
+    "rl_abandon_body": "Combate en curso.<br>Salir contará como <b>DERROTA</b> y te costará una vida.<br><br>No se puede deshacer."
   },
   "it": {
     "btn_tutorial": "TUTORIAL",
@@ -20958,7 +21096,7 @@ const STRINGS = {
     "sp_042": "Puoi attivare il mio skill, giocare Cinder Baron e riusare il mio skill per 5 danni extra!",
     "sp_043": "Attenzione: solo uno skill Manuale per turno. Pianifica in anticipo.",
     "sp_044": "Ho skill potente e alto rischio. Pianifica il round attorno a me.",
-    "sp_045": "Come esca, l'avversario userà Natura contro di me.",
+    "sp_045": "Come esca, l'avversario userà Terra contro di me.",
     "sp_046": "Esca riuscita! Usa Flame Deity per rendermi Fuoco e vincere la corsia.",
     "sp_047": "Al Bonus Round: Vampire Kiss su Orb Wisp — Fuoco batte Terra!",
     "sp_048": "Attiva il mio Vampire Kiss e punta Orb Wisp — diventerà Fuoco e batterà quella carta Natura!",
@@ -21307,7 +21445,6 @@ const STRINGS = {
     "rl_hub_title": "ROGUELIKE",
     "rl_win_hearts": "Vinci 20 scontri<br>con almeno un cuore rimasto!",
     "rl_hearts_desc": "Hai 3 cuori.<br>Ogni sconfitta ne toglie uno.",
-    "rl_fights_to_win": "{n} scontri da vincere · {lives} {life} rimasti",
     "rl_won_title": "🏆 Hai vinto il Roguelike!",
     "rl_game_over_title": "💀 Fine Partita",
     "dp_owner_player": "Giocatore",
@@ -21340,9 +21477,9 @@ const STRINGS = {
     "sp_072": "Non puoi vincere questa sfida senza la mia abilità Colpo.",
     "sp_073": "Se giochi l'Ember Brawler, POI me, riattiverò la sua abilità Colpo.",
     "sp_074": "Ma puoi usare solo UNA abilità manuale per turno.",
-    "sp_075": "Se l'avversario gioca una carta Natura contro l'Orb Wisp, la mia abilità Bacio Vampiro potrebbe trasformare l'Orb Wisp in Fuoco e vincere la corsia!",
+    "sp_075": "Se l'avversario gioca una carta Terra contro l'Orb Wisp, la mia abilità Bacio Vampiro potrebbe trasformare l'Orb Wisp in Fuoco e vincere la corsia!",
     "sp_076": "Giocarmi in una corsia vuota è rischioso per il mio rischio 9. Se l'avversario ha una carta Acqua, subirai 9 danni.",
-    "sp_077": "Qui è più sicuro tenermi per la corsia SINISTRA, poiché batterò la carta Natura nemica.",
+    "sp_077": "Qui è più sicuro tenermi per la corsia SINISTRA, poiché batterò la carta Terra nemica.",
     "tut_well_done": "Ben fatto! Torna al tutorial per continuare.",
     "tut_not_quite": "Non proprio — riprova dalla schermata del tutorial.",
     "rule_065": "3 corsie. <span class=\"el-pill\">🔥Fuoco</span> batte <span class=\"el-pill\">🌿Terra</span>, che batte <span class=\"el-pill\">💧Acqua</span>, che batte <span class=\"el-pill\">🔥Fuoco</span>. <span class=\"el-pill\">◈Polvere</span> perde sempre (eccetto contro Polvere: pareggio).",
@@ -21360,7 +21497,39 @@ const STRINGS = {
     "focus_p2_embersprite": "Questa carta ha solo rischio 3. Alcune carte possono avere rischio 9+. Sconfiggerle causa molti danni.",
     "focus_p3_x2": "Nota questo indicatore ×2. Significa che viene inflitto danno doppio a un giocatore in questa corsia se la freccia punta verso di lui. È una meccanica importante del gioco.",
     "focus_p4_x2": "Nota che il danno doppio punta verso di te. Fai attenzione a non perdere questa corsia.",
-    "focus_p5_x2": "Nota che l'indicatore ruota ogni turno. Infliggi danno doppio in questa corsia."
+    "focus_p5_x2": "Nota che l'indicatore ruota ogni turno. Infliggi danno doppio in questa corsia.",
+
+    /* [v40 b06] Chaînes qui étaient codées en dur dans le HTML/JS */
+    "save_load_from": "Caricare il salvataggio del {date}?",
+    "rotate_msg": "Ruota il dispositivo<br>in modalità verticale<br>per giocare a Primal Gambit",
+    "resume_title": "⚔ Partita in corso",
+    "resume_body": "Salvata {ago}<br>Riprendere da dove eri rimasto?",
+    "resume_ago_now": "meno di un minuto fa",
+    "resume_ago_min": "{n} min fa",
+    "resume_ago_hour": "{h}h{m} fa",
+    "toast_saved": "✦ Salvato",
+    "toast_resumed": "✦ Partita ripresa",
+    "alo_loading": "Caricamento…",
+    "alo_prep_fight": "Preparazione del combattimento…",
+    "alo_open_rules": "Apertura delle regole…",
+    "alo_tip_1": "Promemoria: il Fuoco batte la Terra, la Terra batte l'Acqua, l'Acqua batte il Fuoco.",
+    "alo_tip_2": "La Polvere perde contro ogni elemento, anche contro una carta già indebolita.",
+    "alo_tip_3": "Un Deadlock non è una sconfitta: il Rischio si accumula per il round in cui la corsia si deciderà.",
+    "alo_tip_4": "La corsia ×2 raddoppia i danni inflitti E quelli subiti — giocala con attenzione.",
+    "alo_tip_5": "Alcune carte guadagnano più perdendo il duello che vincendolo.",
+    "alo_tip_6": "Il momento migliore per attivare un potere raramente è il primo disponibile.",
+    "alo_tip_7": "Una carta ad alto Rischio è pericolosa solo se finisce per perdere.",
+    "alo_tip_8": "Controlla sempre quale corsia porta il ×2 prima di giocare l'ultima carta.",
+    "alo_tip_9": "Stiamo caricando le illustrazioni, non la suspense — quella resta intatta.",
+    "stats_empty_title": "NESSUNA PARTITA REGISTRATA",
+    "stats_empty_sub": "Gioca una partita per iniziare a raccogliere statistiche",
+    "status_loading": "Caricamento…",
+    "resume_rl_warning": "⚠ Combattimento roguelike in corso — non riprenderlo conterà come SCONFITTA e ti costerà una vita.",
+    "rl_fights_left_1": "{n} scontro da vincere",
+    "rl_fights_left_n": "{n} scontri da vincere",
+    "rl_lives_left_1": "{lives} vita rimasta",
+    "rl_lives_left_n": "{lives} vite rimaste",
+    "rl_abandon_body": "Combattimento in corso.<br>Uscire conterà come <b>SCONFITTA</b> e ti costerà una vita.<br><br>Non è reversibile."
   },
   "zh": {
     "btn_tutorial": "教程",
@@ -21674,10 +21843,10 @@ const STRINGS = {
     "sp_042": "你可以激活我的技能、打出Cinder Baron，再次激活我的技能获得5点额外伤害！",
     "sp_043": "注意：每回合只能用一个主动技能。提前计划。",
     "sp_044": "我有强力技能和高风险。围绕我规划这一回合。",
-    "sp_045": "作为诱饵，对手可能会用自然元素对抗我。",
+    "sp_045": "作为诱饵，对手可能会用土元素对抗我。",
     "sp_046": "诱饵成功！现在用Flame Deity将我变为火并赢得通道。",
     "sp_047": "在奖励轮：对Orb Wisp使用Vampire Kiss——火克土！",
-    "sp_048": "激活我的Vampire Kiss并锁定Orb Wisp——它会变为火并击败那张自然牌！",
+    "sp_048": "激活我的Vampire Kiss并锁定Orb Wisp——它会变为火并击败那张土牌！",
     "sp_049": "你本应把我放在更安全的通道上。你无法获胜。",
     "sp_050": "我的复仇技能从未触发——我必须在通道上才能在结算时激活！",
     "sp_051": "我从未使用打击！双击并激活它来造成直接伤害。",
@@ -22023,7 +22192,6 @@ const STRINGS = {
     "rl_hub_title": "肉鸽模式",
     "rl_win_hearts": "赢得20场战斗<br>且至少保留一颗心即可获胜！",
     "rl_hearts_desc": "你有3颗心。<br>每次失败减少一颗。",
-    "rl_fights_to_win": "还需赢{n}场 · 剩余{lives}颗心",
     "rl_won_title": "🏆 你赢得了肉鸽模式！",
     "rl_game_over_title": "💀 游戏结束",
     "dp_owner_player": "玩家",
@@ -22056,9 +22224,9 @@ const STRINGS = {
     "sp_072": "没有我的打击技能，你无法赢得这次挑战。",
     "sp_073": "如果你先打出Ember Brawler，然后再打出我，我将重新激活它的打击能力。",
     "sp_074": "但每回合你只能使用一个主动技能。",
-    "sp_075": "如果对手对Orb Wisp打出自然牌，我的吸血之吻能力可以将Orb Wisp变成火并赢得通道！",
+    "sp_075": "如果对手对Orb Wisp打出土牌，我的吸血之吻能力可以将Orb Wisp变成火并赢得通道！",
     "sp_076": "把我打在空通道上很危险，因为我的风险值是9。如果对手有水牌，你将受到9点伤害。",
-    "sp_077": "这里更安全的做法是把我留给左侧通道，因为我能击败敌方的自然牌。",
+    "sp_077": "这里更安全的做法是把我留给左侧通道，因为我能击败敌方的土牌。",
     "tut_well_done": "做得好！返回教程继续。",
     "tut_not_quite": "还差一点——从教程界面重试。",
     "rule_065": "3条通道。<span class=\"el-pill\">🔥火</span>克<span class=\"el-pill\">🌿土</span>，土克<span class=\"el-pill\">💧水</span>，水克<span class=\"el-pill\">🔥火</span>。<span class=\"el-pill\">◈尘埃</span>总是失败（除非对阵尘埃：平局）。",
@@ -22076,7 +22244,39 @@ const STRINGS = {
     "focus_p2_embersprite": "这张牌的风险值只有3。有些牌的风险值可以达到9以上。击败它们会造成大量伤害。",
     "focus_p3_x2": "注意这个×2指示器。如果箭头指向某玩家，意味着该玩家在这条通道会受到双倍伤害。这是游戏的重要机制。",
     "focus_p4_x2": "注意双倍伤害指向你。小心不要输掉这条通道。",
-    "focus_p5_x2": "注意指示器每回合都会旋转。你在这条通道造成双倍伤害。"
+    "focus_p5_x2": "注意指示器每回合都会旋转。你在这条通道造成双倍伤害。",
+
+    /* [v40 b06] Chaînes qui étaient codées en dur dans le HTML/JS */
+    "save_load_from": "载入 {date} 的存档？",
+    "rotate_msg": "请将设备<br>旋转为竖屏<br>以游玩 Primal Gambit",
+    "resume_title": "⚔ 进行中的对局",
+    "resume_body": "保存于{ago}<br>从上次中断处继续？",
+    "resume_ago_now": "不到一分钟前",
+    "resume_ago_min": "{n} 分钟前",
+    "resume_ago_hour": "{h} 小时 {m} 分钟前",
+    "toast_saved": "✦ 已保存",
+    "toast_resumed": "✦ 对局已恢复",
+    "alo_loading": "加载中…",
+    "alo_prep_fight": "正在准备战斗…",
+    "alo_open_rules": "正在打开规则…",
+    "alo_tip_1": "提示：火克土，土克水，水克火。",
+    "alo_tip_2": "尘对任何元素都会落败——即使对手是一张已被削弱的牌。",
+    "alo_tip_3": "僵持并非失败：风险会累积到该路线最终分出胜负的那一回合。",
+    "alo_tip_4": "×2 路线会同时加倍你造成和承受的伤害——谨慎出牌。",
+    "alo_tip_5": "有些牌输掉对决反而收益更大。",
+    "alo_tip_6": "发动技能的最佳时机，往往不是第一个可用的时机。",
+    "alo_tip_7": "高风险的牌只有在最终落败时才是危险的。",
+    "alo_tip_8": "打出最后一张牌之前，先看清 ×2 落在哪条路线。",
+    "alo_tip_9": "我们在加载插画，而不是悬念——悬念完好无损。",
+    "stats_empty_title": "尚无对局记录",
+    "stats_empty_sub": "先玩一局，即可开始统计",
+    "status_loading": "加载中…",
+    "resume_rl_warning": "⚠ Roguelike 战斗进行中 — 不继续将记为失败，并消耗一条命。",
+    "rl_fights_left_1": "还需赢 {n} 场",
+    "rl_fights_left_n": "还需赢 {n} 场",
+    "rl_lives_left_1": "剩余 {lives} 颗心",
+    "rl_lives_left_n": "剩余 {lives} 颗心",
+    "rl_abandon_body": "战斗进行中。<br>离开将记为<b>失败</b>，并消耗一条命。<br><br>此操作无法撤销。"
   },
   "ja": {
     "btn_tutorial": "チュートリアル",
@@ -22390,10 +22590,10 @@ const STRINGS = {
     "sp_042": "スキルを発動してCinder Baronを出し、再度スキルを使えば5ダメージ追加！",
     "sp_043": "注意：マニュアルスキルは1ターンに1回のみ。事前に計画を。",
     "sp_044": "強力なスキルと高リスク。僕を中心にラウンドを計画して。",
-    "sp_045": "囮として使えば、相手はおそらく自然を当ててくる。",
+    "sp_045": "囮として使えば、相手はおそらく土を当ててくる。",
     "sp_046": "囮成功！Flame Deityで僕を火に変えてレーンを制圧して。",
     "sp_047": "ボーナスラウンドで：Orb WispにVampire Kissを使って——火は土に強い！",
-    "sp_048": "Vampire Kissを発動してOrb Wispを狙って——火になってその自然カードに勝てる！",
+    "sp_048": "Vampire Kissを発動してOrb Wispを狙って——火になってその土カードに勝てる！",
     "sp_049": "もっと安全なレーンに置くべきだった。もう勝てない。",
     "sp_050": "Vendettaスキルが一度も発動しなかった——解決時に発動するにはレーン上にいる必要がある！",
     "sp_051": "Strikeを一度も使わなかった！ダブルタップして発動して直接ダメージを。",
@@ -22739,7 +22939,6 @@ const STRINGS = {
     "rl_hub_title": "ローグライク",
     "rl_win_hearts": "ハートを1つ残して<br>20戦勝利せよ！",
     "rl_hearts_desc": "ハート3つ所持。<br>敗北するたび1つ失う。",
-    "rl_fights_to_win": "残り{n}戦 · ライフ{lives}",
     "rl_won_title": "🏆 ローグライク制覇！",
     "rl_game_over_title": "💀 ゲームオーバー",
     "dp_owner_player": "プレイヤー",
@@ -22772,9 +22971,9 @@ const STRINGS = {
     "sp_072": "私のストライクスキルなしではこの課題に勝てない。",
     "sp_073": "Ember Brawlerを出してから私を出せば、彼のストライク能力を再発動できる。",
     "sp_074": "しかし1ターンに使えるマニュアルスキルは1つだけだ。",
-    "sp_075": "相手がOrb Wispに自然カードを出したら、私のVampire KissでOrb Wispを火に変えてレーンを勝ち取れる！",
+    "sp_075": "相手がOrb Wispに土カードを出したら、私のVampire KissでOrb Wispを火に変えてレーンを勝ち取れる！",
     "sp_076": "空のレーンに私を出すのはリスク9のため危険だ。相手が水カードを持っていれば9ダメージを受ける。",
-    "sp_077": "ここでは私を左レーンのために取っておく方が安全だ。敵の自然カードに勝てるから。",
+    "sp_077": "ここでは私を左レーンのために取っておく方が安全だ。敵の土カードに勝てるから。",
     "tut_well_done": "よくできました！チュートリアルに戻って続けよう。",
     "tut_not_quite": "惜しい——チュートリアル画面からもう一度挑戦しよう。",
     "rule_065": "3レーン。<span class=\"el-pill\">🔥火</span>は<span class=\"el-pill\">🌿土</span>に強く、土は<span class=\"el-pill\">💧水</span>に強く、水は<span class=\"el-pill\">🔥火</span>に強い。<span class=\"el-pill\">◈塵</span>は常に負ける（塵同士は引き分け）。",
@@ -22792,14 +22991,64 @@ const STRINGS = {
     "focus_p2_embersprite": "このカードのリスクはわずか3。中にはリスク9以上のカードもある。それらを倒すと大ダメージになる。",
     "focus_p3_x2": "この×2表示に注目。矢印がプレイヤーを向いていると、そのレーンで2倍のダメージが与えられることを意味する。これはゲームの重要な仕組みだ。",
     "focus_p4_x2": "倍ダメージがあなたを向いていることに注目。このレーンを失わないよう注意しよう。",
-    "focus_p5_x2": "この表示は毎ターン回転することに注目。このレーンではあなたが倍ダメージを与える。"
+    "focus_p5_x2": "この表示は毎ターン回転することに注目。このレーンではあなたが倍ダメージを与える。",
+
+    /* [v40 b06] Chaînes qui étaient codées en dur dans le HTML/JS */
+    "save_load_from": "{date} のセーブデータを読み込みますか？",
+    "rotate_msg": "端末を縦向きにして<br>Primal Gambit を<br>プレイしてください",
+    "resume_title": "⚔ 進行中のゲーム",
+    "resume_body": "{ago}に保存<br>続きからプレイしますか？",
+    "resume_ago_now": "1分以内",
+    "resume_ago_min": "{n}分前",
+    "resume_ago_hour": "{h}時間{m}分前",
+    "toast_saved": "✦ 保存しました",
+    "toast_resumed": "✦ ゲームを再開しました",
+    "alo_loading": "読み込み中…",
+    "alo_prep_fight": "戦闘を準備中…",
+    "alo_open_rules": "ルールを開いています…",
+    "alo_tip_1": "おさらい：火は土に、土は水に、水は火に強い。",
+    "alo_tip_2": "塵はすべての元素に負ける——すでに弱っているカードが相手でも。",
+    "alo_tip_3": "デッドロックは敗北ではない。レーンの決着がつくラウンドまでリスクが積み上がる。",
+    "alo_tip_4": "×2レーンは与ダメージも被ダメージも倍になる——慎重に。",
+    "alo_tip_5": "デュエルに勝つより負けたほうが得をするカードもある。",
+    "alo_tip_6": "能力を使う最適なタイミングは、最初に来た機会とは限らない。",
+    "alo_tip_7": "高リスクのカードが危険なのは、最終的に負けたときだけ。",
+    "alo_tip_8": "最後の1枚を出す前に、×2がどのレーンにあるか必ず確認を。",
+    "alo_tip_9": "読み込んでいるのはイラストであって、緊張感ではありません。",
+    "stats_empty_title": "まだ対戦記録がありません",
+    "stats_empty_sub": "1ゲームプレイすると統計が記録されます",
+    "status_loading": "読み込み中…",
+    "resume_rl_warning": "⚠ ローグライクの戦闘が進行中です — 再開しない場合は敗北扱いとなり、ライフを1つ失います。",
+    "rl_fights_left_1": "残り {n} 戦",
+    "rl_fights_left_n": "残り {n} 戦",
+    "rl_lives_left_1": "ライフ {lives}",
+    "rl_lives_left_n": "ライフ {lives}",
+    "rl_abandon_body": "戦闘が進行中です。<br>退場すると<b>敗北</b>扱いとなり、ライフを1つ失います。<br><br>取り消せません。"
   }
 };
 
 const _laneNames = ()=>[t('log_lane_left'),t('log_lane_center'),t('log_lane_right')];
 const LANG_NAMES = {en:'English',fr:'Français',de:'Deutsch',es:'Español',it:'Italiano',zh:'中文',ja:'日本語'};
 const LANG_LS_KEY = 'pg_lang';
-let _lang = localStorage.getItem(LANG_LS_KEY) || 'en';
+// [v40 b06] La langue par défaut était 'en' en dur, alors que <html lang="fr">
+// et le manifeste annoncent le français : un joueur francophone atterrissait en
+// anglais et devait trouver le sélecteur. On lit maintenant la langue du
+// navigateur, avec repli sur l'anglais si elle n'est pas gérée. Un choix
+// explicite déjà stocké l'emporte toujours.
+function _detectLang(){
+  try{
+    const stored = localStorage.getItem(LANG_LS_KEY);
+    if(stored && LANG_NAMES[stored]) return stored;
+  }catch(e){}
+  const prefs = (navigator.languages && navigator.languages.length)
+              ? navigator.languages : [navigator.language || 'en'];
+  for(const p of prefs){
+    const code = String(p).toLowerCase().slice(0,2);
+    if(LANG_NAMES[code]) return code;
+  }
+  return 'en';
+}
+let _lang = _detectLang();
 
 function t(key){
   const s = STRINGS[_lang];
@@ -23047,14 +23296,20 @@ function sfxWoosh(type){
 
 // ── HP heart loop ─────────────────────────────────────────────────────────
 let _heartEls = { player: null, enemy: null };
+// Gain effectif des boucles cardiaques — même formule que sfx() : on tient
+// compte du master, du switch FX et du switch audio global, pas seulement de _fxVol.
+function _heartGain(){
+  if(!_audioEnabled || !_fxEnabled) return 0;
+  return Math.min(1, Math.max(0, _fxVol * (_masterVol||1) * 0.6));
+}
 function _startHeartLoop(isPlayer){
   const key = isPlayer ? 'player' : 'enemy';
   if(_heartEls[key]) return;
-  if(!_audioEnabled) return;
+  if(!_audioEnabled || !_fxEnabled) return;
   try{
     const el = new Audio(isPlayer ? SFX.heart : SFX.heart2);
     el.loop = true;
-    el.volume = _fxVol * 0.6;
+    el.volume = _heartGain();
     el.play().catch(()=>{});
     _heartEls[key] = el;
   }catch(e){}
@@ -23074,8 +23329,9 @@ function _updateHeartLoops(){
 }
 function _stopAllHeartLoops(){ _stopHeartLoop(true); _stopHeartLoop(false); }
 function fxUpdateVolume(){
-  if(_heartEls.player) _heartEls.player.volume = _fxVol * 0.6;
-  if(_heartEls.enemy)  _heartEls.enemy.volume  = _fxVol * 0.6;
+  const g = _heartGain();
+  if(_heartEls.player) _heartEls.player.volume = g;
+  if(_heartEls.enemy)  _heartEls.enemy.volume  = g;
 }
 // ── Musique ───────────────────────────────────────────────────────────────
 let _musicEl = null;       // <audio> courant
@@ -23120,15 +23376,20 @@ function _fadeOut(el, cb){
 function _playMusic(src){
   if(!_audioEnabled){ return; }
   const _start = () => {
-    _musicEl = new Audio(src);
-    _musicEl.loop = true;
-    _musicEl.volume = 0;
-    _musicEl.play().catch(()=>{});
-    const target = _musicVol;
+    // `el` est une référence LOCALE : si un autre _playMusic() démarre pendant
+    // le fondu, l'ancien intervalle ne pilote plus le nouvel élément.
+    const el = new Audio(src);
+    _musicEl = el;
+    el.loop = true;
+    el.volume = 0;
+    el.play().catch(()=>{});
+    // Cible = même formule que musicUpdateVolume() (master + switches compris).
+    const target = (_audioEnabled && _musicEnabled) ? _musicVol * (_masterVol||1) : 0;
     const step = target / (MUSIC_FADE_MS / 50);
     const iv = setInterval(()=>{
-      _musicEl.volume = Math.min(target, (_musicEl.volume||0) + step);
-      if(_musicEl.volume >= target){ _musicEl.volume = target; clearInterval(iv); }
+      if(_musicEl !== el){ clearInterval(iv); return; } // remplacé entre-temps
+      el.volume = Math.min(target, (el.volume||0) + step);
+      if(el.volume >= target){ el.volume = target; clearInterval(iv); }
     }, 50);
   };
   if(_musicEl && !_musicEl.paused){
@@ -23155,11 +23416,11 @@ function musicStop(){
 function musicUpdateVolume(){
   if(_musicEl) _musicEl.volume = _audioEnabled && _musicEnabled ? _musicVol * (_masterVol||1) : 0;
 }
-function fxUpdateVolume(){
-  // Met à jour les heart loops
-  if(_heartLoops.player) _heartLoops.player.gain.gain.setValueAtTime(_fxVol*0.6, _getAudioCtx()?.currentTime||0);
-  if(_heartLoops.enemy)  _heartLoops.enemy.gain.gain.setValueAtTime(_fxVol*0.6, _getAudioCtx()?.currentTime||0);
-}
+// [v40 b06] Une seconde définition de fxUpdateVolume() vivait ici. Elle écrasait
+// celle qui est ~80 lignes plus haut et référençait _heartLoops, qui n'a jamais
+// existé dans le fichier : ReferenceError à CHAQUE appel, donc curseurs de volume
+// non persistés et import de sauvegarde interrompu avant son `return true`.
+// La version conservée (sur _heartEls) est celle déclarée avec les heart loops.
 
 // ── Déblocage AudioContext iOS (autoplay policy) ──────────────────────────
 // Safari/iOS suspend l'AudioContext jusqu'au premier geste utilisateur.
@@ -23226,7 +23487,9 @@ function audioSetMusic(v){
   _musicVol = v/100;
   document.getElementById('audio-mu-val').textContent = v+'%';
   if(_musicEnabled){
-    if(_musicEl) _musicEl.volume = _musicVol;
+    // musicUpdateVolume() applique aussi le master et le switch audio global —
+    // écrire _musicVol directement ignorait le curseur « général ».
+    if(_musicEl) musicUpdateVolume();
     else _startTitleMusicOnce(); // relancer si rien ne joue
   }
   _audioPrefsSave();
@@ -23234,21 +23497,21 @@ function audioSetMusic(v){
 function audioToggle(){
   _audioEnabled = !_audioEnabled;
   musicUpdateVolume();
-  if(!_audioEnabled) _stopAllHeartLoops();
+  if(!_audioEnabled) _stopAllHeartLoops(); else fxUpdateVolume();
   _audioPrefsSave();
 }
 function audioToggleFx(){
   _fxEnabled = !_fxEnabled;
   const img = document.getElementById('audio-img-fx');
   if(img) img.src = 'assets/background/sqbutton_soundfx'+(_fxEnabled?'on':'off')+'.png';
-  if(!_fxEnabled) _stopAllHeartLoops();
+  if(!_fxEnabled) _stopAllHeartLoops(); else fxUpdateVolume();
   _audioPrefsSave();
 }
 function audioToggleMusic(){
   _musicEnabled = !_musicEnabled;
   const img = document.getElementById('audio-img-music');
   if(img) img.src = 'assets/background/sqbutton_music'+(_musicEnabled?'on':'off')+'.png';
-  if(_musicEl) _musicEl.volume = _musicEnabled ? _musicVol : 0;
+  if(_musicEl) musicUpdateVolume();
   else if(_musicEnabled) _startTitleMusicOnce(); // relancer si rien ne joue
   _audioPrefsSave();
 }
@@ -23398,10 +23661,10 @@ function _saveParseAndRestore(text, source){
   if(info){
     info.innerHTML =
       '<div style="margin-top:8px;">' +
-      '<p style="font-size:11px;color:var(--text);margin-bottom:8px;">Load save from ' + date + '?<br><span style="color:var(--dim);font-size:10px;">' + summary + '</span></p>' +
+      '<p style="font-size:11px;color:var(--text);margin-bottom:8px;">' + _esc(t('save_load_from')).replace('{date}', _esc(date)) + '<br><span style="color:var(--dim);font-size:10px;">' + _esc(summary) + '</span></p>' +
       '<div style="display:flex;gap:8px;">' +
-      '<button onclick="sfx(SFX.click2);_saveDoRestore()" style="flex:1;background:none;border:none;cursor:pointer;padding:0;position:relative;"><img src="assets/background/button_s_black.png" style="width:100%;height:auto;display:block;" alt=""><span style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-family:Cinzel,serif;font-size:clamp(14px,3.2vw,18px);font-weight:700;color:#fff;pointer-events:none;">YES</span></button>' +
-      '<button onclick="sfx(SFX.click2);document.getElementById(\'save-import-info\').innerHTML=\'\'" style="flex:1;background:none;border:none;cursor:pointer;padding:0;position:relative;"><img src="assets/background/button_s_white.png" style="width:100%;height:auto;display:block;" alt=""><span style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-family:Cinzel,serif;font-size:clamp(14px,3.2vw,18px);font-weight:700;color:#000;pointer-events:none;">CANCEL</span></button>' +
+      '<button onclick="sfx(SFX.click2);_saveDoRestore()" style="flex:1;background:none;border:none;cursor:pointer;padding:0;position:relative;"><img src="assets/background/button_s_black.png" style="width:100%;height:auto;display:block;" alt=""><span style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-family:Cinzel,serif;font-size:clamp(14px,3.2vw,18px);font-weight:700;color:#fff;pointer-events:none;">' + _esc(t('btn_yes_load')) + '</span></button>' +
+      '<button onclick="sfx(SFX.click2);document.getElementById(\'save-import-info\').innerHTML=\'\'" style="flex:1;background:none;border:none;cursor:pointer;padding:0;position:relative;"><img src="assets/background/button_s_white.png" style="width:100%;height:auto;display:block;" alt=""><span style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-family:Cinzel,serif;font-size:clamp(14px,3.2vw,18px);font-weight:700;color:#000;pointer-events:none;">' + _esc(t('btn_cancel')) + '</span></button>' +
       '</div></div>';
   }
   // Stocker les données en attente
@@ -23501,8 +23764,9 @@ async function openRulesPanel(){
   // préchargement global au démarrage (_bootstrapAssetPreload), donc ce gate
   // ne montre l'overlay que si ce panneau est ouvert avant que ce
   // préchargement de fond ait fini (cas rare, ex. tout premier lancement).
-  await _gateWithPreload(_allIconUrls(), 'Ouverture des règles…');
+  await _gateWithPreload(_allIconUrls(), t('alo_open_rules'));
   document.getElementById('rules-overlay').classList.add('open');
+  _hydrateCompendiumThumbs();
   // Sound on accordion open/close
   document.getElementById('rules-overlay').querySelectorAll('details').forEach(d=>{
     if(!d._hasPaperSound){
@@ -23514,6 +23778,25 @@ async function openRulesPanel(){
   if(rb) rb.classList.remove('rules-wiggle');
 }
 function closeRulesPanel(){ sfx(SFX.tock); document.getElementById('rules-overlay').classList.remove('open'); }
+
+// [v40 b06] Vignettes du compendium : la src reste en data-src dans le HTML.
+// Les 49 entrées pointaient vers assets/icons/<Nom_De_Carte>.png — des fichiers
+// qui n'existent pas (ce dossier ne contient que les icônes de SKILLS), donc
+// 49 requêtes 404 à chaque chargement et un compendium sans aucune illustration.
+// Elles pointent désormais vers les vraies illustrations, mais celles-ci pèsent
+// ~260 Ko pièce : les poser en src statique coûterait plusieurs Mo au démarrage
+// pour un panneau que le joueur n'ouvre peut-être jamais. loading="lazy" ne
+// suffit pas (le panneau n'est pas display:none, le navigateur en précharge une
+// vingtaine). On les active donc à la première ouverture du panneau.
+let _compendiumHydrated = false;
+function _hydrateCompendiumThumbs(){
+  if(_compendiumHydrated) return;
+  _compendiumHydrated = true;
+  document.querySelectorAll('.rsk-card-entry img[data-src]').forEach(img => {
+    img.src = img.dataset.src;
+    delete img.dataset.src;
+  });
+}
 
 /* ═══════════════════════════════════════════════════════════════════
    DECK PANEL — Gestionnaire de deck (v29 b2)
@@ -23946,11 +24229,23 @@ function dpClose(){
 // plus bas). Reproduit fidèlement le comportement ACTUEL du simulateur, y
 // compris un bug connu sur disguiseAlly non corrigé à ce stade (voir
 // SIMULATOR_DEVIATIONS.md point 46) — décision explicite de l'utilisateur.
-function vlog(entry){ /* no-op : instrumentation debug du simulateur, non nécessaire ici */ }
-function wrapLogWithColor(log, card){ return log; } // no-op : coloration de log non nécessaire ici, retourne log tel quel
-function coloredName(card){ return card ? card.name : ''; } // no-op : pas de coloration HTML nécessaire ici
-function elColor(el){ return '#fff'; } // no-op : pas de coloration HTML nécessaire ici
-function renderMicroArena(G, log){ /* no-op : affichage visuel du simulateur, non nécessaire ici */ }
+//
+// [v40 b06] La garantie ci-dessus était fausse : cinq no-op du simulateur
+// (vlog, wrapLogWithColor, coloredName, elColor, renderMicroArena) étaient
+// déclarés SANS préfixe, en portée globale. Aucune collision réelle à ce jour,
+// mais `elColor` existe déjà comme const locale dans deux fonctions du jeu.
+// Ils sont désormais _advVlog, _advWrapLogWithColor, _advColoredName,
+// _advElColor, _advRenderMicroArena — l'invariant est de nouveau vrai.
+//
+// ⚠ DETTE CONNUE : ce module rejoue les règles du jeu de façon indépendante de
+// l'IA de combat (_aiEvaluateSkillMoves, ~1000 lignes plus haut). Toute règle
+// corrigée d'un côté doit l'être de l'autre, sans quoi l'indice conseillera un
+// coup illégal. À surveiller à chaque nouvelle carte.
+function _advVlog(entry){ /* no-op : instrumentation debug du simulateur, non nécessaire ici */ }
+function _advWrapLogWithColor(log, card){ return log; } // no-op : coloration de log non nécessaire ici, retourne log tel quel
+function _advColoredName(card){ return card ? card.name : ''; } // no-op : pas de coloration HTML nécessaire ici
+function _advElColor(el){ return '#fff'; } // no-op : pas de coloration HTML nécessaire ici
+function _advRenderMicroArena(G, log){ /* no-op : affichage visuel du simulateur, non nécessaire ici */ }
 
 function _advresetCardToBase(card){
   const base = POOL.find(p => p.id === card.id);
@@ -24773,15 +25068,15 @@ const _advSKILL_TYPES_FULL = {
 function _advskillTypeOf(key){ return _advSKILL_TYPES_FULL[key] || 'manual'; }
 const _advIMPLEMENTED_SKILLS = new Set(Object.keys(_advSKILL_TYPES_FULL));
 function _advfireInstantOnPlace(G, card, laneIdx, isPlayer, log){
-  log = wrapLogWithColor(log, card);
+  log = _advWrapLogWithColor(log, card);
   const lane = G.lanes[laneIdx];
   const opp = isPlayer ? lane.ec : lane.pc;
 
   if(card.skill === 'judgement'){
     if(!opp){ log(`    [Judgement] no opposing card — no effect`); return; }
     const result = beats(card.el, opp.el);
-    if(result === 'win'){ opp.el = EL.D; log(`    [Judgement] ${coloredName(opp)} → Dust`); }
-    else if(result === 'lose'){ card.el = EL.D; log(`    [Judgement] ${coloredName(card)} → Dust`); }
+    if(result === 'win'){ opp.el = EL.D; log(`    [Judgement] ${_advColoredName(opp)} → Dust`); }
+    else if(result === 'lose'){ card.el = EL.D; log(`    [Judgement] ${_advColoredName(card)} → Dust`); }
     else { card.el = EL.D; opp.el = EL.D; log(`    [Judgement] tie — both → Dust`); }
   }
 
@@ -24799,7 +25094,7 @@ function _advfireInstantOnPlace(G, card, laneIdx, isPlayer, log){
       const copied = opp.skill;
       card.skill = copied;
       card._skillUsed = false;
-      log(`    [Mimic] ${coloredName(card)} copies [${copied}] from ${coloredName(opp)}`);
+      log(`    [Mimic] ${_advColoredName(card)} copies [${copied}] from ${_advColoredName(opp)}`);
     } else {
       log(`    [Mimic] no valid opposite skill to copy`);
     }
@@ -25376,7 +25671,7 @@ function _advevaluateSkillMoves(G, isPlayerSide){
 
   const threshold = isBonus ? 0.3 : 1.0;
   const result = (bestLane === -1 || bestGain <= threshold) ? null : { lane: bestLane, card: bestCard, gain: bestGain };
-  vlog({
+  _advVlog({
     type: '_advevaluateSkillMoves',
     round: G.round, sr: G._roundState ? G._roundState.sr : null,
     isPlayerSide,
@@ -25392,18 +25687,18 @@ function _advevaluateSkillMoves(G, isPlayerSide){
 function _advtryActivateBestSkill(G, isPlayer, log, phaseLabel){
   const move = _advevaluateSkillMoves(G, isPlayer);
   if(!move){
-    vlog({ type:'_advtryActivateBestSkill', round:G.round, sr:G._roundState?G._roundState.sr:null, phaseLabel, isPlayer, outcome:'no-candidate' });
+    _advVlog({ type:'_advtryActivateBestSkill', round:G.round, sr:G._roundState?G._roundState.sr:null, phaseLabel, isPlayer, outcome:'no-candidate' });
     return false;
   }
   const applied = _advtryManualSkill(G, move.card, move.lane, isPlayer, log);
-  vlog({
+  _advVlog({
     type:'_advtryActivateBestSkill', round:G.round, sr:G._roundState?G._roundState.sr:null, phaseLabel, isPlayer,
     candidateCard: move.card.name, candidateSkill: move.card.skill, candidateGain: +move.gain.toFixed(3),
     outcome: applied ? 'applied' : 'blocked-or-failed',
   });
   if(applied){
-    log(`    [SkillTiming:${phaseLabel}] ${isPlayer?'YOU':'OPP'} activated ${coloredName(move.card)}'s skill on lane ${move.lane+1}`);
-    renderMicroArena(G, log);
+    log(`    [SkillTiming:${phaseLabel}] ${isPlayer?'YOU':'OPP'} activated ${_advColoredName(move.card)}'s skill on lane ${move.lane+1}`);
+    _advRenderMicroArena(G, log);
   }
   return applied;
 }
@@ -25411,7 +25706,7 @@ function _advtryActivateBestSkill(G, isPlayer, log, phaseLabel){
 // ── Manuels : appliquent un effet immédiat sur l'état ──────────────────────
 // Retourne true si le skill a été appliqué (consomme le tour de skill)
 function _advtryManualSkill(G, card, laneIdx, isPlayer, log){
-  log = wrapLogWithColor(log, card);
+  log = _advWrapLogWithColor(log, card);
   if(card._skillUsed) return false;
   const type = _advskillTypeOf(card.skill);
   if(type !== 'manual') return false;
@@ -25431,7 +25726,7 @@ function _advtryManualSkill(G, card, laneIdx, isPlayer, log){
       // cible aucune carte précise. Le nom affiché n'est que la carte qui a
       // ÉCHOUÉ à s'activer (la meilleure candidate du glouton à cet instant),
       // pas une cible du skill exhaust lui-même.
-      log(`    [Exhaust] all manual skills blocked this SR (attempted: ${coloredName(card)})`);
+      log(`    [Exhaust] all manual skills blocked this SR (attempted: ${_advColoredName(card)})`);
     }
     return false;
   }
@@ -25464,7 +25759,7 @@ function _advtryManualSkill(G, card, laneIdx, isPlayer, log){
   if(card.skill === 'crush'){
     if(opp && opp.risk <= 6){
       opp.el = EL.D;
-      log(`    [Crush] ${coloredName(opp)} (Risk ${opp.risk}) → Dust`);
+      log(`    [Crush] ${_advColoredName(opp)} (Risk ${opp.risk}) → Dust`);
     } else {
       log(`    [Crush] no effect (opposing Risk > 6 or no target)`);
     }
@@ -25504,7 +25799,7 @@ function _advtryManualSkill(G, card, laneIdx, isPlayer, log){
       if(bestTarget && bestNet > 0){
         card.el = EL.D;
         bestTarget.el = EL.D;
-        log(`    [Dustshot] ${coloredName(card)} + ${coloredName(bestTarget)} (lane ${bestLaneIdx+1}) → Dust`);
+        log(`    [Dustshot] ${_advColoredName(card)} + ${_advColoredName(bestTarget)} (lane ${bestLaneIdx+1}) → Dust`);
       } else {
         log(`    [Dustshot] no beneficial target — no effect`);
       }
@@ -25528,7 +25823,7 @@ function _advtryManualSkill(G, card, laneIdx, isPlayer, log){
     });
     if(best && bestGain > 0){
       best.el = EL.D;
-      log(`    [Extinguish] ${coloredName(best)} (lane ${bestLaneIdx+1}, Fire) → Dust`);
+      log(`    [Extinguish] ${_advColoredName(best)} (lane ${bestLaneIdx+1}, Fire) → Dust`);
     } else {
       log(`    [Extinguish] no beneficial Fire target — no effect`);
     }
@@ -25558,7 +25853,7 @@ function _advtryManualSkill(G, card, laneIdx, isPlayer, log){
     lane[oppDlKey]  = Math.max(0, lane[oppDlKey]  - oppRisk + oldRisk);
     card.risk = 2;
     lane[oppDlKey] = Math.max(0, lane[oppDlKey] - oldRisk + 2);
-    log(`    [Betrayal] ${coloredName(card)} swaps with ${coloredName(opp)}, Risk ${oldRisk}→2`);
+    log(`    [Betrayal] ${_advColoredName(card)} swaps with ${_advColoredName(opp)}, Risk ${oldRisk}→2`);
     card._skillUsed = true;
     return true;
   }
@@ -25593,7 +25888,7 @@ function _advtryManualSkill(G, card, laneIdx, isPlayer, log){
     if(bestFound && bestGain > 0){
       card.el = EL.D;
       bestFound.ally.el = EL.E;
-      log(`    [Cede and Seed] ${coloredName(card)} → Dust, ${bestFound.ally.name} → Earth`);
+      log(`    [Cede and Seed] ${_advColoredName(card)} → Dust, ${bestFound.ally.name} → Earth`);
     } else {
       log(`    [Cede and Seed] no beneficial ally — no effect`);
     }
@@ -25615,7 +25910,7 @@ function _advtryManualSkill(G, card, laneIdx, isPlayer, log){
     if(bestFound && bestGain > 0){
       const oldEl = card.el;
       card.el = bestFound.el;
-      log(`    [Chameleon] ${coloredName(card)}: ${oldEl}→${card.el}`);
+      log(`    [Chameleon] ${_advColoredName(card)}: ${oldEl}→${card.el}`);
     } else {
       log(`    [Chameleon] no beneficial adjacent ally — no effect`);
     }
@@ -25642,7 +25937,7 @@ function _advtryManualSkill(G, card, laneIdx, isPlayer, log){
       card.risk = bestFound.risk;
       card.skill = bestFound.skill;
       card.name = oldName + '*';
-      log(`    [Doppelganger] ${oldName} → copy of ${coloredName(bestFound)}`);
+      log(`    [Doppelganger] ${oldName} → copy of ${_advColoredName(bestFound)}`);
     } else {
       log(`    [Doppelganger] no beneficial adjacent ally — no effect`);
     }
@@ -25676,7 +25971,7 @@ function _advtryManualSkill(G, card, laneIdx, isPlayer, log){
       G.lanes[bestFound.idx][selfDlKey] = Math.max(0, G.lanes[bestFound.idx][selfDlKey] + riskDiff);
       card.el = EL.D;
       card.risk = 1;
-      log(`    [Disguise Ally] ${oldAllyName} copies ${coloredName(opp)}, ${coloredName(card)} → Dust`);
+      log(`    [Disguise Ally] ${oldAllyName} copies ${_advColoredName(opp)}, ${_advColoredName(card)} → Dust`);
     } else {
       log(`    [Disguise Ally] no beneficial target — no effect`);
     }
@@ -25722,7 +26017,7 @@ function _advtryManualSkill(G, card, laneIdx, isPlayer, log){
   }
 
   if(card.skill === 'mirror'){
-    if(opp){ card.el = opp.el; log(`    [Mirror] ${coloredName(card)} copies ${opp.el}`); }
+    if(opp){ card.el = opp.el; log(`    [Mirror] ${_advColoredName(card)} copies ${opp.el}`); }
     else log(`    [Mirror] no opposing card — no effect`);
     card._skillUsed = true;
     return true;
@@ -25740,14 +26035,14 @@ function _advtryManualSkill(G, card, laneIdx, isPlayer, log){
   }
 
   if(card.skill === 'overpower'){
-    if(opp && opp.risk >= 9){ opp.el = EL.D; log(`    [Overpower] ${coloredName(opp)} (Risk ${opp.risk}) → Dust`); }
+    if(opp && opp.risk >= 9){ opp.el = EL.D; log(`    [Overpower] ${_advColoredName(opp)} (Risk ${opp.risk}) → Dust`); }
     else log(`    [Overpower] no effect (opposing Risk < 9 or no target)`);
     card._skillUsed = true;
     return true;
   }
 
   if(card.skill === 'intimidate'){
-    if(opp && opp.el === card.el && opp.risk < card.risk){ opp.el = EL.D; log(`    [Intimidate] ${coloredName(opp)} → Dust`); }
+    if(opp && opp.el === card.el && opp.risk < card.risk){ opp.el = EL.D; log(`    [Intimidate] ${_advColoredName(opp)} → Dust`); }
     else log(`    [Intimidate] no effect (conditions not met)`);
     card._skillUsed = true;
     return true;
@@ -25794,7 +26089,7 @@ function _advtryManualSkill(G, card, laneIdx, isPlayer, log){
       const g = (score(allyOpp ? beats(EL.F, allyOpp.el) : 'tie') - score(allyOpp ? beats(ally.el, allyOpp.el) : 'tie')) * iMult;
       if(g > bestGain){ bestGain = g; best = ally; bestLaneIdx = li; }
     });
-    if(best){ best.el = EL.F; log(`    [Ignite] ${coloredName(best)} (lane ${bestLaneIdx+1}) → Fire`); }
+    if(best){ best.el = EL.F; log(`    [Ignite] ${_advColoredName(best)} (lane ${bestLaneIdx+1}) → Fire`); }
     else log(`    [Ignite] no beneficial allied target — no effect`);
     card._skillUsed = true;
     return true;
@@ -25827,7 +26122,7 @@ function _advtryManualSkill(G, card, laneIdx, isPlayer, log){
         G.lanes[dst].eDl += card.risk;
         G.lanes[dst].ec = card;
       }
-      log(`    [Leap] ${coloredName(card)} moves lane ${laneIdx+1}→${dst+1}`);
+      log(`    [Leap] ${_advColoredName(card)} moves lane ${laneIdx+1}→${dst+1}`);
     } else {
       log(`    [Leap] no beneficial empty slot — no effect`);
     }
@@ -25865,7 +26160,7 @@ function _advtryManualSkill(G, card, laneIdx, isPlayer, log){
         G.lanes[laneIdx].eDl = Math.max(0, G.lanes[laneIdx].eDl - srcRisk + dstRisk);
         G.lanes[allyLaneIdx].eDl = Math.max(0, G.lanes[allyLaneIdx].eDl - dstRisk + srcRisk);
       }
-      log(`    [Maneuver] ${coloredName(card)} swaps with ${coloredName(ally)} (lane ${laneIdx+1}↔${allyLaneIdx+1})`);
+      log(`    [Maneuver] ${_advColoredName(card)} swaps with ${_advColoredName(ally)} (lane ${laneIdx+1}↔${allyLaneIdx+1})`);
     } else {
       log(`    [Maneuver] no beneficial adjacent ally — no effect`);
     }
@@ -25921,7 +26216,7 @@ function _advtryManualSkill(G, card, laneIdx, isPlayer, log){
       const g = curOut === 'win' ? 2.5*vMult : curOut === 'tie' ? 1.5*vMult : 1.0*vMult;
       if(g > bestGain){ bestGain = g; best = target; bestLaneIdx = li; }
     });
-    if(best && bestGain > 0){ best._skillVoided = true; best._skillUsed = true; log(`    [Void] ${coloredName(best)} (lane ${bestLaneIdx+1}) skill disabled`); }
+    if(best && bestGain > 0){ best._skillVoided = true; best._skillUsed = true; log(`    [Void] ${_advColoredName(best)} (lane ${bestLaneIdx+1}) skill disabled`); }
     else log(`    [Void] no beneficial enemy target — no effect`);
     card._skillUsed = true;
     return true;
@@ -25949,7 +26244,7 @@ function _advtryManualSkill(G, card, laneIdx, isPlayer, log){
       else G.lanes[bestLaneIdx].eDl = Math.max(0, G.lanes[bestLaneIdx].eDl + riskDiff);
       best.el = card.el; best.risk = card.risk; best.skill = card.skill;
       best.name = best.name + '*'; best._skillUsed = true;
-      log(`    [Vampire Kiss] ${coloredName(best)} (lane ${bestLaneIdx+1}) becomes a copy of ${coloredName(card)}`);
+      log(`    [Vampire Kiss] ${_advColoredName(best)} (lane ${bestLaneIdx+1}) becomes a copy of ${_advColoredName(card)}`);
     } else {
       log(`    [Vampire Kiss] no beneficial allied card — no effect`);
     }
@@ -25994,7 +26289,7 @@ function _advtryManualSkill(G, card, laneIdx, isPlayer, log){
         lane.eDl = Math.max(0, lane.eDl - card.risk + newCard.risk);
         lane.ec = newCard;
       }
-      log(`    [Retreat] ${coloredName(card)} → ${coloredName(newCard)} (Risk ${newCard.risk})`);
+      log(`    [Retreat] ${_advColoredName(card)} → ${_advColoredName(newCard)} (Risk ${newCard.risk})`);
     }
     card._skillUsed = true;
     return true;
@@ -26010,7 +26305,7 @@ function _advtryManualSkill(G, card, laneIdx, isPlayer, log){
         if(isPlayer) lane.eDl = Math.max(0, lane.eDl - opp.risk + newOpp.risk);
         else lane.pDl = Math.max(0, lane.pDl - opp.risk + newOpp.risk);
         if(isPlayer) lane.ec = newOpp; else lane.pc = newOpp;
-        log(`    [Terrify] ${coloredName(opp)} replaced by ${coloredName(newOpp)} (Risk ${newOpp.risk})`);
+        log(`    [Terrify] ${_advColoredName(opp)} replaced by ${_advColoredName(newOpp)} (Risk ${newOpp.risk})`);
       }
     } else {
       log(`    [Terrify] no opposing card — no effect`);
@@ -26034,15 +26329,15 @@ function _advapplyPassivesOnResolve(G, laneIdx, outcome, log){
     // DETERMINED : retire la carte de l'égalité sans laisser de Risk
     if(pc && pc.skill === 'determined'){
       lane.pDl = Math.max(0, lane.pDl - pc.risk);
-      log(`    <span style="color:${elColor(pc.el)};font-weight:bold;">[Determined]</span> ${coloredName(pc)} removed — no Deadlock Risk`);
+      log(`    <span style="color:${_advElColor(pc.el)};font-weight:bold;">[Determined]</span> ${_advColoredName(pc)} removed — no Deadlock Risk`);
     }
     if(ec && ec.skill === 'determined'){
       lane.eDl = Math.max(0, lane.eDl - ec.risk);
-      log(`    <span style="color:${elColor(ec.el)};font-weight:bold;">[Determined]</span> ${coloredName(ec)} removed — no Deadlock Risk`);
+      log(`    <span style="color:${_advElColor(ec.el)};font-weight:bold;">[Determined]</span> ${_advColoredName(ec)} removed — no Deadlock Risk`);
     }
     // BACKSTAB : chaque camp avec backstab inflige 6 dégâts direct à l'adversaire
-    if(pc && pc.skill === 'backstab'){ extraDmgToEnemy += 6; log(`    <span style="color:${elColor(pc.el)};font-weight:bold;">[Backstab]</span> ${coloredName(pc)} deals 6 dmg`); }
-    if(ec && ec.skill === 'backstab'){ extraDmgToPlayer += 6; log(`    <span style="color:${elColor(ec.el)};font-weight:bold;">[Backstab]</span> ${coloredName(ec)} deals 6 dmg`); }
+    if(pc && pc.skill === 'backstab'){ extraDmgToEnemy += 6; log(`    <span style="color:${_advElColor(pc.el)};font-weight:bold;">[Backstab]</span> ${_advColoredName(pc)} deals 6 dmg`); }
+    if(ec && ec.skill === 'backstab'){ extraDmgToPlayer += 6; log(`    <span style="color:${_advElColor(ec.el)};font-weight:bold;">[Backstab]</span> ${_advColoredName(ec)} deals 6 dmg`); }
   } else {
     const winnerCard  = outcome==='win' ? pc : ec;
     const loserCard   = outcome==='win' ? ec : pc;
@@ -26050,12 +26345,12 @@ function _advapplyPassivesOnResolve(G, laneIdx, outcome, log){
     // TORMENT : si le gagnant bat une carte de Risk inférieur, +7 dégâts
     if(winnerCard && winnerCard.skill === 'torment' && loserCard.risk < winnerCard.risk){
       if(winnerIsPlayer) extraDmgToEnemy += 7; else extraDmgToPlayer += 7;
-      log(`    <span style="color:${elColor(winnerCard.el)};font-weight:bold;">[Torment]</span> ${coloredName(winnerCard)} crushes ${coloredName(loserCard)} — +7 dmg`);
+      log(`    <span style="color:${_advElColor(winnerCard.el)};font-weight:bold;">[Torment]</span> ${_advColoredName(winnerCard)} crushes ${_advColoredName(loserCard)} — +7 dmg`);
     }
     // VENDETTA : si le perdant a vendetta, il inflige 4 dégâts au gagnant
     if(loserCard && loserCard.skill === 'vendetta'){
       if(winnerIsPlayer) extraDmgToPlayer += 4; else extraDmgToEnemy += 4;
-      log(`    <span style="color:${elColor(loserCard.el)};font-weight:bold;">[Vendetta]</span> ${coloredName(loserCard)} retaliates — +4 dmg`);
+      log(`    <span style="color:${_advElColor(loserCard.el)};font-weight:bold;">[Vendetta]</span> ${_advColoredName(loserCard)} retaliates — +4 dmg`);
     }
   }
 
@@ -26241,6 +26536,37 @@ function _advGetHint(realG){
     return { error: true, errorMessage: (err && err.message) ? err.message : String(err) };
   }
 }
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   SERVICE WORKER — installation hors-ligne
+   ─────────────────────────────────────────────────────────────────────────
+   Sans ce bloc, « Ajouter à l'écran d'accueil » ne crée qu'un raccourci :
+   l'icône ne s'ouvre pas sans réseau. Avec, le jeu se lance hors-ligne.
+   · Ignoré silencieusement en file:// (pas de contexte sécurisé) et dans
+     l'iframe itch.io — dans les deux cas le jeu fonctionne comme avant.
+   · Enregistré après 'load' pour ne jamais concurrencer le préchargement
+     des illustrations sur une connexion lente.
+   ═══════════════════════════════════════════════════════════════════════════ */
+function _swRegister(){
+  if(!('serviceWorker' in navigator) || !window.isSecureContext) return;
+  navigator.serviceWorker.register('sw.js', { scope: './' })
+    .then(reg => {
+      // Une nouvelle version est prête : l'activer sans attendre la fermeture
+      // de tous les onglets. Elle prendra effet au prochain chargement.
+      reg.addEventListener('updatefound', () => {
+        const sw = reg.installing;
+        if(!sw) return;
+        sw.addEventListener('statechange', () => {
+          if(sw.state === 'installed' && navigator.serviceWorker.controller){
+            sw.postMessage('skipWaiting');
+          }
+        });
+      });
+    })
+    .catch(() => { /* pas de hors-ligne : le jeu reste pleinement jouable */ });
+}
+if(document.readyState === 'complete') _swRegister();
+else window.addEventListener('load', _swRegister);
 
 </script>
 
