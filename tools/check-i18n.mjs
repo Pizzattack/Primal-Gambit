@@ -111,24 +111,35 @@ export function checkI18n(html = readIndex()) {
   }
 
   // ── 4. Placeholders : ce qui est écrit dans la table doit être remplacé ──
-  // On rassemble tous les .replace('{x}', …) du fichier ; tout placeholder
-  // d'une chaîne qui n'apparaît jamais dans un replace finira à l'écran.
+  // Deux mécanismes coexistent dans le code :
+  //   · l'ancien, t('clé').replace('{x}', …) — c'est lui qui avait laissé {s}
+  //     et {s2} s'afficher littéralement dans les 7 langues ;
+  //   · le nouveau, tl('clé', { x: … }) — on connaît alors la clé ET les
+  //     variables fournies, donc on peut vérifier l'accord exactement.
   //
   // Uniquement sur les clés RÉELLEMENT utilisées : les placeholders d'une clé
-  // orpheline n'atteignent personne. C'est le contrôle n° 3 qui signale les
-  // orphelines, et le mélanger ici noierait le vrai signal.
-  const replaced = new Set(
+  // orpheline n'atteignent personne. C'est le contrôle n° 3 qui les signale.
+  const replacedGlobally = new Set(
     [...html.matchAll(/\.replace\(\s*['"](\{[a-zA-Z0-9_]+\})['"]/g)].map(m => m[1]),
   );
+  // Par clé : union des variables passées à tl() sur tous ses sites d'appel.
+  const providedByKey = new Map();
+  for (const call of findTlCalls(html)) {
+    if (!providedByKey.has(call.key)) providedByKey.set(call.key, new Set());
+    const set = providedByKey.get(call.key);
+    call.vars.forEach(v => set.add('{' + v + '}'));
+  }
+
   const unhandled = new Map();
   for (const lang of langs) {
     for (const [key, val] of Object.entries(STRINGS[lang])) {
       if (typeof val !== 'string' || !used.has(key)) continue;
+      const provided = providedByKey.get(key);
       for (const m of val.matchAll(/\{[a-zA-Z0-9_]+\}/g)) {
-        if (!replaced.has(m[0])) {
-          const id = `${key} ${m[0]}`;
-          if (!unhandled.has(id)) unhandled.set(id, lang);
-        }
+        if (replacedGlobally.has(m[0])) continue;
+        if (provided && provided.has(m[0])) continue;
+        const id = `${key} ${m[0]}`;
+        if (!unhandled.has(id)) unhandled.set(id, lang);
       }
     }
   }
@@ -137,6 +148,23 @@ export function checkI18n(html = readIndex()) {
     r.error(`\`${key}\` contient ${ph}, que le code ne remplace jamais.`, {
       hint: `Le joueur verra « ${ph} » littéralement à l'écran (repéré en "${lang}").`,
     });
+  }
+
+  // ── 4b. Variable passée à tl() mais absente de la chaîne ──
+  // Signe habituel d'un renommage à moitié fait : la valeur est calculée pour
+  // rien, et le placeholder qu'elle visait est peut-être resté sans source.
+  for (const [key, provided] of providedByKey) {
+    if (!refKeys.includes(key)) continue;
+    const inString = new Set(
+      [...(STRINGS[ref][key] || '').matchAll(/\{[a-zA-Z0-9_]+\}/g)].map(m => m[0]),
+    );
+    for (const v of provided) {
+      if (!inString.has(v)) {
+        r.warn(`tl('${key}', …) reçoit ${v}, absent de la chaîne.`, {
+          hint: 'Variable calculée pour rien, ou placeholder renommé d\'un seul côté.',
+        });
+      }
+    }
   }
 
   // ── 5. Cohérence du vocabulaire de jeu ──
@@ -167,4 +195,40 @@ function lineOf(text, index) {
   let n = 1;
   for (let i = 0; i < index; i++) if (text.charCodeAt(i) === 10) n++;
   return n;
+}
+
+
+/**
+ * Trouve les appels tl('clé', { a: …, b: … }) et renvoie, pour chacun, la clé
+ * et les noms de variables fournies.
+ *
+ * Un vrai parseur JS serait exagéré ici : on lit l'objet littéral en comptant
+ * les accolades, ce qui suffit pour la forme utilisée dans ce fichier, et on
+ * ne retient que les identifiants en début de propriété (`nom:` ou `nom,` pour
+ * la forme abrégée).
+ */
+function findTlCalls(html) {
+  const calls = [];
+  const re = /\btl\(\s*['"]([a-zA-Z0-9_]+)['"]\s*,\s*\{/g;
+  for (const m of html.matchAll(re)) {
+    let depth = 1;
+    let i = m.index + m[0].length;
+    const start = i;
+    while (i < html.length && depth > 0) {
+      const ch = html[i];
+      if (ch === '{') depth++;
+      else if (ch === '}') depth--;
+      i++;
+    }
+    const body = html.slice(start, i - 1);
+    const vars = [];
+    // `nom:` (propriété classique) ou `nom,` / `nom }` (forme abrégée).
+    // `|$` est indispensable : body est l'INTÉRIEUR des accolades, donc une
+    // propriété abrégée en dernière position n'est suivie de rien.
+    for (const p of body.matchAll(/(?:^|[,{])\s*([a-zA-Z_$][\w$]*)\s*(?=[:,}]|$)/g)) {
+      vars.push(p[1]);
+    }
+    calls.push({ key: m[1], vars });
+  }
+  return calls;
 }

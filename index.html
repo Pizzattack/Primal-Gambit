@@ -6426,7 +6426,7 @@ function _startFight(){
   preloadAssets([...G.pDeck, ...G.eDeck].map(_cardArtUrl));
   statsTimeEnterZone('combat');
   musicPlayBattle();
-  addLog("Battle begins!", 'imp', ["Battle begins!"]);
+  addLog(t('log_battle_begins'), 'imp', [t('logs_battle_begins')]);
   // DEBUG : réinitialise le log verbose cumulatif pour ce nouveau combat.
   if(typeof _vlogResetForNewFight === 'function') _vlogResetForNewFight();
   const startP = [...G.pHand];
@@ -6585,7 +6585,7 @@ function initRoundStructure(){
   let _multLine = null;
   if(G.round === 1){
     G.multOwner = Math.random() < 0.5 ? 0 : 1;
-    _multLine = `** x2: ${G.multOwner === 0 ? 'YOU' : 'OPP'}`;
+    _multLine = tl('logs_x2_owner', { who: G.multOwner === 0 ? t('log_you') : t('log_opp') });
   }
   if(G.round === 1 || !G.pMaxHP){ G.pMaxHP = G.pHP; G.eMaxHP = G.eHP; } // référence max HP — initialisé au round 1 uniquement
   G.skillUsedThisRound = false; // une seule ability par round par joueur
@@ -6612,17 +6612,20 @@ function initRoundStructure(){
     if(lane.pDl > _hrVal){ _hrVal = lane.pDl; _hrLaneIdx = i; _hrOwner = 'YOU'; }
     if(lane.eDl > _hrVal){ _hrVal = lane.eDl; _hrLaneIdx = i; _hrOwner = 'OPP'; }
   });
-  const _laneNames3 = ['Left','Center','Right'];
+  const _laneNames3 = _laneNames();
   const _roundLines = [
-    `*** Round ${G.round}`,
-    `** Initiative: ${A === 'player' ? 'YOU' : 'OPP'}`
+    tl('logs_round', { n: G.round }),
+    tl('logs_initiative', { who: A === 'player' ? t('log_you') : t('log_opp') })
   ];
   if(_multLine) _roundLines.push(_multLine);
   if(_hrLaneIdx !== -1 && _hrVal > 0){
-    _roundLines.push(`** Higher risk:`);
-    _roundLines.push(`   ${_laneNames3[_hrLaneIdx]} lane: ${_hrOwner}`);
+    _roundLines.push(t('logs_higher_risk'));
+    _roundLines.push(tl('logs_higher_risk_lane', { lane: _laneNames3[_hrLaneIdx], who: _hrOwner }));
   }
-  addLog(`Round ${G.round} — ${A === 'player' ? 'You have initiative' : 'Opponent has initiative'}`, 'imp', _roundLines);
+  addLog(tl('log_round_init', {
+    n: G.round,
+    who: A === 'player' ? t('log_you_initiative') : t('log_opp_initiative'),
+  }), 'imp', _roundLines);
 
   // Énigme 5 : bulle pédagogique au tout début du round 2 (peu importe qui joue en premier)
   if(_tutMode && _tutCurrentPuzzle && _tutCurrentPuzzle.id === 5 && G.round === 2 && !G._p5R2SpeechShown){
@@ -6730,8 +6733,8 @@ function evaluateTurnState(){
 
   document.getElementById('status-msg').textContent = t('sr_round').replace('{n}',G.subRound);
   addLog(t('sr_round').replace('{n}',G.subRound)+' — '+(G.turnOwner==='player'?t('arena_your_turn'):t('arena_opp_playing')), '', [
-    `** Sub-round ${G.subRound}/6`,
-    `** ${G.turnOwner === 'player' ? 'YOU are' : 'OPP is'} playing`
+    tl('logs_subround', { n: G.subRound }),
+    tl('logs_playing', { who: G.turnOwner === 'player' ? t('log_you') : t('log_opp') })
   ]);
   renderFight();
 
@@ -7898,7 +7901,8 @@ function tryAiSkillMidRound(){
   const _powerShiftFromAi = _skillNameAi === 'powerShift' ? G.multLaneIdx : -1;
   sfx(SFX.click3);
   sfxElement(card.el);
-  addLog(`Opponent uses [${SKILLS[_skillNameAi].n}] (${card.name}).`, 'opp', [`OPP: activates ${SKILLS[_skillNameAi].n}`]);
+  addLog(tl('log_opp_uses', { skill: _skillName(_skillNameAi), name: card.name }), 'opp',
+    [tl('logs_activates', { who: t('log_opp'), skill: _skillName(_skillNameAi) })]);
   executeSkillLogic(card, bestLane, false, aiTargetLaneIdx, aiTargetIsEnemy);
   card._skillUsed = true;
   G.aiSkillUsedThisRound = true;
@@ -8472,11 +8476,11 @@ function executeAiPlacementAction(){
 
   {
     const _oldRisk = G.lanes[targetLane].eDl - card.risk;
-    const _laneN = ['Left','Center','Right'][targetLane];
-    addLog(`Opponent plays ${card.name} → ${_laneN} lane (Risk ${card.risk}).`, 'opp', [
-      `OPP: plays ${card.name}`,
-      `* in ${_laneN} lane`,
-      `* Total risk = ${_oldRisk} + ${card.risk}`
+    const _laneN = _laneNames()[targetLane];
+    addLog(tl('log_opp_play', { name: card.name, lane: _laneN, risk: card.risk }), 'opp', [
+      tl('logs_opp_plays',  { name: card.name }),
+      tl('logs_in_lane',    { lane: _laneN }),
+      tl('logs_total_risk', { before: _oldRisk, add: card.risk })
     ]);
   }
 
@@ -8500,7 +8504,8 @@ function executeAiPlacementAction(){
     // Refresh ne se marquait jamais elle-même comme utilisée.
     card._skillUsed = true;
     // NE PAS réinitialiser aiSkillUsedThisRound : même règle que côté joueur.
-    addLog(`[Refresh] ${t('log_opp')} : ${restored} ${t('tab_cards').toLowerCase()} ${t('sk_no_adj_ally').includes('adj')?'restored':'restored'}.`, 'opp', [`OPP: Refresh +${restored}`]);
+    addLog(tl('log_refresh', { who: t('log_opp'), n: restored }), 'opp',
+      [tl('logs_hand_plus', { n: restored })]);
   }
 
   // ── Instant : Mimic IA — copie le skill de la carte joueur en face ──
@@ -8511,10 +8516,13 @@ function executeAiPlacementAction(){
       card.skill = copiedSkill;
       card._skillUsed = false;
       const skName = t('skn_'+copiedSkill) || (SKILLS[copiedSkill] || {n: copiedSkill}).n;
-      addLog(`[Mimic] ${card.name} → [${skName}] ← ${opp.name}.`, 'opp', [`OPP: Mimic`, `   ${opp.name} → ${skName}`]);
+      addLog(tl('log_mimic', { name: card.name, skill: skName, opp: opp.name }), 'opp',
+        [tl('logs_activates', { who: t('log_opp'), skill: _skillName('mimic') }),
+         tl('logs_arrow', { from: opp.name, to: skName })]);
       setTimeout(() => _animateSkillActivate(targetLane, false), 0);
     } else {
-      addLog(t('sk_mimic_no_opp'), 'opp', [`OPP: activates Mimic`, `   no effect`]);
+      addLog(t('sk_mimic_no_opp'), 'opp',
+        [tl('logs_activates', { who: t('log_opp'), skill: _skillName('mimic') }), t('logs_no_effect')]);
     }
   }
 
@@ -8625,7 +8633,9 @@ function executeAiBonusSkill(){
       const _powerShiftFromBonus = _skillNameBonus === 'powerShift' ? G.multLaneIdx : -1;
       sfx(SFX.click3);
       sfxElement(ec.el);
-      addLog(`Opponent uses [${SKILLS[_skillNameBonus].n}] at bonus SR7 (${ec.name}).`, 'opp', [`OPP: activates ${SKILLS[_skillNameBonus].n}`, `   bonus SR7`]);
+      addLog(tl('log_opp_uses_bonus', { skill: _skillName(_skillNameBonus), name: ec.name }), 'opp',
+        [tl('logs_activates', { who: t('log_opp'), skill: _skillName(_skillNameBonus) }),
+         t('logs_bonus_sr7')]);
       executeSkillLogic(ec, i, false, bonusTargetLaneIdx, bonusTargetIsEnemy);
       ec._skillUsed = true;
       G.aiSkillUsedThisRound = true;
@@ -9519,7 +9529,7 @@ function dropCardToLane(cardIdx, laneIdx){
     if(laneIdx === G.firstCardLane){
       document.getElementById('status-msg').textContent =
         t('sr_no_opp_r2');
-      addLog(t('sr_no_opp_r2'), 'imp', [`SR2: lane blocked`]);
+      addLog(t('sr_no_opp_r2'), 'imp', [t('logs_lane_blocked')]);
       const slot = document.querySelector(`#lane-${laneIdx} .slot.slot-empty`);
       if(slot && !slot.classList.contains('card-shake')){
         slot.classList.add('card-shake');
@@ -9644,11 +9654,11 @@ function dropCardToLane(cardIdx, laneIdx){
   }
   {
     const _oldRiskP = G.lanes[laneIdx].pDl - card.risk;
-    const _laneNP = ['Left','Center','Right'][laneIdx];
-    addLog(`You play ${card.name} → ${_laneNP} lane (Risk ${card.risk}).`, 'you', [
-      `YOU: play ${card.name}`,
-      `* in ${_laneNP} lane`,
-      `* Total risk = ${_oldRiskP} + ${card.risk}`
+    const _laneNP = _laneNames()[laneIdx];
+    addLog(tl('log_you_play', { name: card.name, lane: _laneNP, risk: card.risk }), 'you', [
+      tl('logs_you_plays',  { name: card.name }),
+      tl('logs_in_lane',    { lane: _laneNP }),
+      tl('logs_total_risk', { before: _oldRiskP, add: card.risk })
     ]);
   }
 
@@ -9678,7 +9688,8 @@ function dropCardToLane(cardIdx, laneIdx){
     // un second skill dans le même sous-round, il réactive les cartes
     // pour les sous-rounds suivants.
     sfxElement(card.el);
-    addLog(`[Refresh] ${t('log_you')} : ${restored} ${t('tab_cards').toLowerCase()} restored.`, 'you', [`YOU: Refresh +${restored}`]);
+    addLog(tl('log_refresh', { who: t('log_you'), n: restored }), 'you',
+      [tl('logs_hand_plus', { n: restored })]);
     _animateSkillActivate(laneIdx, true);
   }
 
@@ -9691,9 +9702,12 @@ function dropCardToLane(cardIdx, laneIdx){
       card._skillUsed = false;
       // Ajouter le skill copié dans SKILLS s'il n'y est pas déjà (ne devrait pas arriver)
       const skName = t('skn_'+copiedSkill) || (SKILLS[copiedSkill] || {n: copiedSkill}).n;
-      addLog(`[Mimic] ${card.name} → [${skName}] ← ${opp.name}.`, 'you', [`YOU: Mimic`, `   ${opp.name} → ${skName}`]);
+      addLog(tl('log_mimic', { name: card.name, skill: skName, opp: opp.name }), 'you',
+        [tl('logs_activates', { who: t('log_you'), skill: _skillName('mimic') }),
+         tl('logs_arrow', { from: opp.name, to: skName })]);
     } else {
-      addLog(t('sk_mimic_no_opp'), 'you', [`YOU: activate Mimic`, `   no effect`]);
+      addLog(t('sk_mimic_no_opp'), 'you',
+        [tl('logs_activates', { who: t('log_you'), skill: _skillName('mimic') }), t('logs_no_effect')]);
     }
     sfxElement(card.el);
     _animateSkillActivate(laneIdx, true);
@@ -10513,7 +10527,8 @@ function confirmSkillTarget(targetLaneIdx, targetIsEnemy){
     G.pendingSkill = null;
 
     // Exécuter avec les deux cibles encodées dans targetLaneIdx/targetIsEnemy
-    addLog(`You use [${SKILLS[pc.skill].n}] (${pc.name}).`, 'you', [`YOU: activate ${SKILLS[pc.skill].n}`]);
+    addLog(tl('log_you_uses', { skill: _skillName(pc.skill), name: pc.name }), 'you',
+      [tl('logs_activates', { who: t('log_you'), skill: _skillName(pc.skill) })]);
     _executeDisguiseAlly(pc, sourceLaneIdx, allyLaneIdx, enemyLaneIdx, targetIsEnemy);
 
     pc._skillUsed = true;
@@ -10538,7 +10553,8 @@ function confirmSkillTarget(targetLaneIdx, targetIsEnemy){
   const _powerShiftFrom = pc.skill === 'powerShift' ? G.multLaneIdx : -1;
   const _skillNamePlayer = pc.skill; // capturer AVANT executeSkillLogic (morph → 'none' après)
 
-  addLog(`You use [${SKILLS[pc.skill].n}] (${pc.name}).`, 'you', [`YOU: activate ${SKILLS[pc.skill].n}`]);
+  addLog(tl('log_you_uses', { skill: _skillName(pc.skill), name: pc.name }), 'you',
+    [tl('logs_activates', { who: t('log_you'), skill: _skillName(pc.skill) })]);
 
   // Exécuter le skill avec la cible choisie
   executeSkillLogic(pc, sourceLaneIdx, true, targetLaneIdx, targetIsEnemy);
@@ -10689,7 +10705,9 @@ function triggerPlayerSkill(laneIdx){
   const _skillNamePlayer = pc.skill; // capturé AVANT mutation (ex. morph → 'none')
   sfx(SFX.click3);
   sfxElement(pc.el);
-  addLog(`You use [${SKILLS[_skillNamePlayer].n}] at bonus SR7 (${pc.name}).`, 'you', [`YOU: activate ${SKILLS[_skillNamePlayer].n}`, `   bonus SR7`]);
+  addLog(tl('log_you_uses_bonus', { skill: _skillName(_skillNamePlayer), name: pc.name }), 'you',
+    [tl('logs_activates', { who: t('log_you'), skill: _skillName(_skillNamePlayer) }),
+     t('logs_bonus_sr7')]);
   executeSkillLogic(pc, laneIdx, true);
   pc._skillUsed = true;
   G.skillUsedThisRound = true;
@@ -10787,12 +10805,13 @@ function _executeSkillLogicReal(card, laneIdx, isPlayer, targetLaneIdx, targetIs
     case 'backstab':
     case 'vendetta':
       // Ces skills se déclenchent automatiquement à la résolution, pas manuellement.
-      addLog(`  → [${SKILLS[card.skill].n}] ${t('sk_torment_info').split(' if ')[0].replace('→ [Torment] ','')}.`, (isPlayer?'you':'opp'), [`   on resolution`]);
+      addLog(tl('log_torment_info', { skill: _skillName(card.skill) }), (isPlayer?'you':'opp'),
+        [t('logs_on_resolution')]);
       break;
 
     case 'mimic':
       // Instant déclenché à la pose — ne passe jamais par ici en usage normal.
-      addLog(t('sk_mimic_trigger'), (isPlayer?'you':'opp'), [`   on placement`]);
+      addLog(t('sk_mimic_trigger'), (isPlayer?'you':'opp'), [t('logs_on_placement')]);
       break;
 
     case 'defend':{
@@ -10806,15 +10825,17 @@ function _executeSkillLogicReal(card, laneIdx, isPlayer, targetLaneIdx, targetIs
         if(isPlayer){
           const before = G.lanes[ai].pDl;
           G.lanes[ai].pDl = Math.max(0, G.lanes[ai].pDl - 3);
-          addLog(`  → Lane ${ai+1} (${ally.name}): Risk ${before}→${G.lanes[ai].pDl}.`, (isPlayer?'you':'opp'), [`   ${ally.name} Risk ${before}->${G.lanes[ai].pDl}`]);
+          addLog(tl('log_ally_risk', { lane: _laneNames()[ai], name: ally.name, before, after: G.lanes[ai].pDl }), (isPlayer?'you':'opp'),
+            [tl('logs_risk_change', { name: ally.name, before, after: G.lanes[ai].pDl })]);
         } else {
           const before = G.lanes[ai].eDl;
           G.lanes[ai].eDl = Math.max(0, G.lanes[ai].eDl - 3);
-          addLog(`  → Lane ${ai+1} (${ally.name}): Risk ${before}→${G.lanes[ai].eDl}.`, (isPlayer?'you':'opp'), [`   ${ally.name} Risk ${before}->${G.lanes[ai].eDl}`]);
+          addLog(tl('log_ally_risk', { lane: _laneNames()[ai], name: ally.name, before, after: G.lanes[ai].eDl }), (isPlayer?'you':'opp'),
+            [tl('logs_risk_change', { name: ally.name, before, after: G.lanes[ai].eDl })]);
         }
         affected++;
       }
-      if(affected === 0) addLog(t('sk_no_adj_ally'), (isPlayer?'you':'opp'), [`   no effect`]);
+      if(affected === 0) addLog(t('sk_no_adj_ally'), (isPlayer?'you':'opp'), [t('logs_no_effect')]);
       break;
     }
 
@@ -10826,7 +10847,7 @@ function _executeSkillLogicReal(card, laneIdx, isPlayer, targetLaneIdx, targetIs
       // Collecter les UIDs des cartes actuellement en lane (ne pas repiocher)
       const laneUids = new Set(G.lanes.map(l => isPlayer ? l.pc?.uid : l.ec?.uid).filter(Boolean));
       if(deck.length === 0){
-        addLog(t('sk_deck_empty'), (isPlayer?'you':'opp'), [`   no effect`]);
+        addLog(t('sk_deck_empty'), (isPlayer?'you':'opp'), [t('logs_no_effect')]);
         break;
       }
       // Remettre les cartes de la main dans le deck (seulement celles pas en lane)
@@ -10843,7 +10864,7 @@ function _executeSkillLogicReal(card, laneIdx, isPlayer, targetLaneIdx, targetIs
       deck.splice(0, deck.length, ...deckFiltered);
       const toDraw = Math.min(count, deck.length);
       for(let i = 0; i < toDraw; i++){ hand.push(deck.pop()); drawn++; }
-      addLog(`  → ${drawn} ${t('tab_cards').toLowerCase()} replaced.`, (isPlayer?'you':'opp'), [`   Hand +${drawn}`]);
+      addLog(tl('log_cards_replaced', { n: drawn }), (isPlayer?'you':'opp'), [tl('logs_hand_plus', { n: drawn })]);
       break;
     }
 
@@ -10851,7 +10872,7 @@ function _executeSkillLogicReal(card, laneIdx, isPlayer, targetLaneIdx, targetIs
       // Remplace CETTE carte en lane par une nouvelle carte du deck
       const deck2 = isPlayer ? G.pDeck : G.eDeck;
       if(deck2.length === 0){
-        addLog(t('sk_deck_empty_replace'), (isPlayer?'you':'opp'), [`   no effect`]);
+        addLog(t('sk_deck_empty_replace'), (isPlayer?'you':'opp'), [t('logs_no_effect')]);
         break;
       }
       const newCard = deck2.pop();
@@ -10864,7 +10885,8 @@ function _executeSkillLogicReal(card, laneIdx, isPlayer, targetLaneIdx, targetIs
         G.lanes[laneIdx].eDl = Math.max(0, G.lanes[laneIdx].eDl - card.risk + newCard.risk);
         G.lanes[laneIdx].ec  = newCard;
       }
-      addLog(`  → ${card.name} → ${newCard.name} (Risk ${newCard.risk}).`, (isPlayer?'you':'opp'), [`   ${card.name} → ${newCard.name}`]);
+      addLog(tl('log_card_swapped', { name: card.name, other: newCard.name, risk: newCard.risk }), (isPlayer?'you':'opp'),
+        [tl('logs_arrow', { from: card.name, to: newCard.name })]);
       break;
     }
 
@@ -10874,32 +10896,34 @@ function _executeSkillLogicReal(card, laneIdx, isPlayer, targetLaneIdx, targetIs
       const jOpp  = isPlayer ? targetLane.ec : targetLane.pc;
       const jSelf = isPlayer ? targetLane.pc : targetLane.ec;
       if(!jOpp){
-        addLog(t('sk_judgement_no_opp'), (isPlayer?'you':'opp'), [`   no effect`]);
+        addLog(t('sk_judgement_no_opp'), (isPlayer?'you':'opp'), [t('logs_no_effect')]);
         break;
       }
       const jResult = beats(jSelf.el, jOpp.el);
       if(jResult === 'win'){
         jOpp.el = EL.D;
-        addLog(`  → [Judgement] ${jOpp.name} → Dust.`, (isPlayer?'you':'opp'), [`   ${jOpp.name} → Dust`]);
+        addLog(tl('log_judgement_to_dust', { name: jOpp.name }), (isPlayer?'you':'opp'),
+          [tl('logs_arrow', { from: jOpp.name, to: _elName('dust') })]);
       } else if(jResult === 'lose'){
         jSelf.el = EL.D;
-        addLog(`  → [Judgement] ${jSelf.name} → Dust.`, (isPlayer?'you':'opp'), [`   ${jSelf.name} → Dust`]);
+        addLog(tl('log_judgement_to_dust', { name: jSelf.name }), (isPlayer?'you':'opp'),
+          [tl('logs_arrow', { from: jSelf.name, to: _elName('dust') })]);
       } else {
         jSelf.el = EL.D;
         jOpp.el  = EL.D;
-        addLog(t('sk_judgement_tie'), (isPlayer?'you':'opp'), [`   both -> Dust`]);
+        addLog(t('sk_judgement_tie'), (isPlayer?'you':'opp'), [t('logs_both_dust')]);
       }
       break;
     }
 
     case 'terrify':{
       if(!oppositeCard){
-        addLog(t('sk_no_opp'), (isPlayer?'you':'opp'), [`   no effect`]);
+        addLog(t('sk_no_opp'), (isPlayer?'you':'opp'), [t('logs_no_effect')]);
         break;
       }
       const oppDeck = isPlayer ? G.eDeck : G.pDeck;
       if(oppDeck.length === 0){
-        addLog(t('sk_opp_deck_empty'), (isPlayer?'you':'opp'), [`   no effect`]);
+        addLog(t('sk_opp_deck_empty'), (isPlayer?'you':'opp'), [t('logs_no_effect')]);
         break;
       }
       const newOpp = oppDeck.pop();
@@ -10914,22 +10938,25 @@ function _executeSkillLogicReal(card, laneIdx, isPlayer, targetLaneIdx, targetIs
         G.lanes[laneIdx].pDl = Math.max(0, G.lanes[laneIdx].pDl - oldOppRisk + newOpp.risk);
         G.lanes[laneIdx].pc  = newOpp;
       }
-      addLog(`  → [Terrify] ${oppositeCard.name} → ${newOpp.name}.`, (isPlayer?'you':'opp'), [`   ${oppositeCard.name} → ${newOpp.name}`]);
+      addLog(tl('log_terrify', { name: oppositeCard.name, other: newOpp.name }), (isPlayer?'you':'opp'),
+        [tl('logs_arrow', { from: oppositeCard.name, to: newOpp.name })]);
       break;
     }
 
     case 'torment':
-      addLog(t('sk_torment_info'), (isPlayer?'you':'opp'), [`   on win: +7 damage`]);
+      addLog(t('sk_torment_info'), (isPlayer?'you':'opp'), [t('logs_on_resolution')]);
       break;
 
     case 'guardMark':{
       const mark = G.laneMarks[laneIdx];
       if(isPlayer){
         mark.pMark = (mark.pMark || 0) - 2;
-        addLog(`  → [Guard Mark] Lane ${laneIdx+1}: ${mark.pMark}Risk.`, (isPlayer?'you':'opp'), [`   Risk ${mark.pMark}`]);
+        addLog(tl('log_guard_mark', { lane: _laneNames()[laneIdx], n: mark.pMark }), (isPlayer?'you':'opp'),
+          [tl('logs_risk_value', { n: mark.pMark })]);
       } else {
         mark.eMark = (mark.eMark || 0) - 2;
-        addLog(`  → [Guard Mark] Lane ${laneIdx+1}: ${mark.eMark}Risk.`, (isPlayer?'you':'opp'), [`   Risk ${mark.eMark}`]);
+        addLog(tl('log_guard_mark', { lane: _laneNames()[laneIdx], n: mark.eMark }), (isPlayer?'you':'opp'),
+          [tl('logs_risk_value', { n: mark.eMark })]);
       }
       break;
     }
@@ -10938,10 +10965,12 @@ function _executeSkillLogicReal(card, laneIdx, isPlayer, targetLaneIdx, targetIs
       const mark = G.laneMarks[laneIdx];
       if(isPlayer){
         mark.eMark = (mark.eMark || 0) + 3;
-        addLog(`  → [War Mark] Lane ${laneIdx+1}: +3 Risk.`, (isPlayer?'you':'opp'), [`   Risk +3`]);
+        addLog(tl('log_war_mark', { lane: _laneNames()[laneIdx] }), (isPlayer?'you':'opp'),
+          [tl('logs_risk_value', { n: '+3' })]);
       } else {
         mark.pMark = (mark.pMark || 0) + 3;
-        addLog(`  → [War Mark] Lane ${laneIdx+1}: +3 Risk.`, (isPlayer?'you':'opp'), [`   Risk +3`]);
+        addLog(tl('log_war_mark', { lane: _laneNames()[laneIdx] }), (isPlayer?'you':'opp'),
+          [tl('logs_risk_value', { n: '+3' })]);
       }
       break;
     }
@@ -10951,7 +10980,7 @@ function _executeSkillLogicReal(card, laneIdx, isPlayer, targetLaneIdx, targetIs
       const refLane = (targetLaneIdx !== undefined) ? G.lanes[targetLaneIdx] : null;
       const refCard = refLane ? (targetIsEnemy ? refLane.ec : refLane.pc) : null;
       if(!refCard){
-        addLog(t('sk_overgrowth_no_ref'), (isPlayer?'you':'opp'), [`   no effect`]);
+        addLog(t('sk_overgrowth_no_ref'), (isPlayer?'you':'opp'), [t('logs_no_effect')]);
         break;
       }
       const targetEl = refCard.el;
@@ -10965,14 +10994,15 @@ function _executeSkillLogicReal(card, laneIdx, isPlayer, targetLaneIdx, targetIs
           }
         });
       });
-      addLog(`  → [Overgrowth] ${count} ${elName} → Earth.`, (isPlayer?'you':'opp'), [`   ${count} ${elName} → Earth`]);
+      addLog(tl('log_overgrowth', { n: count, element: elName }), (isPlayer?'you':'opp'),
+        [tl('logs_arrow', { from: count + ' ' + elName, to: _elName('earth') })]);
       break;
     }
 
     case 'determined':
       // Passif — géré à la résolution dans resolveLaneStep et completeRoundResolution.
       // Si activé manuellement (ne devrait pas arriver), log informatif.
-      addLog(t('sk_determined_info'), (isPlayer?'you':'opp'), [`   on deadlock`, `   card removed`]);
+      addLog(t('sk_determined_info'), (isPlayer?'you':'opp'), [t('logs_on_deadlock'), tl('logs_card_removed', { name: card.name })]);
       break;
 
     case 'cedeSeed':{
@@ -10981,7 +11011,7 @@ function _executeSkillLogicReal(card, laneIdx, isPlayer, targetLaneIdx, targetIs
       const seedLane = (targetLaneIdx !== undefined) ? G.lanes[targetLaneIdx] : null;
       const seedCard = seedLane ? (isPlayer ? seedLane.pc : seedLane.ec) : null;
       if(!seedCard){
-        addLog(t('sk_cede_no_ally'), (isPlayer?'you':'opp'), [`   no effect`]);
+        addLog(t('sk_cede_no_ally'), (isPlayer?'you':'opp'), [t('logs_no_effect')]);
         break;
       }
       // Soi → Poussière
@@ -10989,7 +11019,9 @@ function _executeSkillLogicReal(card, laneIdx, isPlayer, targetLaneIdx, targetIs
       card.el = EL.D;
       // Alliée adjacente choisie → Terre
       seedCard.el = EL.E;
-      addLog(`  → [Cede and Seed] ${card.name} → Dust. ${seedCard.name} → Earth.`, (isPlayer?'you':'opp'), [`   ${card.name} → Dust`, `   ${seedCard.name} → Earth`]);
+      addLog(tl('log_cede_seed', { name: card.name, other: seedCard.name }), (isPlayer?'you':'opp'), [
+        tl('logs_arrow', { from: card.name, to: _elName('dust') }),
+        tl('logs_arrow', { from: seedCard.name, to: _elName('earth') })]);
       break;
     }
 
@@ -10999,12 +11031,13 @@ function _executeSkillLogicReal(card, laneIdx, isPlayer, targetLaneIdx, targetIs
       const voidLane = (targetLaneIdx !== undefined) ? G.lanes[targetLaneIdx] : null;
       const voidCard = voidLane ? (isPlayer ? voidLane.ec : voidLane.pc) : null;
       if(!voidCard){
-        addLog(t('sk_void_no_target'), (isPlayer?'you':'opp'), [`   no effect`]);
+        addLog(t('sk_void_no_target'), (isPlayer?'you':'opp'), [t('logs_no_effect')]);
         break;
       }
       voidCard._skillVoided = true;
       voidCard._skillUsed   = true;
-      addLog(`  → [Void] ${voidCard.name}: skill disabled.`, (isPlayer?'you':'opp'), [`   ${voidCard.name} skill off`]);
+      addLog(tl('log_void', { name: voidCard.name }), (isPlayer?'you':'opp'),
+        [tl('logs_skill_off', { name: voidCard.name })]);
       break;
     }
 
@@ -11012,10 +11045,10 @@ function _executeSkillLogicReal(card, laneIdx, isPlayer, targetLaneIdx, targetIs
       // Bloque l'activation de skill adverse lors de son PROCHAIN SR
       if(isPlayer){
         G.eExhaustedNextSR = true;
-        addLog(t('skill_exhaust_opp'), (isPlayer?'you':'opp'), [`   targetting OPP`, `   skill blocked`]);
+        addLog(t('skill_exhaust_opp'), (isPlayer?'you':'opp'), [tl('logs_targeting', { name: t('log_opp') }), t('logs_no_effect')]);
       } else {
         G.pExhaustedNextSR = true;
-        addLog(t('skill_exhaust_self'), (isPlayer?'you':'opp'), [`   targetting YOU`, `   skill blocked`]);
+        addLog(t('skill_exhaust_self'), (isPlayer?'you':'opp'), [tl('logs_targeting', { name: t('log_you') }), t('logs_no_effect')]);
       }
       break;
     }
@@ -11025,13 +11058,14 @@ function _executeSkillLogicReal(card, laneIdx, isPlayer, targetLaneIdx, targetIs
       const dsLane   = (targetLaneIdx !== undefined) ? G.lanes[targetLaneIdx] : null;
       const dsTarget = dsLane ? (isPlayer ? dsLane.ec : dsLane.pc) : null;
       if(!dsTarget){
-        addLog(t('sk_dustshot_no_target'), (isPlayer?'you':'opp'), [`   no effect`]);
+        addLog(t('sk_dustshot_no_target'), (isPlayer?'you':'opp'), [t('logs_no_effect')]);
         break;
       }
       const oldElDS = card.el;
       card.el     = EL.D;
       dsTarget.el = EL.D;
-      addLog(`  → [Dustshot] ${card.name} + ${dsTarget.name} → Dust.`, (isPlayer?'you':'opp'), [`   both → Dust`]);
+      addLog(tl('log_dustshot', { name: card.name, other: dsTarget.name }), (isPlayer?'you':'opp'),
+        [t('logs_both_dust')]);
       break;
     }
 
@@ -11040,12 +11074,13 @@ function _executeSkillLogicReal(card, laneIdx, isPlayer, targetLaneIdx, targetIs
       const chamLane = (targetLaneIdx !== undefined) ? G.lanes[targetLaneIdx] : null;
       const chamSrc  = chamLane ? (isPlayer ? chamLane.pc : chamLane.ec) : null;
       if(!chamSrc){
-        addLog(t('sk_chameleon_no_ally'), (isPlayer?'you':'opp'), [`   no effect`]);
+        addLog(t('sk_chameleon_no_ally'), (isPlayer?'you':'opp'), [t('logs_no_effect')]);
         break;
       }
       const oldEl = card.el;
       card.el = chamSrc.el;
-      addLog(`  → [Chameleon] ${card.name}: ${oldEl}→${chamSrc.el}.`, (isPlayer?'you':'opp'), [`   ${card.name} → ${chamSrc.el}`]);
+      addLog(tl('log_chameleon', { name: card.name, from: _elName(oldEl), to: _elName(chamSrc.el) }), (isPlayer?'you':'opp'),
+        [tl('logs_arrow', { from: card.name, to: _elName(chamSrc.el) })]);
       break;
     }
 
@@ -11054,7 +11089,7 @@ function _executeSkillLogicReal(card, laneIdx, isPlayer, targetLaneIdx, targetIs
       const doppLane = (targetLaneIdx !== undefined) ? G.lanes[targetLaneIdx] : null;
       const doppSrc  = doppLane ? (isPlayer ? doppLane.pc : doppLane.ec) : null;
       if(!doppSrc){
-        addLog(t('sk_doppel_no_ally'), (isPlayer?'you':'opp'), [`   no effect`]);
+        addLog(t('sk_doppel_no_ally'), (isPlayer?'you':'opp'), [t('logs_no_effect')]);
         break;
       }
       const snap = { el: card.el, risk: card.risk, skill: card.skill, name: card.name };
@@ -11065,7 +11100,8 @@ function _executeSkillLogicReal(card, laneIdx, isPlayer, targetLaneIdx, targetIs
       // card.art n'est PAS écrasé, seules les stats de jeu sont copiées.
       // Conserver le nom d'origine avec mention de la copie
       card.name  = `${snap.name}*`;
-      addLog(`  → [Doppelganger] ${snap.name} → ${doppSrc.name}.`, (isPlayer?'you':'opp'), [`   ${snap.name} copies ${doppSrc.name}`]);
+      addLog(tl('log_doppelganger', { name: snap.name, other: doppSrc.name }), (isPlayer?'you':'opp'),
+        [tl('logs_copies', { name: snap.name, other: doppSrc.name })]);
       break;
     }
 
@@ -11074,7 +11110,7 @@ function _executeSkillLogicReal(card, laneIdx, isPlayer, targetLaneIdx, targetIs
       const vkLane = (targetLaneIdx !== undefined) ? G.lanes[targetLaneIdx] : null;
       const vkTarget = vkLane ? (isPlayer ? vkLane.pc : vkLane.ec) : null;
       if(!vkTarget){
-        addLog(t('sk_vk_no_ally'), (isPlayer?'you':'opp'), [`   no effect`]);
+        addLog(t('sk_vk_no_ally'), (isPlayer?'you':'opp'), [t('logs_no_effect')]);
         break;
       }
       const vkSnap = { name: vkTarget.name, el: vkTarget.el, risk: vkTarget.risk, skill: vkTarget.skill };
@@ -11092,7 +11128,8 @@ function _executeSkillLogicReal(card, laneIdx, isPlayer, targetLaneIdx, targetIs
       vkTarget.name  = `${card.name}*`;
       vkTarget._skillUsed   = true;  // la copie ne peut pas réutiliser le skill dans le même round
       vkTarget._skillVoided = false;
-      addLog(`  → [Vampire Kiss] ${vkSnap.name} → ${card.name}.`, (isPlayer?'you':'opp'), [`   ${vkSnap.name} copies ${card.name}`]);
+      addLog(tl('log_vampire_kiss', { name: vkSnap.name, other: card.name }), (isPlayer?'you':'opp'),
+        [tl('logs_copies', { name: vkSnap.name, other: card.name })]);
       break;
     }
 
@@ -11106,7 +11143,7 @@ function _executeSkillLogicReal(card, laneIdx, isPlayer, targetLaneIdx, targetIs
       const daEnemy = daEnemyLane ? (isPlayer ? daEnemyLane.ec : daEnemyLane.pc) : null;
 
       if(!daAlly || !daEnemy){
-        addLog(t('sk_da_missing'), (isPlayer?'you':'opp'), [`   no effect`]);
+        addLog(t('sk_da_missing'), (isPlayer?'you':'opp'), [t('logs_no_effect')]);
         break;
       }
       const daSnap = { el:daAlly.el, risk:daAlly.risk, skill:daAlly.skill, name:daAlly.name };
@@ -11120,17 +11157,18 @@ function _executeSkillLogicReal(card, laneIdx, isPlayer, targetLaneIdx, targetIs
       // Cette carte → Dust, risk → 1
       card.el   = EL.D;
       card.risk = 1;
-      addLog(`  → [Disguise Ally] ${daSnap.name} copies ${daEnemy.name}. ${card.name} → Dust.`, (isPlayer?'you':'opp'), [
-        `   ${daSnap.name} copies ${daEnemy.name}`,
-        `   ${card.name} → Dust`
-      ]);
+      addLog(tl('log_disguise_ally', {
+        ally: daSnap.name, enemy: daEnemy.name, card: card.name,
+      }), (isPlayer?'you':'opp'), [
+        tl('logs_copies', { name: daSnap.name, other: daEnemy.name }),
+        tl('logs_arrow',  { from: card.name, to: _elName('dust') })]);
       break;
     }
 
     case 'betrayal':{
       // Échange sa place avec la carte en face, PUIS change son Risk à 2.
       if(!oppositeCard){
-        addLog(`  → [Betrayal] No opposing card to swap with.`, (isPlayer?'you':'opp'), [`   no effect`]);
+        addLog(t('log_betrayal_no_opp'), (isPlayer?'you':'opp'), [t('logs_no_effect')]);
         break;
       }
       const oldRiskB = card.risk;
@@ -11155,7 +11193,11 @@ function _executeSkillLogicReal(card, laneIdx, isPlayer, targetLaneIdx, targetIs
       //    (celui qu'elle vient de rejoindre), pour refléter son nouveau Risk de 2.
       if(isPlayer) targetLane.eDl = Math.max(0, targetLane.eDl - oldRiskB + 2);
       else         targetLane.pDl = Math.max(0, targetLane.pDl - oldRiskB + 2);
-      addLog(`  → [Betrayal] ${card.name} swaps places with ${oppositeCard.name}, then its Risk drops from ${oldRiskB} to 2.`, (isPlayer?'you':'opp'), [`   targetting ${oppositeCard.name}`, `   swap, Risk -> 2`]);
+      addLog(tl('log_betrayal', {
+        name: card.name, other: oppositeCard.name, before: oldRiskB,
+      }), (isPlayer?'you':'opp'), [
+        tl('logs_targeting', { name: oppositeCard.name }),
+        tl('logs_risk_change', { name: card.name, before: oldRiskB, after: 2 })]);
       break;
     }
 
@@ -11164,11 +11206,13 @@ function _executeSkillLogicReal(card, laneIdx, isPlayer, targetLaneIdx, targetIs
       const extLane   = (targetLaneIdx !== undefined) ? G.lanes[targetLaneIdx] : null;
       const extTarget = extLane ? (isPlayer ? extLane.ec : extLane.pc) : null;
       if(!extTarget || extTarget.el !== EL.F){
-        addLog(`  → [Extinguish] No valid Fire enemy target.`, (isPlayer?'you':'opp'), [`   no effect`]);
+        addLog(t('log_extinguish_none'), (isPlayer?'you':'opp'), [t('logs_no_effect')]);
         break;
       }
       extTarget.el = EL.D;
-      addLog(`  → [Extinguish] ${extTarget.name} (Fire) → Dust.`, (isPlayer?'you':'opp'), [`   targetting ${extTarget.name}`, `   ${extTarget.name} -> Dust`]);
+      addLog(tl('log_extinguish', { name: extTarget.name }), (isPlayer?'you':'opp'), [
+        tl('logs_targeting', { name: extTarget.name }),
+        tl('logs_arrow', { from: extTarget.name, to: _elName('dust') })]);
       break;
     }
 
@@ -11180,15 +11224,17 @@ function _executeSkillLogicReal(card, laneIdx, isPlayer, targetLaneIdx, targetIs
         return ally && ally.el === EL.W;
       });
       if(!hasWaterAlly){
-        addLog(`  → [Flow Change] No adjacent allied Water card.`, (isPlayer?'you':'opp'), [`   no effect`]);
+        addLog(t('log_flow_no_ally'), (isPlayer?'you':'opp'), [t('logs_no_effect')]);
         break;
       }
       if(!oppositeCard){
-        addLog(`  → [Flow Change] No opposing card.`, (isPlayer?'you':'opp'), [`   no effect`]);
+        addLog(t('log_flow_no_opp'), (isPlayer?'you':'opp'), [t('logs_no_effect')]);
         break;
       }
       oppositeCard.el = EL.W;
-      addLog(`  → [Flow Change] ${oppositeCard.name} → Water.`, (isPlayer?'you':'opp'), [`   targetting ${oppositeCard.name}`, `   ${oppositeCard.name} -> Water`]);
+      addLog(tl('log_flow_to_water', { name: oppositeCard.name }), (isPlayer?'you':'opp'), [
+        tl('logs_targeting', { name: oppositeCard.name }),
+        tl('logs_arrow', { from: oppositeCard.name, to: _elName('water') })]);
       break;
     }
 
@@ -11197,12 +11243,14 @@ function _executeSkillLogicReal(card, laneIdx, isPlayer, targetLaneIdx, targetIs
       const igLane   = (targetLaneIdx !== undefined) ? G.lanes[targetLaneIdx] : null;
       const igTarget = igLane ? (isPlayer ? igLane.pc : igLane.ec) : null;
       if(!igTarget){
-        addLog(`  → [Ignite] No other valid allied card.`, (isPlayer?'you':'opp'), [`   no effect`]);
+        addLog(t('log_ignite_none'), (isPlayer?'you':'opp'), [t('logs_no_effect')]);
         break;
       }
       const oldElIg = igTarget.el;
       igTarget.el = EL.F;
-      addLog(`  → [Ignite] ${igTarget.name} (${oldElIg}) → Fire.`, (isPlayer?'you':'opp'), [`   targetting ${igTarget.name}`, `   ${igTarget.name} -> Fire`]);
+      addLog(tl('log_ignite', { name: igTarget.name, from: _elName(oldElIg) }), (isPlayer?'you':'opp'), [
+        tl('logs_targeting', { name: igTarget.name }),
+        tl('logs_arrow', { from: igTarget.name, to: _elName('fire') })]);
       break;
     }
 
@@ -11211,7 +11259,7 @@ function _executeSkillLogicReal(card, laneIdx, isPlayer, targetLaneIdx, targetIs
       const leapLane = (targetLaneIdx !== undefined) ? G.lanes[targetLaneIdx] : null;
       const leapOccupied = leapLane ? (isPlayer ? leapLane.pc : leapLane.ec) : undefined;
       if(!leapLane || leapOccupied){
-        addLog(`  → [Leap] No valid empty allied slot.`, (isPlayer?'you':'opp'), [`   no effect`]);
+        addLog(t('log_leap_none'), (isPlayer?'you':'opp'), [t('logs_no_effect')]);
         break;
       }
       // Le Risk cumulé suit la carte vers son nouvel emplacement (la lane de destination
@@ -11227,7 +11275,9 @@ function _executeSkillLogicReal(card, laneIdx, isPlayer, targetLaneIdx, targetIs
         G.lanes[targetLaneIdx].eDl += card.risk;
         G.lanes[targetLaneIdx].ec = card;
       }
-      addLog(`  → [Leap] ${card.name} moves from lane ${laneIdx+1} to lane ${targetLaneIdx+1}.`, (isPlayer?'you':'opp'), [`   ${['Left','Center','Right'][laneIdx]} -> ${['Left','Center','Right'][targetLaneIdx]}`]);
+      addLog(tl('log_leap', {
+        name: card.name, from: _laneNames()[laneIdx], to: _laneNames()[targetLaneIdx],
+      }), (isPlayer?'you':'opp'), [tl('logs_arrow', { from: _laneNames()[laneIdx], to: _laneNames()[targetLaneIdx] })]);
       break;
     }
 
@@ -11236,7 +11286,7 @@ function _executeSkillLogicReal(card, laneIdx, isPlayer, targetLaneIdx, targetIs
       const mvLane = (targetLaneIdx !== undefined) ? G.lanes[targetLaneIdx] : null;
       const mvAlly = mvLane ? (isPlayer ? mvLane.pc : mvLane.ec) : null;
       if(!mvAlly){
-        addLog(`  → [Maneuver] No valid adjacent allied card.`, (isPlayer?'you':'opp'), [`   no effect`]);
+        addLog(t('log_maneuver_none'), (isPlayer?'you':'opp'), [t('logs_no_effect')]);
         break;
       }
       const srcRiskMv = card.risk, dstRiskMv = mvAlly.risk;
@@ -11251,16 +11301,23 @@ function _executeSkillLogicReal(card, laneIdx, isPlayer, targetLaneIdx, targetIs
         G.lanes[laneIdx].eDl       = Math.max(0, G.lanes[laneIdx].eDl - srcRiskMv + dstRiskMv);
         G.lanes[targetLaneIdx].eDl = Math.max(0, G.lanes[targetLaneIdx].eDl - dstRiskMv + srcRiskMv);
       }
-      addLog(`  → [Maneuver] ${card.name} swaps position with ${mvAlly.name} (lane ${laneIdx+1} ↔ lane ${targetLaneIdx+1}).`, (isPlayer?'you':'opp'), [`   targetting ${mvAlly.name}`, `   ${['Left','Center','Right'][laneIdx]} <-> ${['Left','Center','Right'][targetLaneIdx]}`]);
+      addLog(tl('log_maneuver', {
+        name: card.name, other: mvAlly.name,
+        from: _laneNames()[laneIdx], to: _laneNames()[targetLaneIdx],
+      }), (isPlayer?'you':'opp'), [
+        tl('logs_targeting', { name: mvAlly.name }),
+        tl('logs_arrow', { from: _laneNames()[laneIdx], to: _laneNames()[targetLaneIdx] })]);
       break;
     }
 
     case 'crush':
       if(oppositeCard && oppositeCard.risk <= 6){
         oppositeCard.el = EL.D;
-        addLog(`  → ${oppositeCard.name} (Risk ${oppositeCard.risk}) becomes Dust.`, (isPlayer?'you':'opp'), [`   targetting ${oppositeCard.name}`, `   ${oppositeCard.name} -> Dust`]);
+        addLog(tl('log_becomes_dust', { name: oppositeCard.name, risk: oppositeCard.risk }), (isPlayer?'you':'opp'), [
+          tl('logs_targeting', { name: oppositeCard.name }),
+          tl('logs_arrow', { from: oppositeCard.name, to: _elName('dust') })]);
       } else {
-        addLog(`  → No effect (opposing Risk > 6).`, (isPlayer?'you':'opp'), [`   no effect`]);
+        addLog(t('log_no_effect_risk6'), (isPlayer?'you':'opp'), [t('logs_no_effect')]);
       }
       break;
 
@@ -11268,16 +11325,21 @@ function _executeSkillLogicReal(card, laneIdx, isPlayer, targetLaneIdx, targetIs
       // Les deux cartes de la lane deviennent Poussière
       card.el = EL.D;
       if(oppositeCard) oppositeCard.el = EL.D;
-      addLog(`  → The entire column ${laneIdx+1} becomes Dust.`, (isPlayer?'you':'opp'), [`   ${['Left','Center','Right'][laneIdx]} lane -> Dust`]);
+      addLog(tl('log_column_dust', { lane: _laneNames()[laneIdx] }), (isPlayer?'you':'opp'),
+        [tl('logs_arrow', { from: _laneNames()[laneIdx], to: _elName('dust') })]);
       break;
 
     case 'intimidate':
       // Carte adverse même élément + Risk inférieur → Poussière
       if(oppositeCard && oppositeCard.el === card.el && oppositeCard.risk < card.risk){
         oppositeCard.el = EL.D;
-        addLog(`  → ${oppositeCard.name} (same element, Risk ${oppositeCard.risk} < ${card.risk}) becomes Dust.`, (isPlayer?'you':'opp'), [`   targetting ${oppositeCard.name}`, `   ${oppositeCard.name} -> Dust`]);
+        addLog(tl('log_same_el_dust', {
+          name: oppositeCard.name, risk: oppositeCard.risk, mine: card.risk,
+        }), (isPlayer?'you':'opp'), [
+          tl('logs_targeting', { name: oppositeCard.name }),
+          tl('logs_arrow', { from: oppositeCard.name, to: _elName('dust') })]);
       } else {
-        addLog(`  → No effect (conditions not met).`, (isPlayer?'you':'opp'), [`   no effect`]);
+        addLog(t('log_no_effect_cond'), (isPlayer?'you':'opp'), [t('logs_no_effect')]);
       }
       break;
 
@@ -11285,9 +11347,13 @@ function _executeSkillLogicReal(card, laneIdx, isPlayer, targetLaneIdx, targetIs
       // Copie l'élément de la carte en face
       if(oppositeCard){
         card.el = oppositeCard.el;
-        addLog(`  → ${card.name} copies the element ${oppositeCard.el} from ${oppositeCard.name}.`, (isPlayer?'you':'opp'), [`   targetting ${oppositeCard.name}`, `   ${card.name} -> ${oppositeCard.el}`]);
+        addLog(tl('log_copies_element', {
+          name: card.name, element: _elName(oppositeCard.el), other: oppositeCard.name,
+        }), (isPlayer?'you':'opp'), [
+          tl('logs_targeting', { name: oppositeCard.name }),
+          tl('logs_arrow', { from: card.name, to: _elName(oppositeCard.el) })]);
       } else {
-        addLog(`  → No opposing card.`, (isPlayer?'you':'opp'), [`   no effect`]);
+        addLog(t('log_no_opp_card'), (isPlayer?'you':'opp'), [t('logs_no_effect')]);
       }
       break;
 
@@ -11307,7 +11373,8 @@ function _executeSkillLogicReal(card, laneIdx, isPlayer, targetLaneIdx, targetIs
         const diff = oldRisk - 2;
         if(isPlayer){ targetLane.pDl = Math.max(0, targetLane.pDl - diff); }
         else         { targetLane.eDl = Math.max(0, targetLane.eDl - diff); }
-        addLog(`  → Transforms into Rat (Dust, Risk 2). Lane cumulative Risk adjusted by -${diff}.`, (isPlayer?'you':'opp'), [`   turned into Rat`, `   (Dust, Risk 2)`]);
+        addLog(tl('log_into_rat', { n: diff }), (isPlayer?'you':'opp'),
+          [t('logs_into_rat'), '   (' + _elName('dust') + ', ' + t('card_risk_label') + ' 2)']);
       }
       break;
 
@@ -11315,9 +11382,11 @@ function _executeSkillLogicReal(card, laneIdx, isPlayer, targetLaneIdx, targetIs
       // Carte adverse Risk ≥ 9 → Poussière
       if(oppositeCard && oppositeCard.risk >= 9){
         oppositeCard.el = EL.D;
-        addLog(`  → ${oppositeCard.name} (Risk ${oppositeCard.risk}) is crushed into Dust.`, (isPlayer?'you':'opp'), [`   targetting ${oppositeCard.name}`, `   ${oppositeCard.name} -> Dust`]);
+        addLog(tl('log_crushed_dust', { name: oppositeCard.name, risk: oppositeCard.risk }), (isPlayer?'you':'opp'), [
+          tl('logs_targeting', { name: oppositeCard.name }),
+          tl('logs_arrow', { from: oppositeCard.name, to: _elName('dust') })]);
       } else {
-        addLog(`  → No effect (opposing Risk < 9).`, (isPlayer?'you':'opp'), [`   no effect`]);
+        addLog(t('log_no_effect_risk9'), (isPlayer?'you':'opp'), [t('logs_no_effect')]);
       }
       break;
 
@@ -11325,7 +11394,8 @@ function _executeSkillLogicReal(card, laneIdx, isPlayer, targetLaneIdx, targetIs
       // Inverse la direction du Multiplicateur de Risk
       { const _prevOwner = G.multOwner;
         G.multOwner = (G.multOwner === 0) ? 1 : 0;
-        addLog(`  → Multiplier reversed (${G.multOwner===0?'danger player':'danger AI'}).`, (isPlayer?'you':'opp'), [`   x2 -> ${G.multOwner===0?'YOU':'OPP'}`]);
+        addLog(tl('log_mult_reversed', { who: G.multOwner === 0 ? t('log_you') : t('log_opp') }),
+          (isPlayer?'you':'opp'), [tl('logs_x2_to', { who: G.multOwner === 0 ? t('log_you') : t('log_opp') })]);
         // Mémorisé globalement pour déclencher l'animation APRÈS le prochain renderFight()
         G._pendingX2FlipOwner = _prevOwner;
       }
@@ -11337,9 +11407,10 @@ function _executeSkillLogicReal(card, laneIdx, isPlayer, targetLaneIdx, targetIs
         const colNames = ['Left','Center','Right'];
         const oldIdx = G.multLaneIdx;
         G.multLaneIdx = targetLaneIdx;
-        addLog(`  → Multiplier ×2 moved from ${colNames[oldIdx]} to ${colNames[targetLaneIdx]} column.`, (isPlayer?'you':'opp'), [`   x2: ${colNames[oldIdx]} -> ${colNames[targetLaneIdx]}`]);
+        addLog(tl('log_powershift', { from: colNames[oldIdx], to: colNames[targetLaneIdx] }),
+          (isPlayer?'you':'opp'), [tl('logs_x2_move', { from: colNames[oldIdx], to: colNames[targetLaneIdx] })]);
       } else {
-        addLog(`  → [Power Shift] No valid target column.`, (isPlayer?'you':'opp'), [`   no effect`]);
+        addLog(t('log_powershift_none'), (isPlayer?'you':'opp'), [t('logs_no_effect')]);
       }
       break;
 
@@ -11348,10 +11419,12 @@ function _executeSkillLogicReal(card, laneIdx, isPlayer, targetLaneIdx, targetIs
       // La carte elle-même a déjà ajouté son risk au compteur (lors de la pose) :
       // on remet donc le compteur à card.risk (= uniquement le risk de la carte posée).
       if(isPlayer){
-        addLog(`  → Player Deadlock Risk lane ${laneIdx+1} purged (${targetLane.pDl} → ${card.risk}).`, (isPlayer?'you':'opp'), [`   Risk ${targetLane.pDl}->${card.risk}`]);
+        addLog(tl('log_purge_p', { n: laneIdx + 1, before: targetLane.pDl, after: card.risk }),
+        (isPlayer?'you':'opp'), [tl('logs_arrow', { from: targetLane.pDl, to: card.risk })]);
         targetLane.pDl = card.risk;
       } else {
-        addLog(`  → AI Deadlock Risk lane ${laneIdx+1} purged (${targetLane.eDl} → ${card.risk}).`, (isPlayer?'you':'opp'), [`   Risk ${targetLane.eDl}->${card.risk}`]);
+        addLog(tl('log_purge_ai', { n: laneIdx + 1, before: targetLane.eDl, after: card.risk }),
+        (isPlayer?'you':'opp'), [tl('logs_arrow', { from: targetLane.eDl, to: card.risk })]);
         targetLane.eDl = card.risk;
       }
       break;
@@ -11366,10 +11439,12 @@ function _executeSkillLogicReal(card, laneIdx, isPlayer, targetLaneIdx, targetIs
       const strikeTgt = isPlayer ? 'enemy' : 'player';
       if(isPlayer){
         G.eHP = Math.max(0, G.eHP - strikeDmg);
-        addLog(`  → Opponent takes ${strikeDmg} direct damage (HP: ${G.eHP}).`, (isPlayer?'you':'opp'), [{ text: `   OPP -${strikeDmg} HP`, c: 'dmg-opp' }]);
+        addLog(tl('log_strike_opp', { dmg: strikeDmg, hp: G.eHP }), (isPlayer?'you':'opp'),
+        [{ text: tl('logs_opp_hp', { dmg: strikeDmg }), c: 'dmg-opp' }]);
       } else {
         G.pHP = Math.max(0, G.pHP - strikeDmg);
-        addLog(`  → You take ${strikeDmg} direct damage (HP: ${G.pHP}).`, (isPlayer?'you':'opp'), [{ text: `   YOU -${strikeDmg} HP`, c: 'dmg-you' }]);
+        addLog(tl('log_strike_you', { dmg: strikeDmg, hp: G.pHP }), (isPlayer?'you':'opp'),
+        [{ text: tl('logs_you_hp', { dmg: strikeDmg }), c: 'dmg-you' }]);
       }
       // Verrouiller l'affichage des PV dès maintenant (pas seulement à l'impact) :
       // un renderFight() peut survenir entre l'exécution du skill et l'impact du
@@ -12404,7 +12479,7 @@ function runResolutionSequence(){
   });
   G.skillUsedThisRound = true;
   G.aiSkillUsedThisRound = true;
-  addLog("Round analysis and resolution", 'resolve', ['** Resolving lanes']);
+  addLog(t('log_resolve_start'), 'resolve', [t('logs_resolving')]);
   resolveLaneStep(0);
 }
 
@@ -12654,7 +12729,8 @@ function resolveLaneStep(laneIdx){
 
   const _fireFC = (card, isPlayerCard) => {
     const opp = isPlayerCard ? lane.ec : lane.pc;
-    addLog(`[Flow Change] ${card.name}'s adjacent ally is Water — ${opp.name} becomes Water.`, isPlayerCard?'you':'opp', [`   ${opp.name} → Water`]);
+    addLog(tl('log_flowchange', { name: card.name, opp: opp.name }), isPlayerCard?'you':'opp',
+      [tl('logs_arrow', { from: opp.name, to: _elName('water') })]);
     _animateSkillActivate(laneIdx, isPlayerCard);
     // srcEl : slot de la carte qui active Flow Change
     //   isPlayerCard=true  → carte joueur (bas) → _getSlotEl(laneIdx, false)  → !isPlayerCard = false ✓
@@ -12820,9 +12896,11 @@ function resolveLaneStep(laneIdx){
 
     if(tie){
       statsOnLaneResolved?.(laneIdx,'tie',0,0,lane.pc,lane.ec);
-      addLog(`${ ['Left','Center','Right'][laneIdx] } lane: Deadlock — risks carry over (you ${lane.pDl} / opp ${lane.eDl}).`, 'resolve', [
-        `${['Left','Center','Right'][laneIdx]} Lane: deadlock`,
-        `new risks YOU: ${lane.pDl}, OPP: ${lane.eDl}`
+      addLog(tl('log_lane_deadlock', {
+        lane: _laneNames()[laneIdx], p: lane.pDl, e: lane.eDl,
+      }), 'resolve', [
+        tl('logs_lane_deadlock', { lane: _laneNames()[laneIdx] }),
+        tl('logs_new_risks',     { p: lane.pDl, e: lane.eDl })
       ]);
 
       // Tutoriel énigme 5 : message pédagogique sur le deadlock
@@ -12839,7 +12917,8 @@ function resolveLaneStep(laneIdx){
       // ── DETERMINED : retire la carte de l'égalité sans laisser de Risk ──
       const checkDetermined = (card, cardOwner) => {
         if(card && card.skill === 'determined'){
-          addLog(`[Determined] ${card.name} removed — no Deadlock Risk.`, cardOwner==='player'?'you':'opp', [`   ${card.name} removed`]);
+          addLog(tl('log_determined_removed', { name: card.name }),
+            cardOwner==='player'?'you':'opp', [tl('logs_card_removed', { name: card.name })]);
           // Annuler le risk cumulé de cette carte pour cette lane
           if(cardOwner === 'player'){
             lane.pDl = Math.max(0, lane.pDl - card.risk);
@@ -12865,9 +12944,12 @@ function resolveLaneStep(laneIdx){
       lane.pDl = 0; lane.eDl = 0;
       statsOnLaneResolved?.(laneIdx,'win',0,finalDmg,lane.pc,lane.ec);
       const eMarkStr = eMarkVal ? ` +${eMarkVal > 0 ? '+' : ''}${eMarkVal} mark` : '';
-      addLog(`${ ['Left','Center','Right'][laneIdx] } lane: ✓ You win${isDoubled?' (×2)':''}! Opponent −${finalDmg} HP${eMarkStr}.`, 'resolve', [
-        { text: `${['Left','Center','Right'][laneIdx]} Lane: YOU win`, c: 'resolve' },
-        { text: `OPP receives ${finalDmg} damage`, c: 'dmg-opp' }
+      addLog(tl('log_lane_win', {
+        lane: _laneNames()[laneIdx], x: isDoubled ? t('log_doubled') : '',
+        dmg: finalDmg, mark: eMarkStr,
+      }), 'resolve', [
+        { text: tl('logs_lane_you_win', { lane: _laneNames()[laneIdx] }), c: 'resolve' },
+        { text: tl('logs_opp_receives', { dmg: finalDmg }), c: 'dmg-opp' }
       ]);
     } else {
       const pDlBefore = lane.pDl;
@@ -12877,7 +12959,7 @@ function resolveLaneStep(laneIdx){
       if(lane.pc && lane.pc.skill === 'seal'){
         base = lane.pc.risk;
         sfxElement(lane.pc.el);
-        addLog(`  → [Seal] ${lane.pc.name} absorbs the loss — damage capped at Risk ${base}.`, 'sk', [`   seal active`]);
+        addLog(tl('log_seal', { name: lane.pc.name, base }), 'sk', [t('logs_seal_active')]);
       }
       if(isMultLane && G.multOwner === 0){ base *= 2; isDoubled = true; }
       finalDmg = base;
@@ -12888,9 +12970,12 @@ function resolveLaneStep(laneIdx){
       lane.pDl = 0; lane.eDl = 0;
       statsOnLaneResolved?.(laneIdx,'lose',finalDmg,0,lane.pc,lane.ec);
       const pMarkStr = pMarkVal ? ` +${pMarkVal > 0 ? '+' : ''}${pMarkVal} mark` : '';
-      addLog(`${ ['Left','Center','Right'][laneIdx] } lane: ✗ You lose${isDoubled?' (×2)':''}! You −${finalDmg} HP${pMarkStr}.`, 'resolve', [
-        { text: `${['Left','Center','Right'][laneIdx]} Lane: OPP wins`, c: 'resolve' },
-        { text: `YOU receive ${finalDmg} damage`, c: 'dmg-you' }
+      addLog(tl('log_lane_lose', {
+        lane: _laneNames()[laneIdx], x: isDoubled ? t('log_doubled') : '',
+        dmg: finalDmg, mark: pMarkStr,
+      }), 'resolve', [
+        { text: tl('logs_lane_opp_win', { lane: _laneNames()[laneIdx] }), c: 'resolve' },
+        { text: tl('logs_you_receive', { dmg: finalDmg }), c: 'dmg-you' }
       ]);
     }
 
@@ -12920,7 +13005,10 @@ function resolveLaneStep(laneIdx){
         if(tgt === 'enemy'){ G.eHP = Math.max(0, G.eHP - dmg); _hpCountdownActive.enemy = true; }
         else               { G.pHP = Math.max(0, G.pHP - dmg); _hpCountdownActive.player = true; }
         sfxElement(winningCard.el);
-        addLog(`[Torment] ${winningCard.name} crushes ${losingCard.name} — +${dmg} damage!`, 'sk', [{ text: `   +${dmg} damage`, c: tgt === 'enemy' ? 'dmg-opp' : 'dmg-you' }]);
+        addLog(tl('log_torment', {
+          winner: winningCard.name, loser: losingCard.name,
+          lr: losingCard.risk, wr: winningCard.risk, dmg,
+        }), 'sk', [{ text: tl('logs_plus_damage', { dmg }), c: tgt === 'enemy' ? 'dmg-opp' : 'dmg-you' }]);
         animateDmgProjectile(dmg, tgt, false, false, 0, laneIdx, null);
         _checkSkillGameOver();
       }
@@ -12935,7 +13023,8 @@ function resolveLaneStep(laneIdx){
           if(tgt === 'enemy'){ G.eHP = Math.max(0, G.eHP - dmg); _hpCountdownActive.enemy = true; }
           else               { G.pHP = Math.max(0, G.pHP - dmg); _hpCountdownActive.player = true; }
           sfxElement(card.el);
-          addLog(`[Backstab] ${card.name} Deadlocked — deals ${dmg} damage!`, 'sk', [{ text: `   +${dmg} damage`, c: tgt === 'enemy' ? 'dmg-opp' : 'dmg-you' }]);
+          addLog(tl('log_backstab', { name: card.name, dmg }), 'sk',
+            [{ text: tl('logs_plus_damage', { dmg }), c: tgt === 'enemy' ? 'dmg-opp' : 'dmg-you' }]);
           _animateAutoSkillDamage(laneIdx, cardOwner === 'player', dmg, tgt, laneIdx, () => _checkSkillGameOver());
         }
       };
@@ -12953,7 +13042,8 @@ function resolveLaneStep(laneIdx){
         if(tgt === 'enemy'){ G.eHP = Math.max(0, G.eHP - dmg); _hpCountdownActive.enemy = true; }
         else               { G.pHP = Math.max(0, G.pHP - dmg); _hpCountdownActive.player = true; }
         sfxElement(losingCard.el);
-        addLog(`[Vendetta] ${losingCard.name} is defeated — retaliates for ${dmg} damage!`, 'sk', [{ text: `   +${dmg} damage`, c: tgt === 'enemy' ? 'dmg-opp' : 'dmg-you' }]);
+        addLog(tl('log_vendetta', { name: losingCard.name, dmg }), 'sk',
+          [{ text: tl('logs_plus_damage', { dmg }), c: tgt === 'enemy' ? 'dmg-opp' : 'dmg-you' }]);
         _animateAutoSkillDamage(laneIdx, losingOwner === 'player', dmg, tgt, laneIdx, () => _checkSkillGameOver());
       }
     }
@@ -13066,14 +13156,14 @@ function completeRoundResolution(){
       if(l.pc){ if(G.pDiscarded) G.pDiscarded.push(l.pc); resetCard(l.pc); l.pc = null; }
       if(l.ec){ if(G.eDiscarded) G.eDiscarded.push(l.ec); resetCard(l.ec); l.ec = null; }
       if(pcDetermined || ecDetermined){
-        addLog(`Lane ${laneIdx+1}: Deadlock — [Determined] active, no Risk.`, 'resolve', [
-          `${['Left','Center','Right'][laneIdx]} Lane: deadlock`,
-          `no risk left`
+        addLog(tl('log_deadlock_determined', { n: laneIdx + 1 }), 'resolve', [
+          tl('logs_lane_deadlock', { lane: _laneNames()[laneIdx] }),
+          t('logs_no_risk_left')
         ]);
       } else {
-        addLog(`Lane ${laneIdx+1}: Deadlock — risks pending (P:${l.pDl} / AI:${l.eDl}).`, 'resolve', [
-          `${['Left','Center','Right'][laneIdx]} Lane: deadlock`,
-          `new risks YOU: ${l.pDl}, OPP: ${l.eDl}`
+        addLog(tl('log_deadlock_pending', { n: laneIdx + 1, p: l.pDl, e: l.eDl }), 'resolve', [
+          tl('logs_lane_deadlock', { lane: _laneNames()[laneIdx] }),
+          tl('logs_new_risks',     { p: l.pDl, e: l.eDl })
         ]);
       }
     }
@@ -13267,7 +13357,7 @@ function completeRoundResolution(){
     const ensureDeck = (deck, builder) => {
       if(deck.length === 0){
         builder().forEach(c => deck.push(c));
-        addLog('Deck exhausted — new deck shuffled.', 'imp', ['Deck reshuffled']);
+        addLog(t('log_deck_reshuffled'), 'imp', [t('logs_deck_reshuffled')]);
       }
     };
 
@@ -18157,7 +18247,7 @@ const STRINGS = {
     "obj_designate": "Designate a target",
     "obj_panel_title": "Objectives",
     "log_battle_begins": "Battle begins!",
-    "log_round_init": "Round {n} — {who} has initiative",
+    "log_round_init": "Round {n} — {who}",
     "log_you_initiative": "You have initiative",
     "log_opp_initiative": "Opponent has initiative",
     "log_you_play": "{name} → {lane} lane (Risk {risk}).",
@@ -18167,8 +18257,6 @@ const STRINGS = {
     "log_lane_right": "Right",
     "log_you": "YOU",
     "log_opp": "OPP",
-    "log_you_activate": "YOU: activates {skill}",
-    "log_opp_activate": "OPP: activates {skill}",
     "log_resolve_start": "Round analysis and resolution",
     "log_lane_deadlock": "{lane} lane: Deadlock — risks carry over (you {p} / opp {e}).",
     "log_lane_win": "{lane} lane: ✓ You win{x}! Opponent −{dmg} HP{mark}.",
@@ -18574,7 +18662,100 @@ const STRINGS = {
     "rl_fights_left_n": "{n} fights to win",
     "rl_lives_left_1": "{lives} life left",
     "rl_lives_left_n": "{lives} lives left",
-    "rl_abandon_body": "Fight in progress.<br>Leaving will count as a <b>LOSS</b> and cost you one life.<br><br>You cannot undo this."
+    "rl_abandon_body": "Fight in progress.<br>Leaving will count as a <b>LOSS</b> and cost you one life.<br><br>You cannot undo this.",
+
+    /* [v40 b06] Journal de combat — était écrit en dur en anglais */
+    "log_you_uses": "You use [{skill}] ({name}).",
+    "log_opp_uses": "Opponent uses [{skill}] ({name}).",
+    "log_you_uses_bonus": "You use [{skill}] at bonus SR7 ({name}).",
+    "log_opp_uses_bonus": "Opponent uses [{skill}] at bonus SR7 ({name}).",
+    "log_refresh": "[Refresh] {who}: {n} powers restored.",
+    "log_mimic": "[Mimic] {name} → [{skill}] ← {opp}.",
+    "log_ally_risk": "  → {lane} lane ({name}): Risk {before}→{after}.",
+    "log_cards_replaced": "  → {n} cards replaced.",
+    "log_card_swapped": "  → {name} → {other} (Risk {risk}).",
+    "log_judgement_to_dust": "  → [Judgement] {name} → Dust.",
+    "log_terrify": "  → [Terrify] {name} → {other}.",
+    "log_guard_mark": "  → [Guard Mark] {lane} lane: {n} Risk.",
+    "log_war_mark": "  → [War Mark] {lane} lane: +3 Risk.",
+    "log_overgrowth": "  → [Overgrowth] {n} {element} → Earth.",
+    "log_cede_seed": "  → [Cede and Seed] {name} → Dust. {other} → Earth.",
+    "log_void": "  → [Void] {name}: power disabled.",
+    "log_dustshot": "  → [Dustshot] {name} + {other} → Dust.",
+    "log_chameleon": "  → [Chameleon] {name}: {from} → {to}.",
+    "log_doppelganger": "  → [Doppelganger] {name} → {other}.",
+    "log_vampire_kiss": "  → [Vampire Kiss] {name} → {other}.",
+    "log_betrayal_no_opp": "  → [Betrayal] No opposing card to swap with.",
+    "log_betrayal": "  → [Betrayal] {name} swaps places with {other}, then its Risk drops from {before} to 2.",
+    "log_extinguish_none": "  → [Extinguish] No valid Fire enemy target.",
+    "log_extinguish": "  → [Extinguish] {name} (Fire) → Dust.",
+    "log_flow_no_ally": "  → [Flow Change] No adjacent allied Water card.",
+    "log_flow_no_opp": "  → [Flow Change] No opposing card.",
+    "log_flow_to_water": "  → [Flow Change] {name} → Water.",
+    "log_ignite_none": "  → [Ignite] No other valid allied card.",
+    "log_ignite": "  → [Ignite] {name} ({from}) → Fire.",
+    "log_leap_none": "  → [Leap] No valid empty allied slot.",
+    "log_leap": "  → [Leap] {name} moves from {from} lane to {to} lane.",
+    "log_maneuver_none": "  → [Maneuver] No valid adjacent allied card.",
+    "log_maneuver": "  → [Maneuver] {name} swaps position with {other} ({from} lane ↔ {to} lane).",
+    "log_becomes_dust": "  → {name} (Risk {risk}) becomes Dust.",
+    "log_no_effect_risk6": "  → No effect (opposing Risk > 6).",
+    "log_column_dust": "  → The whole {lane} lane becomes Dust.",
+    "log_same_el_dust": "  → {name} (same element, Risk {risk} < {mine}) becomes Dust.",
+    "log_no_effect_cond": "  → No effect (conditions not met).",
+    "log_copies_element": "  → {name} copies the {element} element from {other}.",
+    "log_no_opp_card": "  → No opposing card.",
+    "log_into_rat": "  → Turns into Rat (Dust, Risk 2). Lane cumulative Risk adjusted by −{n}.",
+    "log_crushed_dust": "  → {name} (Risk {risk}) is crushed into Dust.",
+    "log_no_effect_risk9": "  → No effect (opposing Risk < 9).",
+    "log_mult_reversed": "  → Multiplier reversed (now dangerous for {who}).",
+    "log_powershift": "  → Multiplier ×2 moved from {from} lane to {to} lane.",
+    "log_powershift_none": "  → [Power Shift] No valid target lane.",
+    "log_torment_info": "  → [{skill}] triggers at resolution if this card beats a lower Risk.",
+    "logs_battle_begins": "Battle begins!",
+    "logs_round": "*** Round {n}",
+    "logs_initiative": "** Initiative: {who}",
+    "logs_higher_risk": "** Higher risk:",
+    "logs_higher_risk_lane": "   {lane} lane: {who}",
+    "logs_you_plays": "YOU: play {name}",
+    "logs_opp_plays": "OPP: plays {name}",
+    "logs_in_lane": "* in {lane} lane",
+    "logs_total_risk": "* Total risk = {before} + {add}",
+    "logs_resolving": "** Resolving lanes",
+    "logs_lane_deadlock": "{lane} Lane: deadlock",
+    "logs_new_risks": "new risks YOU: {p}, OPP: {e}",
+    "logs_no_risk_left": "no risk left",
+    "logs_lane_you_win": "{lane} Lane: YOU win",
+    "logs_lane_opp_win": "{lane} Lane: OPP wins",
+    "logs_opp_receives": "OPP receives {dmg} damage",
+    "logs_you_receive": "YOU receive {dmg} damage",
+    "logs_card_removed": "   {name} removed",
+    "logs_seal_active": "   seal active",
+    "logs_plus_damage": "   +{dmg} damage",
+    "logs_deck_reshuffled": "Deck reshuffled",
+    "logs_no_effect": "   no effect",
+    "logs_activates": "{who}: activates {skill}",
+    "logs_bonus_sr7": "   bonus SR7",
+    "logs_opp_hp": "   OPP −{dmg} HP",
+    "logs_you_hp": "   YOU −{dmg} HP",
+    "logs_lane_blocked": "SR2: lane blocked",
+    "logs_on_resolution": "   on resolution",
+    "logs_on_placement": "   on placement",
+    "logs_on_deadlock": "   on deadlock",
+    "logs_targeting": "   targeting {name}",
+    "logs_arrow": "   {from} → {to}",
+    "logs_hand_plus": "   Hand +{n}",
+    "logs_risk_change": "   {name} Risk {before}→{after}",
+    "logs_risk_value": "   Risk {n}",
+    "logs_both_dust": "   both → Dust",
+    "logs_skill_off": "   {name} power off",
+    "logs_copies": "   {name} copies {other}",
+    "logs_x2_to": "   x2 → {who}",
+    "logs_x2_move": "   x2: {from} → {to}",
+    "logs_into_rat": "   turned into Rat",
+    "logs_x2_owner": "** x2: {who}",
+    "logs_subround": "** Sub-round {n}/6",
+    "logs_playing": "** {who} playing"
   },
   "fr": {
     "btn_tutorial": "TUTORIEL",
@@ -18905,7 +19086,7 @@ const STRINGS = {
     "obj_designate": "Désigner une cible",
     "obj_panel_title": "Objectifs",
     "log_battle_begins": "Le combat commence !",
-    "log_round_init": "Round {n} — {who} a l'initiative",
+    "log_round_init": "Round {n} — {who}",
     "log_you_initiative": "Vous avez l'initiative",
     "log_opp_initiative": "L'adversaire a l'initiative",
     "log_you_play": "{name} → couloir {lane} (Risque {risk}).",
@@ -18915,8 +19096,6 @@ const STRINGS = {
     "log_lane_right": "Droite",
     "log_you": "VOUS",
     "log_opp": "ADV",
-    "log_you_activate": "VOUS : activez {skill}",
-    "log_opp_activate": "ADV : active {skill}",
     "log_resolve_start": "Analyse et résolution du round",
     "log_lane_deadlock": "Couloir {lane}: Deadlock — risques reportés (vous {p} / adv {e}).",
     "log_lane_win": "Couloir {lane}: ✓ Victoire{x}! Adversaire −{dmg} PV{mark}.",
@@ -19321,7 +19500,100 @@ const STRINGS = {
     "rl_fights_left_n": "{n} combats à gagner",
     "rl_lives_left_1": "{lives} vie restante",
     "rl_lives_left_n": "{lives} vies restantes",
-    "rl_abandon_body": "Combat en cours.<br>Quitter comptera comme une <b>DÉFAITE</b> et vous coûtera une vie.<br><br>C'est irréversible."
+    "rl_abandon_body": "Combat en cours.<br>Quitter comptera comme une <b>DÉFAITE</b> et vous coûtera une vie.<br><br>C'est irréversible.",
+
+    /* [v40 b06] Journal de combat — était écrit en dur en anglais */
+    "log_you_uses": "Vous utilisez [{skill}] ({name}).",
+    "log_opp_uses": "L'adversaire utilise [{skill}] ({name}).",
+    "log_you_uses_bonus": "Vous utilisez [{skill}] au SR7 bonus ({name}).",
+    "log_opp_uses_bonus": "L'adversaire utilise [{skill}] au SR7 bonus ({name}).",
+    "log_refresh": "[Rafraîchir] {who} : {n} pouvoirs restaurés.",
+    "log_mimic": "[Mimique] {name} → [{skill}] ← {opp}.",
+    "log_ally_risk": "  → Couloir {lane} ({name}) : Risque {before}→{after}.",
+    "log_cards_replaced": "  → {n} cartes remplacées.",
+    "log_card_swapped": "  → {name} → {other} (Risque {risk}).",
+    "log_judgement_to_dust": "  → [Jugement] {name} → Poussière.",
+    "log_terrify": "  → [Terreur] {name} → {other}.",
+    "log_guard_mark": "  → [Marque de Garde] Couloir {lane} : {n} Risque.",
+    "log_war_mark": "  → [Marque de Guerre] Couloir {lane} : +3 Risque.",
+    "log_overgrowth": "  → [Croissance] {n} {element} → Terre.",
+    "log_cede_seed": "  → [Cède et Sème] {name} → Poussière. {other} → Terre.",
+    "log_void": "  → [Néant] {name} : pouvoir désactivé.",
+    "log_dustshot": "  → [Tir de Poussière] {name} + {other} → Poussière.",
+    "log_chameleon": "  → [Caméléon] {name} : {from} → {to}.",
+    "log_doppelganger": "  → [Sosie] {name} → {other}.",
+    "log_vampire_kiss": "  → [Baiser Vampirique] {name} → {other}.",
+    "log_betrayal_no_opp": "  → [Trahison] Aucune carte opposée avec qui échanger.",
+    "log_betrayal": "  → [Trahison] {name} échange sa place avec {other}, puis son Risque tombe de {before} à 2.",
+    "log_extinguish_none": "  → [Extinction] Aucune cible ennemie Feu valide.",
+    "log_extinguish": "  → [Extinction] {name} (Feu) → Poussière.",
+    "log_flow_no_ally": "  → [Changement de Flux] Aucune carte alliée Eau adjacente.",
+    "log_flow_no_opp": "  → [Changement de Flux] Aucune carte opposée.",
+    "log_flow_to_water": "  → [Changement de Flux] {name} → Eau.",
+    "log_ignite_none": "  → [Ignition] Aucune autre carte alliée valide.",
+    "log_ignite": "  → [Ignition] {name} ({from}) → Feu.",
+    "log_leap_none": "  → [Bond] Aucun emplacement allié vide valide.",
+    "log_leap": "  → [Bond] {name} passe du couloir {from} au couloir {to}.",
+    "log_maneuver_none": "  → [Manœuvre] Aucune carte alliée adjacente valide.",
+    "log_maneuver": "  → [Manœuvre] {name} échange sa position avec {other} (couloir {from} ↔ couloir {to}).",
+    "log_becomes_dust": "  → {name} (Risque {risk}) devient Poussière.",
+    "log_no_effect_risk6": "  → Aucun effet (Risque opposé > 6).",
+    "log_column_dust": "  → Tout le couloir {lane} devient Poussière.",
+    "log_same_el_dust": "  → {name} (même élément, Risque {risk} < {mine}) devient Poussière.",
+    "log_no_effect_cond": "  → Aucun effet (conditions non réunies).",
+    "log_copies_element": "  → {name} copie l'élément {element} de {other}.",
+    "log_no_opp_card": "  → Aucune carte opposée.",
+    "log_into_rat": "  → Se transforme en Rat (Poussière, Risque 2). Risque cumulé du couloir ajusté de −{n}.",
+    "log_crushed_dust": "  → {name} (Risque {risk}) est écrasée en Poussière.",
+    "log_no_effect_risk9": "  → Aucun effet (Risque opposé < 9).",
+    "log_mult_reversed": "  → Multiplicateur inversé (dangereux pour {who} désormais).",
+    "log_powershift": "  → Multiplicateur ×2 déplacé du couloir {from} au couloir {to}.",
+    "log_powershift_none": "  → [Transfert de Puissance] Aucun couloir cible valide.",
+    "log_torment_info": "  → [{skill}] se déclenche à la résolution si cette carte bat un Risque inférieur.",
+    "logs_battle_begins": "Le combat commence !",
+    "logs_round": "*** Round {n}",
+    "logs_initiative": "** Initiative : {who}",
+    "logs_higher_risk": "** Risque le plus élevé :",
+    "logs_higher_risk_lane": "   couloir {lane} : {who}",
+    "logs_you_plays": "VOUS : jouez {name}",
+    "logs_opp_plays": "ADV : joue {name}",
+    "logs_in_lane": "* dans le couloir {lane}",
+    "logs_total_risk": "* Risque total = {before} + {add}",
+    "logs_resolving": "** Résolution des couloirs",
+    "logs_lane_deadlock": "Couloir {lane} : deadlock",
+    "logs_new_risks": "nouveaux risques VOUS : {p}, ADV : {e}",
+    "logs_no_risk_left": "plus aucun risque",
+    "logs_lane_you_win": "Couloir {lane} : VOUS gagnez",
+    "logs_lane_opp_win": "Couloir {lane} : ADV gagne",
+    "logs_opp_receives": "ADV reçoit {dmg} dégâts",
+    "logs_you_receive": "VOUS recevez {dmg} dégâts",
+    "logs_card_removed": "   {name} retirée",
+    "logs_seal_active": "   sceau actif",
+    "logs_plus_damage": "   +{dmg} dégâts",
+    "logs_deck_reshuffled": "Deck remélangé",
+    "logs_no_effect": "   aucun effet",
+    "logs_activates": "{who} : active {skill}",
+    "logs_bonus_sr7": "   SR7 bonus",
+    "logs_opp_hp": "   ADV −{dmg} PV",
+    "logs_you_hp": "   VOUS −{dmg} PV",
+    "logs_lane_blocked": "SR2 : couloir bloqué",
+    "logs_on_resolution": "   à la résolution",
+    "logs_on_placement": "   à la pose",
+    "logs_on_deadlock": "   en deadlock",
+    "logs_targeting": "   cible {name}",
+    "logs_arrow": "   {from} → {to}",
+    "logs_hand_plus": "   Main +{n}",
+    "logs_risk_change": "   {name} Risque {before}→{after}",
+    "logs_risk_value": "   Risque {n}",
+    "logs_both_dust": "   les deux → Poussière",
+    "logs_skill_off": "   pouvoir de {name} désactivé",
+    "logs_copies": "   {name} copie {other}",
+    "logs_x2_to": "   x2 → {who}",
+    "logs_x2_move": "   x2 : {from} → {to}",
+    "logs_into_rat": "   transformée en Rat",
+    "logs_x2_owner": "** x2 : {who}",
+    "logs_subround": "** Sous-round {n}/6",
+    "logs_playing": "** {who} joue"
   },
   "de": {
     "btn_tutorial": "TUTORIAL",
@@ -19652,7 +19924,7 @@ const STRINGS = {
     "obj_designate": "Ziel bestimmen",
     "obj_panel_title": "Ziele",
     "log_battle_begins": "Kampf beginnt!",
-    "log_round_init": "Runde {n} — {who} hat Initiative",
+    "log_round_init": "Runde {n} — {who}",
     "log_you_initiative": "Du hast die Initiative",
     "log_opp_initiative": "Gegner hat die Initiative",
     "log_you_play": "{name} → {lane}-Spur (Risiko {risk}).",
@@ -19662,8 +19934,6 @@ const STRINGS = {
     "log_lane_right": "Rechts",
     "log_you": "DU",
     "log_opp": "GEG",
-    "log_you_activate": "DU: aktivierst {skill}",
-    "log_opp_activate": "GEG: aktiviert {skill}",
     "log_resolve_start": "Runden-Analyse und Auflösung",
     "log_lane_deadlock": "Spur {lane}: Deadlock — Risiken übertragen (du {p} / geg {e}).",
     "log_lane_win": "Spur {lane}: ✓ Sieg{x}! Gegner −{dmg} LP{mark}.",
@@ -20068,7 +20338,100 @@ const STRINGS = {
     "rl_fights_left_n": "{n} Kämpfe zu gewinnen",
     "rl_lives_left_1": "{lives} Leben übrig",
     "rl_lives_left_n": "{lives} Leben übrig",
-    "rl_abandon_body": "Kampf läuft.<br>Verlassen zählt als <b>NIEDERLAGE</b> und kostet dich ein Leben.<br><br>Das lässt sich nicht rückgängig machen."
+    "rl_abandon_body": "Kampf läuft.<br>Verlassen zählt als <b>NIEDERLAGE</b> und kostet dich ein Leben.<br><br>Das lässt sich nicht rückgängig machen.",
+
+    /* [v40 b06] Journal de combat — était écrit en dur en anglais */
+    "log_you_uses": "Du setzt [{skill}] ein ({name}).",
+    "log_opp_uses": "Der Gegner setzt [{skill}] ein ({name}).",
+    "log_you_uses_bonus": "Du setzt [{skill}] im Bonus-SR7 ein ({name}).",
+    "log_opp_uses_bonus": "Der Gegner setzt [{skill}] im Bonus-SR7 ein ({name}).",
+    "log_refresh": "[Erneuern] {who}: {n} Fähigkeiten wiederhergestellt.",
+    "log_mimic": "[Nachahmung] {name} → [{skill}] ← {opp}.",
+    "log_ally_risk": "  → Spur {lane} ({name}): Risiko {before}→{after}.",
+    "log_cards_replaced": "  → {n} Karten ersetzt.",
+    "log_card_swapped": "  → {name} → {other} (Risiko {risk}).",
+    "log_judgement_to_dust": "  → [Urteil] {name} → Staub.",
+    "log_terrify": "  → [Schrecken] {name} → {other}.",
+    "log_guard_mark": "  → [Schutzmal] Spur {lane}: {n} Risiko.",
+    "log_war_mark": "  → [Kriegsmal] Spur {lane}: +3 Risiko.",
+    "log_overgrowth": "  → [Überwucherung] {n} {element} → Erde.",
+    "log_cede_seed": "  → [Weichen und Säen] {name} → Staub. {other} → Erde.",
+    "log_void": "  → [Leere] {name}: Fähigkeit deaktiviert.",
+    "log_dustshot": "  → [Staubschuss] {name} + {other} → Staub.",
+    "log_chameleon": "  → [Chamäleon] {name}: {from} → {to}.",
+    "log_doppelganger": "  → [Doppelgänger] {name} → {other}.",
+    "log_vampire_kiss": "  → [Vampirkuss] {name} → {other}.",
+    "log_betrayal_no_opp": "  → [Verrat] Keine gegnerische Karte zum Tauschen.",
+    "log_betrayal": "  → [Verrat] {name} tauscht den Platz mit {other}, dann fällt ihr Risiko von {before} auf 2.",
+    "log_extinguish_none": "  → [Auslöschen] Kein gültiges Feuer-Ziel beim Gegner.",
+    "log_extinguish": "  → [Auslöschen] {name} (Feuer) → Staub.",
+    "log_flow_no_ally": "  → [Strömungswechsel] Keine benachbarte verbündete Wasserkarte.",
+    "log_flow_no_opp": "  → [Strömungswechsel] Keine gegnerische Karte.",
+    "log_flow_to_water": "  → [Strömungswechsel] {name} → Wasser.",
+    "log_ignite_none": "  → [Entzünden] Keine andere gültige verbündete Karte.",
+    "log_ignite": "  → [Entzünden] {name} ({from}) → Feuer.",
+    "log_leap_none": "  → [Sprung] Kein gültiger freier verbündeter Platz.",
+    "log_leap": "  → [Sprung] {name} wechselt von Spur {from} zu Spur {to}.",
+    "log_maneuver_none": "  → [Manöver] Keine gültige benachbarte verbündete Karte.",
+    "log_maneuver": "  → [Manöver] {name} tauscht die Position mit {other} (Spur {from} ↔ Spur {to}).",
+    "log_becomes_dust": "  → {name} (Risiko {risk}) wird zu Staub.",
+    "log_no_effect_risk6": "  → Keine Wirkung (gegnerisches Risiko > 6).",
+    "log_column_dust": "  → Die ganze Spur {lane} wird zu Staub.",
+    "log_same_el_dust": "  → {name} (gleiches Element, Risiko {risk} < {mine}) wird zu Staub.",
+    "log_no_effect_cond": "  → Keine Wirkung (Bedingungen nicht erfüllt).",
+    "log_copies_element": "  → {name} kopiert das Element {element} von {other}.",
+    "log_no_opp_card": "  → Keine gegnerische Karte.",
+    "log_into_rat": "  → Verwandelt sich in eine Ratte (Staub, Risiko 2). Kumuliertes Spur-Risiko um −{n} angepasst.",
+    "log_crushed_dust": "  → {name} (Risiko {risk}) wird zu Staub zermalmt.",
+    "log_no_effect_risk9": "  → Keine Wirkung (gegnerisches Risiko < 9).",
+    "log_mult_reversed": "  → Multiplikator umgekehrt (jetzt gefährlich für {who}).",
+    "log_powershift": "  → Multiplikator ×2 von Spur {from} nach Spur {to} verschoben.",
+    "log_powershift_none": "  → [Machtverschiebung] Keine gültige Zielspur.",
+    "log_torment_info": "  → [{skill}] löst bei der Auflösung aus, wenn diese Karte ein niedrigeres Risiko schlägt.",
+    "logs_battle_begins": "Der Kampf beginnt!",
+    "logs_round": "*** Runde {n}",
+    "logs_initiative": "** Initiative: {who}",
+    "logs_higher_risk": "** Höheres Risiko:",
+    "logs_higher_risk_lane": "   Spur {lane}: {who}",
+    "logs_you_plays": "DU: spielst {name}",
+    "logs_opp_plays": "GEG: spielt {name}",
+    "logs_in_lane": "* auf Spur {lane}",
+    "logs_total_risk": "* Gesamtrisiko = {before} + {add}",
+    "logs_resolving": "** Spuren werden aufgelöst",
+    "logs_lane_deadlock": "Spur {lane}: Deadlock",
+    "logs_new_risks": "neue Risiken DU: {p}, GEG: {e}",
+    "logs_no_risk_left": "kein Risiko mehr",
+    "logs_lane_you_win": "Spur {lane}: DU gewinnst",
+    "logs_lane_opp_win": "Spur {lane}: GEG gewinnt",
+    "logs_opp_receives": "GEG erhält {dmg} Schaden",
+    "logs_you_receive": "DU erhältst {dmg} Schaden",
+    "logs_card_removed": "   {name} entfernt",
+    "logs_seal_active": "   Siegel aktiv",
+    "logs_plus_damage": "   +{dmg} Schaden",
+    "logs_deck_reshuffled": "Deck neu gemischt",
+    "logs_no_effect": "   keine Wirkung",
+    "logs_activates": "{who}: aktiviert {skill}",
+    "logs_bonus_sr7": "   Bonus-SR7",
+    "logs_opp_hp": "   GEG −{dmg} LP",
+    "logs_you_hp": "   DU −{dmg} LP",
+    "logs_lane_blocked": "SR2: Spur blockiert",
+    "logs_on_resolution": "   bei der Auflösung",
+    "logs_on_placement": "   beim Ausspielen",
+    "logs_on_deadlock": "   bei Deadlock",
+    "logs_targeting": "   Ziel {name}",
+    "logs_arrow": "   {from} → {to}",
+    "logs_hand_plus": "   Hand +{n}",
+    "logs_risk_change": "   {name} Risiko {before}→{after}",
+    "logs_risk_value": "   Risiko {n}",
+    "logs_both_dust": "   beide → Staub",
+    "logs_skill_off": "   Fähigkeit von {name} aus",
+    "logs_copies": "   {name} kopiert {other}",
+    "logs_x2_to": "   x2 → {who}",
+    "logs_x2_move": "   x2: {from} → {to}",
+    "logs_into_rat": "   in eine Ratte verwandelt",
+    "logs_x2_owner": "** x2: {who}",
+    "logs_subround": "** Unterrunde {n}/6",
+    "logs_playing": "** {who} ist am Zug"
   },
   "es": {
     "btn_tutorial": "TUTORIAL",
@@ -20399,7 +20762,7 @@ const STRINGS = {
     "obj_designate": "Designar objetivo",
     "obj_panel_title": "Objetivos",
     "log_battle_begins": "¡Comienza la batalla!",
-    "log_round_init": "Round {n} — {who} tiene iniciativa",
+    "log_round_init": "Round {n} — {who}",
     "log_you_initiative": "Tienes la iniciativa",
     "log_opp_initiative": "El adversario tiene la iniciativa",
     "log_you_play": "{name} → carril {lane} (Riesgo {risk}).",
@@ -20409,8 +20772,6 @@ const STRINGS = {
     "log_lane_right": "Der.",
     "log_you": "TÚ",
     "log_opp": "ADV",
-    "log_you_activate": "TÚ: activas {skill}",
-    "log_opp_activate": "ADV: activa {skill}",
     "log_resolve_start": "Análisis y resolución del round",
     "log_lane_deadlock": "Carril {lane}: Deadlock — riesgos transferidos (tú {p} / adv {e}).",
     "log_lane_win": "Carril {lane}: ✓ ¡Victoria{x}! Adversario −{dmg} PV{mark}.",
@@ -20815,7 +21176,100 @@ const STRINGS = {
     "rl_fights_left_n": "{n} combates para ganar",
     "rl_lives_left_1": "{lives} vida restante",
     "rl_lives_left_n": "{lives} vidas restantes",
-    "rl_abandon_body": "Combate en curso.<br>Salir contará como <b>DERROTA</b> y te costará una vida.<br><br>No se puede deshacer."
+    "rl_abandon_body": "Combate en curso.<br>Salir contará como <b>DERROTA</b> y te costará una vida.<br><br>No se puede deshacer.",
+
+    /* [v40 b06] Journal de combat — était écrit en dur en anglais */
+    "log_you_uses": "Usas [{skill}] ({name}).",
+    "log_opp_uses": "El adversario usa [{skill}] ({name}).",
+    "log_you_uses_bonus": "Usas [{skill}] en el SR7 extra ({name}).",
+    "log_opp_uses_bonus": "El adversario usa [{skill}] en el SR7 extra ({name}).",
+    "log_refresh": "[Renovar] {who}: {n} poderes restaurados.",
+    "log_mimic": "[Imitar] {name} → [{skill}] ← {opp}.",
+    "log_ally_risk": "  → Carril {lane} ({name}): Riesgo {before}→{after}.",
+    "log_cards_replaced": "  → {n} cartas reemplazadas.",
+    "log_card_swapped": "  → {name} → {other} (Riesgo {risk}).",
+    "log_judgement_to_dust": "  → [Juicio] {name} → Polvo.",
+    "log_terrify": "  → [Aterrar] {name} → {other}.",
+    "log_guard_mark": "  → [Marca de Guardia] Carril {lane}: {n} de Riesgo.",
+    "log_war_mark": "  → [Marca de Guerra] Carril {lane}: +3 de Riesgo.",
+    "log_overgrowth": "  → [Crecimiento] {n} {element} → Tierra.",
+    "log_cede_seed": "  → [Ceder y Sembrar] {name} → Polvo. {other} → Tierra.",
+    "log_void": "  → [Vacío] {name}: poder desactivado.",
+    "log_dustshot": "  → [Disparo de Polvo] {name} + {other} → Polvo.",
+    "log_chameleon": "  → [Camaleón] {name}: {from} → {to}.",
+    "log_doppelganger": "  → [Doble] {name} → {other}.",
+    "log_vampire_kiss": "  → [Beso Vampírico] {name} → {other}.",
+    "log_betrayal_no_opp": "  → [Traición] No hay carta opuesta con la que intercambiar.",
+    "log_betrayal": "  → [Traición] {name} intercambia su lugar con {other}, y su Riesgo baja de {before} a 2.",
+    "log_extinguish_none": "  → [Extinguir] No hay objetivo enemigo de Fuego válido.",
+    "log_extinguish": "  → [Extinguir] {name} (Fuego) → Polvo.",
+    "log_flow_no_ally": "  → [Cambio de Flujo] No hay carta aliada de Agua adyacente.",
+    "log_flow_no_opp": "  → [Cambio de Flujo] No hay carta opuesta.",
+    "log_flow_to_water": "  → [Cambio de Flujo] {name} → Agua.",
+    "log_ignite_none": "  → [Ignición] No hay otra carta aliada válida.",
+    "log_ignite": "  → [Ignición] {name} ({from}) → Fuego.",
+    "log_leap_none": "  → [Salto] No hay espacio aliado libre válido.",
+    "log_leap": "  → [Salto] {name} pasa del carril {from} al carril {to}.",
+    "log_maneuver_none": "  → [Maniobra] No hay carta aliada adyacente válida.",
+    "log_maneuver": "  → [Maniobra] {name} intercambia posición con {other} (carril {from} ↔ carril {to}).",
+    "log_becomes_dust": "  → {name} (Riesgo {risk}) se convierte en Polvo.",
+    "log_no_effect_risk6": "  → Sin efecto (Riesgo opuesto > 6).",
+    "log_column_dust": "  → Todo el carril {lane} se convierte en Polvo.",
+    "log_same_el_dust": "  → {name} (mismo elemento, Riesgo {risk} < {mine}) se convierte en Polvo.",
+    "log_no_effect_cond": "  → Sin efecto (condiciones no cumplidas).",
+    "log_copies_element": "  → {name} copia el elemento {element} de {other}.",
+    "log_no_opp_card": "  → No hay carta opuesta.",
+    "log_into_rat": "  → Se transforma en Rata (Polvo, Riesgo 2). Riesgo acumulado del carril ajustado en −{n}.",
+    "log_crushed_dust": "  → {name} (Riesgo {risk}) es aplastada en Polvo.",
+    "log_no_effect_risk9": "  → Sin efecto (Riesgo opuesto < 9).",
+    "log_mult_reversed": "  → Multiplicador invertido (ahora peligroso para {who}).",
+    "log_powershift": "  → Multiplicador ×2 movido del carril {from} al carril {to}.",
+    "log_powershift_none": "  → [Cambio de Poder] No hay carril objetivo válido.",
+    "log_torment_info": "  → [{skill}] se activa en la resolución si esta carta vence a un Riesgo inferior.",
+    "logs_battle_begins": "¡Comienza el combate!",
+    "logs_round": "*** Ronda {n}",
+    "logs_initiative": "** Iniciativa: {who}",
+    "logs_higher_risk": "** Riesgo más alto:",
+    "logs_higher_risk_lane": "   carril {lane}: {who}",
+    "logs_you_plays": "TÚ: juegas {name}",
+    "logs_opp_plays": "ADV: juega {name}",
+    "logs_in_lane": "* en el carril {lane}",
+    "logs_total_risk": "* Riesgo total = {before} + {add}",
+    "logs_resolving": "** Resolviendo carriles",
+    "logs_lane_deadlock": "Carril {lane}: deadlock",
+    "logs_new_risks": "nuevos riesgos TÚ: {p}, ADV: {e}",
+    "logs_no_risk_left": "sin riesgo restante",
+    "logs_lane_you_win": "Carril {lane}: GANAS",
+    "logs_lane_opp_win": "Carril {lane}: gana ADV",
+    "logs_opp_receives": "ADV recibe {dmg} de daño",
+    "logs_you_receive": "TÚ recibes {dmg} de daño",
+    "logs_card_removed": "   {name} retirada",
+    "logs_seal_active": "   sello activo",
+    "logs_plus_damage": "   +{dmg} de daño",
+    "logs_deck_reshuffled": "Mazo rebarajado",
+    "logs_no_effect": "   sin efecto",
+    "logs_activates": "{who}: activa {skill}",
+    "logs_bonus_sr7": "   SR7 extra",
+    "logs_opp_hp": "   ADV −{dmg} PV",
+    "logs_you_hp": "   TÚ −{dmg} PV",
+    "logs_lane_blocked": "SR2: carril bloqueado",
+    "logs_on_resolution": "   en la resolución",
+    "logs_on_placement": "   al jugarla",
+    "logs_on_deadlock": "   en deadlock",
+    "logs_targeting": "   objetivo {name}",
+    "logs_arrow": "   {from} → {to}",
+    "logs_hand_plus": "   Mano +{n}",
+    "logs_risk_change": "   {name} Riesgo {before}→{after}",
+    "logs_risk_value": "   Riesgo {n}",
+    "logs_both_dust": "   ambas → Polvo",
+    "logs_skill_off": "   poder de {name} desactivado",
+    "logs_copies": "   {name} copia a {other}",
+    "logs_x2_to": "   x2 → {who}",
+    "logs_x2_move": "   x2: {from} → {to}",
+    "logs_into_rat": "   convertida en Rata",
+    "logs_x2_owner": "** x2: {who}",
+    "logs_subround": "** Sub-ronda {n}/6",
+    "logs_playing": "** juega {who}"
   },
   "it": {
     "btn_tutorial": "TUTORIAL",
@@ -21146,7 +21600,7 @@ const STRINGS = {
     "obj_designate": "Designare un bersaglio",
     "obj_panel_title": "Obiettivi",
     "log_battle_begins": "La battaglia inizia!",
-    "log_round_init": "Round {n} — {who} ha l'iniziativa",
+    "log_round_init": "Round {n} — {who}",
     "log_you_initiative": "Hai l'iniziativa",
     "log_opp_initiative": "L'avversario ha l'iniziativa",
     "log_you_play": "{name} → corsia {lane} (Rischio {risk}).",
@@ -21156,8 +21610,6 @@ const STRINGS = {
     "log_lane_right": "Des.",
     "log_you": "TU",
     "log_opp": "AVV",
-    "log_you_activate": "TU: attivi {skill}",
-    "log_opp_activate": "AVV: attiva {skill}",
     "log_resolve_start": "Analisi e risoluzione del round",
     "log_lane_deadlock": "Corsia {lane}: Deadlock — rischi trasferiti (tu {p} / avv {e}).",
     "log_lane_win": "Corsia {lane}: ✓ Vittoria{x}! Avversario −{dmg} PV{mark}.",
@@ -21562,7 +22014,100 @@ const STRINGS = {
     "rl_fights_left_n": "{n} scontri da vincere",
     "rl_lives_left_1": "{lives} vita rimasta",
     "rl_lives_left_n": "{lives} vite rimaste",
-    "rl_abandon_body": "Combattimento in corso.<br>Uscire conterà come <b>SCONFITTA</b> e ti costerà una vita.<br><br>Non è reversibile."
+    "rl_abandon_body": "Combattimento in corso.<br>Uscire conterà come <b>SCONFITTA</b> e ti costerà una vita.<br><br>Non è reversibile.",
+
+    /* [v40 b06] Journal de combat — était écrit en dur en anglais */
+    "log_you_uses": "Usi [{skill}] ({name}).",
+    "log_opp_uses": "L'avversario usa [{skill}] ({name}).",
+    "log_you_uses_bonus": "Usi [{skill}] al SR7 bonus ({name}).",
+    "log_opp_uses_bonus": "L'avversario usa [{skill}] al SR7 bonus ({name}).",
+    "log_refresh": "[Rinnova] {who}: {n} poteri ripristinati.",
+    "log_mimic": "[Imita] {name} → [{skill}] ← {opp}.",
+    "log_ally_risk": "  → Corsia {lane} ({name}): Rischio {before}→{after}.",
+    "log_cards_replaced": "  → {n} carte sostituite.",
+    "log_card_swapped": "  → {name} → {other} (Rischio {risk}).",
+    "log_judgement_to_dust": "  → [Giudizio] {name} → Polvere.",
+    "log_terrify": "  → [Terrore] {name} → {other}.",
+    "log_guard_mark": "  → [Marchio di Guardia] Corsia {lane}: {n} Rischio.",
+    "log_war_mark": "  → [Marchio di Guerra] Corsia {lane}: +3 Rischio.",
+    "log_overgrowth": "  → [Rigoglio] {n} {element} → Terra.",
+    "log_cede_seed": "  → [Cedi e Semina] {name} → Polvere. {other} → Terra.",
+    "log_void": "  → [Vuoto] {name}: potere disattivato.",
+    "log_dustshot": "  → [Colpo di Polvere] {name} + {other} → Polvere.",
+    "log_chameleon": "  → [Camaleonte] {name}: {from} → {to}.",
+    "log_doppelganger": "  → [Sosia] {name} → {other}.",
+    "log_vampire_kiss": "  → [Bacio Vampiro] {name} → {other}.",
+    "log_betrayal_no_opp": "  → [Tradimento] Nessuna carta opposta con cui scambiare.",
+    "log_betrayal": "  → [Tradimento] {name} scambia posto con {other}, poi il suo Rischio scende da {before} a 2.",
+    "log_extinguish_none": "  → [Estinzione] Nessun bersaglio nemico di Fuoco valido.",
+    "log_extinguish": "  → [Estinzione] {name} (Fuoco) → Polvere.",
+    "log_flow_no_ally": "  → [Cambio di Flusso] Nessuna carta alleata d'Acqua adiacente.",
+    "log_flow_no_opp": "  → [Cambio di Flusso] Nessuna carta opposta.",
+    "log_flow_to_water": "  → [Cambio di Flusso] {name} → Acqua.",
+    "log_ignite_none": "  → [Accensione] Nessun'altra carta alleata valida.",
+    "log_ignite": "  → [Accensione] {name} ({from}) → Fuoco.",
+    "log_leap_none": "  → [Balzo] Nessuno spazio alleato libero valido.",
+    "log_leap": "  → [Balzo] {name} passa dalla corsia {from} alla corsia {to}.",
+    "log_maneuver_none": "  → [Manovra] Nessuna carta alleata adiacente valida.",
+    "log_maneuver": "  → [Manovra] {name} scambia posizione con {other} (corsia {from} ↔ corsia {to}).",
+    "log_becomes_dust": "  → {name} (Rischio {risk}) diventa Polvere.",
+    "log_no_effect_risk6": "  → Nessun effetto (Rischio opposto > 6).",
+    "log_column_dust": "  → L'intera corsia {lane} diventa Polvere.",
+    "log_same_el_dust": "  → {name} (stesso elemento, Rischio {risk} < {mine}) diventa Polvere.",
+    "log_no_effect_cond": "  → Nessun effetto (condizioni non soddisfatte).",
+    "log_copies_element": "  → {name} copia l'elemento {element} da {other}.",
+    "log_no_opp_card": "  → Nessuna carta opposta.",
+    "log_into_rat": "  → Si trasforma in Ratto (Polvere, Rischio 2). Rischio cumulato della corsia corretto di −{n}.",
+    "log_crushed_dust": "  → {name} (Rischio {risk}) è schiacciata in Polvere.",
+    "log_no_effect_risk9": "  → Nessun effetto (Rischio opposto < 9).",
+    "log_mult_reversed": "  → Moltiplicatore invertito (ora pericoloso per {who}).",
+    "log_powershift": "  → Moltiplicatore ×2 spostato dalla corsia {from} alla corsia {to}.",
+    "log_powershift_none": "  → [Spostamento di Potere] Nessuna corsia bersaglio valida.",
+    "log_torment_info": "  → [{skill}] si attiva alla risoluzione se questa carta batte un Rischio inferiore.",
+    "logs_battle_begins": "Il combattimento inizia!",
+    "logs_round": "*** Round {n}",
+    "logs_initiative": "** Iniziativa: {who}",
+    "logs_higher_risk": "** Rischio più alto:",
+    "logs_higher_risk_lane": "   corsia {lane}: {who}",
+    "logs_you_plays": "TU: giochi {name}",
+    "logs_opp_plays": "AVV: gioca {name}",
+    "logs_in_lane": "* nella corsia {lane}",
+    "logs_total_risk": "* Rischio totale = {before} + {add}",
+    "logs_resolving": "** Risoluzione delle corsie",
+    "logs_lane_deadlock": "Corsia {lane}: deadlock",
+    "logs_new_risks": "nuovi rischi TU: {p}, AVV: {e}",
+    "logs_no_risk_left": "nessun rischio rimasto",
+    "logs_lane_you_win": "Corsia {lane}: VINCI",
+    "logs_lane_opp_win": "Corsia {lane}: vince AVV",
+    "logs_opp_receives": "AVV subisce {dmg} danni",
+    "logs_you_receive": "TU subisci {dmg} danni",
+    "logs_card_removed": "   {name} rimossa",
+    "logs_seal_active": "   sigillo attivo",
+    "logs_plus_damage": "   +{dmg} danni",
+    "logs_deck_reshuffled": "Mazzo rimescolato",
+    "logs_no_effect": "   nessun effetto",
+    "logs_activates": "{who}: attiva {skill}",
+    "logs_bonus_sr7": "   SR7 bonus",
+    "logs_opp_hp": "   AVV −{dmg} PV",
+    "logs_you_hp": "   TU −{dmg} PV",
+    "logs_lane_blocked": "SR2: corsia bloccata",
+    "logs_on_resolution": "   alla risoluzione",
+    "logs_on_placement": "   al momento della giocata",
+    "logs_on_deadlock": "   in deadlock",
+    "logs_targeting": "   bersaglio {name}",
+    "logs_arrow": "   {from} → {to}",
+    "logs_hand_plus": "   Mano +{n}",
+    "logs_risk_change": "   {name} Rischio {before}→{after}",
+    "logs_risk_value": "   Rischio {n}",
+    "logs_both_dust": "   entrambe → Polvere",
+    "logs_skill_off": "   potere di {name} disattivato",
+    "logs_copies": "   {name} copia {other}",
+    "logs_x2_to": "   x2 → {who}",
+    "logs_x2_move": "   x2: {from} → {to}",
+    "logs_into_rat": "   trasformata in Ratto",
+    "logs_x2_owner": "** x2: {who}",
+    "logs_subround": "** Sotto-round {n}/6",
+    "logs_playing": "** gioca {who}"
   },
   "zh": {
     "btn_tutorial": "教程",
@@ -21893,7 +22438,7 @@ const STRINGS = {
     "obj_designate": "指定目标",
     "obj_panel_title": "目标",
     "log_battle_begins": "战斗开始！",
-    "log_round_init": "Round {n} — {who}先手",
+    "log_round_init": "Round {n} — {who}",
     "log_you_initiative": "你先手",
     "log_opp_initiative": "对手先手",
     "log_you_play": "{name} → {lane}通道（风险{risk}）。",
@@ -21903,8 +22448,6 @@ const STRINGS = {
     "log_lane_right": "右",
     "log_you": "你",
     "log_opp": "对手",
-    "log_you_activate": "你：激活{skill}",
-    "log_opp_activate": "对手：激活{skill}",
     "log_resolve_start": "回合分析与结算",
     "log_lane_deadlock": "{lane}通道：僵局 — 风险延续（你{p} / 对{e}）。",
     "log_lane_win": "{lane}通道：✓ 你赢{x}！对手−{dmg}HP{mark}。",
@@ -22309,7 +22852,100 @@ const STRINGS = {
     "rl_fights_left_n": "还需赢 {n} 场",
     "rl_lives_left_1": "剩余 {lives} 颗心",
     "rl_lives_left_n": "剩余 {lives} 颗心",
-    "rl_abandon_body": "战斗进行中。<br>离开将记为<b>失败</b>，并消耗一条命。<br><br>此操作无法撤销。"
+    "rl_abandon_body": "战斗进行中。<br>离开将记为<b>失败</b>，并消耗一条命。<br><br>此操作无法撤销。",
+
+    /* [v40 b06] Journal de combat — était écrit en dur en anglais */
+    "log_you_uses": "你使用了【{skill}】（{name}）。",
+    "log_opp_uses": "对手使用了【{skill}】（{name}）。",
+    "log_you_uses_bonus": "你在附加SR7使用了【{skill}】（{name}）。",
+    "log_opp_uses_bonus": "对手在附加SR7使用了【{skill}】（{name}）。",
+    "log_refresh": "【刷新】{who}：恢复了 {n} 个能力。",
+    "log_mimic": "【模仿】{name} → 【{skill}】← {opp}。",
+    "log_ally_risk": "  → {lane}通道（{name}）：风险 {before}→{after}。",
+    "log_cards_replaced": "  → 替换了 {n} 张牌。",
+    "log_card_swapped": "  → {name} → {other}（风险 {risk}）。",
+    "log_judgement_to_dust": "  → 【审判】{name} → 尘。",
+    "log_terrify": "  → 【恐吓】{name} → {other}。",
+    "log_guard_mark": "  → 【守护印记】{lane}通道：{n} 风险。",
+    "log_war_mark": "  → 【战争印记】{lane}通道：+3 风险。",
+    "log_overgrowth": "  → 【蔓生】{n} 张{element} → 土。",
+    "log_cede_seed": "  → 【让位播种】{name} → 尘。{other} → 土。",
+    "log_void": "  → 【虚无】{name}：能力已禁用。",
+    "log_dustshot": "  → 【尘击】{name} + {other} → 尘。",
+    "log_chameleon": "  → 【变色龙】{name}：{from} → {to}。",
+    "log_doppelganger": "  → 【二重身】{name} → {other}。",
+    "log_vampire_kiss": "  → 【吸血之吻】{name} → {other}。",
+    "log_betrayal_no_opp": "  → 【背叛】没有可交换的对位牌。",
+    "log_betrayal": "  → 【背叛】{name} 与 {other} 交换位置，其风险从 {before} 降至 2。",
+    "log_extinguish_none": "  → 【熄灭】没有有效的敌方火牌目标。",
+    "log_extinguish": "  → 【熄灭】{name}（火）→ 尘。",
+    "log_flow_no_ally": "  → 【流向改变】没有相邻的友方水牌。",
+    "log_flow_no_opp": "  → 【流向改变】没有对位牌。",
+    "log_flow_to_water": "  → 【流向改变】{name} → 水。",
+    "log_ignite_none": "  → 【点燃】没有其他有效的友方牌。",
+    "log_ignite": "  → 【点燃】{name}（{from}）→ 火。",
+    "log_leap_none": "  → 【跃迁】没有有效的空闲友方位置。",
+    "log_leap": "  → 【跃迁】{name} 从{from}通道移动到{to}通道。",
+    "log_maneuver_none": "  → 【调度】没有有效的相邻友方牌。",
+    "log_maneuver": "  → 【调度】{name} 与 {other} 交换位置（{from}通道 ↔ {to}通道）。",
+    "log_becomes_dust": "  → {name}（风险 {risk}）变为尘。",
+    "log_no_effect_risk6": "  → 无效果（对位风险 > 6）。",
+    "log_column_dust": "  → 整条{lane}通道变为尘。",
+    "log_same_el_dust": "  → {name}（同元素，风险 {risk} < {mine}）变为尘。",
+    "log_no_effect_cond": "  → 无效果（条件不满足）。",
+    "log_copies_element": "  → {name} 复制了 {other} 的{element}元素。",
+    "log_no_opp_card": "  → 没有对位牌。",
+    "log_into_rat": "  → 变成老鼠（尘，风险 2）。通道累计风险调整 −{n}。",
+    "log_crushed_dust": "  → {name}（风险 {risk}）被碾为尘。",
+    "log_no_effect_risk9": "  → 无效果（对位风险 < 9）。",
+    "log_mult_reversed": "  → 倍率已反转（现在对{who}不利）。",
+    "log_powershift": "  → ×2 倍率从{from}通道移到{to}通道。",
+    "log_powershift_none": "  → 【力量转移】没有有效的目标通道。",
+    "log_torment_info": "  → 【{skill}】在结算时若此牌击败更低风险的牌则触发。",
+    "logs_battle_begins": "战斗开始！",
+    "logs_round": "*** 第 {n} 回合",
+    "logs_initiative": "** 先手：{who}",
+    "logs_higher_risk": "** 最高风险：",
+    "logs_higher_risk_lane": "   {lane}通道：{who}",
+    "logs_you_plays": "我方：打出 {name}",
+    "logs_opp_plays": "对手：打出 {name}",
+    "logs_in_lane": "* 位于{lane}通道",
+    "logs_total_risk": "* 总风险 = {before} + {add}",
+    "logs_resolving": "** 结算通道",
+    "logs_lane_deadlock": "{lane}通道：僵持",
+    "logs_new_risks": "新风险 我方：{p}，对手：{e}",
+    "logs_no_risk_left": "无剩余风险",
+    "logs_lane_you_win": "{lane}通道：我方胜",
+    "logs_lane_opp_win": "{lane}通道：对手胜",
+    "logs_opp_receives": "对手受到 {dmg} 伤害",
+    "logs_you_receive": "我方受到 {dmg} 伤害",
+    "logs_card_removed": "   {name} 已移除",
+    "logs_seal_active": "   封印生效",
+    "logs_plus_damage": "   +{dmg} 伤害",
+    "logs_deck_reshuffled": "牌库已重洗",
+    "logs_no_effect": "   无效果",
+    "logs_activates": "{who}：发动 {skill}",
+    "logs_bonus_sr7": "   附加SR7",
+    "logs_opp_hp": "   对手 −{dmg} HP",
+    "logs_you_hp": "   我方 −{dmg} HP",
+    "logs_lane_blocked": "SR2：通道封锁",
+    "logs_on_resolution": "   结算时",
+    "logs_on_placement": "   打出时",
+    "logs_on_deadlock": "   僵持时",
+    "logs_targeting": "   目标 {name}",
+    "logs_arrow": "   {from} → {to}",
+    "logs_hand_plus": "   手牌 +{n}",
+    "logs_risk_change": "   {name} 风险 {before}→{after}",
+    "logs_risk_value": "   风险 {n}",
+    "logs_both_dust": "   双方 → 尘",
+    "logs_skill_off": "   {name} 能力关闭",
+    "logs_copies": "   {name} 复制 {other}",
+    "logs_x2_to": "   x2 → {who}",
+    "logs_x2_move": "   x2：{from} → {to}",
+    "logs_into_rat": "   变成老鼠",
+    "logs_x2_owner": "** x2：{who}",
+    "logs_subround": "** 子回合 {n}/6",
+    "logs_playing": "** {who} 行动中"
   },
   "ja": {
     "btn_tutorial": "チュートリアル",
@@ -22640,7 +23276,7 @@ const STRINGS = {
     "obj_designate": "ターゲットを指定",
     "obj_panel_title": "目標",
     "log_battle_begins": "戦闘開始！",
-    "log_round_init": "Round {n} — {who}が先手",
+    "log_round_init": "Round {n} — {who}",
     "log_you_initiative": "あなたが先手",
     "log_opp_initiative": "相手が先手",
     "log_you_play": "{name} → {lane}レーン（リスク{risk}）。",
@@ -22650,8 +23286,6 @@ const STRINGS = {
     "log_lane_right": "右",
     "log_you": "自分",
     "log_opp": "相手",
-    "log_you_activate": "自分：{skill}発動",
-    "log_opp_activate": "相手：{skill}発動",
     "log_resolve_start": "ラウンド解決",
     "log_lane_deadlock": "{lane}レーン：デッドロック — リスク継続（あ{p}/相{e}）。",
     "log_lane_win": "{lane}レーン：✓勝利{x}！相手−{dmg}HP{mark}。",
@@ -23056,7 +23690,100 @@ const STRINGS = {
     "rl_fights_left_n": "残り {n} 戦",
     "rl_lives_left_1": "ライフ {lives}",
     "rl_lives_left_n": "ライフ {lives}",
-    "rl_abandon_body": "戦闘が進行中です。<br>退場すると<b>敗北</b>扱いとなり、ライフを1つ失います。<br><br>取り消せません。"
+    "rl_abandon_body": "戦闘が進行中です。<br>退場すると<b>敗北</b>扱いとなり、ライフを1つ失います。<br><br>取り消せません。",
+
+    /* [v40 b06] Journal de combat — était écrit en dur en anglais */
+    "log_you_uses": "あなたは【{skill}】を使用（{name}）。",
+    "log_opp_uses": "相手が【{skill}】を使用（{name}）。",
+    "log_you_uses_bonus": "あなたはボーナスSR7で【{skill}】を使用（{name}）。",
+    "log_opp_uses_bonus": "相手がボーナスSR7で【{skill}】を使用（{name}）。",
+    "log_refresh": "【リフレッシュ】{who}：{n} 個の能力を回復。",
+    "log_mimic": "【ミミック】{name} → 【{skill}】← {opp}。",
+    "log_ally_risk": "  → {lane}レーン（{name}）：リスク {before}→{after}。",
+    "log_cards_replaced": "  → {n} 枚を入れ替え。",
+    "log_card_swapped": "  → {name} → {other}（リスク {risk}）。",
+    "log_judgement_to_dust": "  → 【ジャッジメント】{name} → 塵。",
+    "log_terrify": "  → 【テリファイ】{name} → {other}。",
+    "log_guard_mark": "  → 【ガードマーク】{lane}レーン：リスク {n}。",
+    "log_war_mark": "  → 【ウォーマーク】{lane}レーン：リスク +3。",
+    "log_overgrowth": "  → 【オーバーグロウス】{element} {n} 枚 → 土。",
+    "log_cede_seed": "  → 【シード・アンド・シード】{name} → 塵。{other} → 土。",
+    "log_void": "  → 【ヴォイド】{name}：能力を無効化。",
+    "log_dustshot": "  → 【ダストショット】{name} + {other} → 塵。",
+    "log_chameleon": "  → 【カメレオン】{name}：{from} → {to}。",
+    "log_doppelganger": "  → 【ドッペルゲンガー】{name} → {other}。",
+    "log_vampire_kiss": "  → 【ヴァンパイアキス】{name} → {other}。",
+    "log_betrayal_no_opp": "  → 【ビトレイアル】交換できる対面カードがありません。",
+    "log_betrayal": "  → 【ビトレイアル】{name} が {other} と位置を交換し、リスクが {before} から 2 に低下。",
+    "log_extinguish_none": "  → 【消火】有効な敵の火カードがありません。",
+    "log_extinguish": "  → 【消火】{name}（火）→ 塵。",
+    "log_flow_no_ally": "  → 【フローチェンジ】隣接する味方の水カードがありません。",
+    "log_flow_no_opp": "  → 【フローチェンジ】対面カードがありません。",
+    "log_flow_to_water": "  → 【フローチェンジ】{name} → 水。",
+    "log_ignite_none": "  → 【イグナイト】他に有効な味方カードがありません。",
+    "log_ignite": "  → 【イグナイト】{name}（{from}）→ 火。",
+    "log_leap_none": "  → 【リープ】有効な空き味方スロットがありません。",
+    "log_leap": "  → 【リープ】{name} が{from}レーンから{to}レーンへ移動。",
+    "log_maneuver_none": "  → 【マニューバ】有効な隣接味方カードがありません。",
+    "log_maneuver": "  → 【マニューバ】{name} が {other} と位置を交換（{from}レーン ↔ {to}レーン）。",
+    "log_becomes_dust": "  → {name}（リスク {risk}）が塵になる。",
+    "log_no_effect_risk6": "  → 効果なし（対面のリスク > 6）。",
+    "log_column_dust": "  → {lane}レーン全体が塵になる。",
+    "log_same_el_dust": "  → {name}（同元素、リスク {risk} < {mine}）が塵になる。",
+    "log_no_effect_cond": "  → 効果なし（条件を満たしていません）。",
+    "log_copies_element": "  → {name} が {other} の{element}元素をコピー。",
+    "log_no_opp_card": "  → 対面カードがありません。",
+    "log_into_rat": "  → ネズミに変化（塵、リスク 2）。レーンの累積リスクを −{n} 調整。",
+    "log_crushed_dust": "  → {name}（リスク {risk}）が塵に砕かれる。",
+    "log_no_effect_risk9": "  → 効果なし（対面のリスク < 9）。",
+    "log_mult_reversed": "  → 倍率が反転（{who}にとって危険に）。",
+    "log_powershift": "  → ×2 倍率が{from}レーンから{to}レーンへ移動。",
+    "log_powershift_none": "  → 【パワーシフト】有効な対象レーンがありません。",
+    "log_torment_info": "  → 【{skill}】はこのカードがより低いリスクに勝ったとき、解決時に発動。",
+    "logs_battle_begins": "戦闘開始！",
+    "logs_round": "*** ラウンド {n}",
+    "logs_initiative": "** 先手：{who}",
+    "logs_higher_risk": "** 最大リスク：",
+    "logs_higher_risk_lane": "   {lane}レーン：{who}",
+    "logs_you_plays": "自分：{name} をプレイ",
+    "logs_opp_plays": "相手：{name} をプレイ",
+    "logs_in_lane": "* {lane}レーンに",
+    "logs_total_risk": "* 合計リスク = {before} + {add}",
+    "logs_resolving": "** レーンの解決",
+    "logs_lane_deadlock": "{lane}レーン：デッドロック",
+    "logs_new_risks": "新リスク 自分：{p}、相手：{e}",
+    "logs_no_risk_left": "リスクなし",
+    "logs_lane_you_win": "{lane}レーン：自分の勝ち",
+    "logs_lane_opp_win": "{lane}レーン：相手の勝ち",
+    "logs_opp_receives": "相手が {dmg} ダメージ",
+    "logs_you_receive": "自分が {dmg} ダメージ",
+    "logs_card_removed": "   {name} を除去",
+    "logs_seal_active": "   シール発動中",
+    "logs_plus_damage": "   +{dmg} ダメージ",
+    "logs_deck_reshuffled": "デッキを再シャッフル",
+    "logs_no_effect": "   効果なし",
+    "logs_activates": "{who}：{skill} 発動",
+    "logs_bonus_sr7": "   ボーナスSR7",
+    "logs_opp_hp": "   相手 −{dmg} HP",
+    "logs_you_hp": "   自分 −{dmg} HP",
+    "logs_lane_blocked": "SR2：レーン封鎖",
+    "logs_on_resolution": "   解決時",
+    "logs_on_placement": "   プレイ時",
+    "logs_on_deadlock": "   デッドロック時",
+    "logs_targeting": "   対象 {name}",
+    "logs_arrow": "   {from} → {to}",
+    "logs_hand_plus": "   手札 +{n}",
+    "logs_risk_change": "   {name} リスク {before}→{after}",
+    "logs_risk_value": "   リスク {n}",
+    "logs_both_dust": "   両方 → 塵",
+    "logs_skill_off": "   {name} の能力オフ",
+    "logs_copies": "   {name} が {other} をコピー",
+    "logs_x2_to": "   x2 → {who}",
+    "logs_x2_move": "   x2：{from} → {to}",
+    "logs_into_rat": "   ネズミに変化",
+    "logs_x2_owner": "** x2：{who}",
+    "logs_subround": "** サブラウンド {n}/6",
+    "logs_playing": "** {who} の手番"
   }
 };
 
@@ -23088,6 +23815,22 @@ function t(key){
   if(s && s[key] !== undefined) return s[key];
   return STRINGS.en[key] || key;
 }
+
+// [v40 b06] Traduction AVEC substitution.
+//   tl('log_you_play', {name:'Rat', lane:'Gauche', risk:2})
+// Remplace la chaîne de .replace('{x}',…).replace('{y}',…) qu'on écrivait à la
+// main : c'est elle qui avait laissé {s} et {s2} non substitués dans le
+// sous-titre roguelike pendant sept traductions. Ici, on ne peut plus oublier
+// un placeholder — on passe l'objet, la fonction fait le reste.
+function tl(key, vars){
+  let out = t(key);
+  if(vars) for(const k in vars) out = out.split('{' + k + '}').join(vars[k]);
+  return out;
+}
+
+// Nom affichable d'un élément. Le journal de combat écrivait « Fire », « Water »
+// en dur ; ces quatre clés existaient déjà, traduites, pour le panneau de stats.
+function _elName(el){ return t('card_el_' + (el === 'nature' ? 'earth' : el)) || el; }
 
 function setLang(lang){
   _lang = lang;
