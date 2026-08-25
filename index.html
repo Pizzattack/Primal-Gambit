@@ -30,8 +30,8 @@
 <!-- ═══ v40 b03 : favicon + installation écran d'accueil (iOS/Android) ═══ -->
 <!-- favicon.png (64px) : onglet navigateur uniquement, optimisé lisibilité en petit -->
 <link rel="icon" type="image/png" href="assets/background/favicon.png">
-<!-- manifest-icon.png (512px) : icône iOS/Android — source haute-res pour éviter le flou à 180px -->
-<link rel="apple-touch-icon" href="assets/background/manifest-icon.png">
+<!-- manifest-icon.webp (512px) : icône iOS/Android — source haute-res pour éviter le flou à 180px -->
+<link rel="apple-touch-icon" href="assets/background/manifest-icon.webp">
 <link rel="manifest" href="manifest.json">
 <meta name="theme-color" content="#000000">
 <!-- iOS : mode "app" sans barre Safari, titre court sous l'icône -->
@@ -79,7 +79,7 @@
 
 html, body {
   width:100%; height:100%;
-  background:var(--bg) url('assets/background/bg0.png') center center / cover no-repeat;
+  background:var(--bg) url('assets/background/bg0.webp') center center / cover no-repeat;
   color:var(--text);
   font-family:'Cinzel',serif;
   overflow:hidden;
@@ -90,7 +90,7 @@ html, body {
 }
 /* Fond spécifique à l'écran de combat */
 body:has(#s-fight.active){
-  background-image: url('assets/background/bg1.png');
+  background-image: url('assets/background/bg1.webp');
 }
 
 /* ─── ÉCRANS ─── */
@@ -113,7 +113,7 @@ body:has(#s-fight.active){
   font-size:clamp(15px, 4vw, 20px);
   font-weight:700; letter-spacing:.12em; text-transform:uppercase;
   padding:clamp(22px,5.5vw,34px) clamp(38px,9.5vw,64px);
-  background:url('assets/background/button_l_black.png') center/100% 100% no-repeat;
+  background:url('assets/background/button_l_black.webp') center/100% 100% no-repeat;
   color:#cccccc; border:none; cursor:pointer;
   transition:transform .1s;
   white-space:nowrap;
@@ -127,7 +127,7 @@ body:has(#s-fight.active){
   font-size:clamp(13px,3.5vw,17px);
   font-weight:700; letter-spacing:.1em; text-transform:uppercase;
   padding:clamp(18px,4.5vw,28px) clamp(28px,7vw,48px);
-  background:url('assets/background/button_l_white.png') center/100% 100% no-repeat;
+  background:url('assets/background/button_l_white.webp') center/100% 100% no-repeat;
   border:none; color:#222222; cursor:pointer;
   transition:transform .1s;
   white-space:nowrap;
@@ -417,7 +417,7 @@ body:has(#s-fight.active){
 img.slot-skill-targeted{
   animation: skillTargetImpactDropShadow 0.52s ease-out both !important;
 }
-/* Indicateur ×2 : le halo suit les contours de circle_up.png via drop-shadow */
+/* Indicateur ×2 : le halo suit les contours de circle_up.webp via drop-shadow */
 .arrow-x2.slot-skill-targeted{
   animation: none;
 }
@@ -462,12 +462,12 @@ img.slot-skill-targeted{
    L'opacité du ::before correspond exactement à l'ancien alpha du fond uniforme. */
 .hp-bar::before{
   content:''; position:absolute; inset:0; pointer-events:none; z-index:0;
-  background:url('assets/background/texture_black.png') top left/1254px 1254px repeat;
+  background:url('assets/background/texture_black.webp') top left/1254px 1254px repeat;
   opacity:0.8;
 }
 .hand-container::before{
   content:''; position:absolute; inset:0; pointer-events:none; z-index:0;
-  background:url('assets/background/texture_black.png') top left/1254px 1254px repeat;
+  background:url('assets/background/texture_black.webp') top left/1254px 1254px repeat;
   opacity:0.4;
 }
 /* Les enfants directs doivent passer au-dessus du ::before */
@@ -621,7 +621,7 @@ img.slot-skill-targeted{
 }
 .slot.slot-empty::before{
   content:''; position:absolute; inset:0; pointer-events:none; z-index:0;
-  background:url('assets/background/texture_black.png') top left/1254px 1254px repeat;
+  background:url('assets/background/texture_black.webp') top left/1254px 1254px repeat;
   opacity:0.5;
 }
 .slot > *{ position:relative; z-index:1; }
@@ -821,7 +821,7 @@ img.slot-skill-targeted{
 /* ── Texture opacity:0.6 sur les panneaux log et règles ── */
 #log-drawer::before, #rules-panel::before, #stats-panel::before{
   content:''; position:absolute; inset:0; pointer-events:none; z-index:0;
-  background:url('assets/background/texture_black.png') top left/1254px 1254px repeat;
+  background:url('assets/background/texture_black.webp') top left/1254px 1254px repeat;
   opacity:0.6;
 }
 #log-drawer > *, #rules-panel > *, #stats-panel > *{ position:relative; z-index:1; }
@@ -887,7 +887,7 @@ img.slot-skill-targeted{
   transition:opacity 0.2s;
   -webkit-tap-highlight-color:transparent;
   line-height:1.2; flex-shrink:0;
-  background:url('assets/background/button_m_black.png') center/100% 100% no-repeat;
+  background:url('assets/background/button_m_black.webp') center/100% 100% no-repeat;
   box-shadow:none;
 }
 /* Re-centrer les éléments de la hp-bar player */
@@ -907,7 +907,7 @@ img.slot-skill-targeted{
 /* Joueur : fond blanc, texte rouge foncé, halo rouge */
 .btn-end-round.turn-player{
   color:#8b0000;
-  background:url('assets/background/button_m_white.png') center/100% 100% no-repeat;
+  background:url('assets/background/button_m_white.webp') center/100% 100% no-repeat;
   filter:drop-shadow(0 0 12px rgba(139,0,0,1)) drop-shadow(0 0 28px rgba(139,0,0,0.6));
   display:flex; align-items:center; justify-content:center;
 }
@@ -921,7 +921,7 @@ img.slot-skill-targeted{
 }
 /* IA : fond noir, texte violet clair, halo violet */
 .btn-end-round.turn-ai{
-  background:url('assets/background/button_m_black.png') center/100% 100% no-repeat;
+  background:url('assets/background/button_m_black.webp') center/100% 100% no-repeat;
   color:#c084fc; cursor:default; opacity:0.9;
   filter:drop-shadow(0 0 12px rgba(192,132,252,1)) drop-shadow(0 0 28px rgba(192,132,252,0.6));
   white-space:normal; text-align:center;
@@ -1052,7 +1052,7 @@ img.slot-skill-targeted{
 #mull-deck-pile.drag-over{ transform:scale(1.08); }
 .mull-deck-card{
   position:absolute; inset:0;
-  background:url('assets/background/back.png') center/cover no-repeat;
+  background:url('assets/background/back.webp') center/cover no-repeat;
   border-radius:6px;
   overflow:hidden;
 }
@@ -1561,7 +1561,7 @@ img.slot-skill-targeted{
 
 /* Carte masquée en main (debug OFF) */
 .card-masked{
-  background:url('assets/background/back.png') center/cover no-repeat !important;
+  background:url('assets/background/back.webp') center/cover no-repeat !important;
   display:flex; align-items:center; justify-content:center;
   flex-direction:column; gap:3px;
 }
@@ -1707,10 +1707,10 @@ body:has(#s-fight.active) .hp-circle-num img{
   transition:opacity 0.25s;
   background-size:cover; background-position:center; background-repeat:no-repeat;
 }
-.ri-square.ri-done      { background-image:url('assets/background/indicator_square_gold.png'); }
-.ri-square.ri-current   { background-image:url('assets/background/indicator_square_lgrey.png'); }
-.ri-square.ri-future    { background-image:url('assets/background/indicator_square_black.png'); }
-.ri-square.ri-card-played{ background-image:url('assets/background/indicator_square_gold.png'); }
+.ri-square.ri-done      { background-image:url('assets/background/indicator_square_gold.webp'); }
+.ri-square.ri-current   { background-image:url('assets/background/indicator_square_lgrey.webp'); }
+.ri-square.ri-future    { background-image:url('assets/background/indicator_square_black.webp'); }
+.ri-square.ri-card-played{ background-image:url('assets/background/indicator_square_gold.webp'); }
 
 @keyframes riCurrentPulse{
   from{ opacity:0.85; }
@@ -1731,26 +1731,26 @@ body:has(#s-fight.active) .hp-circle-num img{
 }
 /* Futur / passé non activé — gris foncé */
 .ri-circle.ri-ability-off{
-  background-image:url('assets/background/indicator_circle_black.png');
+  background-image:url('assets/background/indicator_circle_black.webp');
 }
 /* Slot actuel, skill disponible non encore activé — gris clair */
 .ri-circle.ri-ability-current{
-  background-image:url('assets/background/indicator_circle_lgrey.png');
+  background-image:url('assets/background/indicator_circle_lgrey.webp');
 }
 /* Skill activé — vert */
 .ri-circle.ri-ability-used{
-  background-image:url('assets/background/indicator_circle_green.png');
+  background-image:url('assets/background/indicator_circle_green.webp');
 }
 /* Exhaust / bloqué — rouge */
 .ri-circle.ri-exhausted{
-  background-image:url('assets/background/indicator_circle_red.png');
+  background-image:url('assets/background/indicator_circle_red.webp');
   display:flex; align-items:center; justify-content:center;
   color:transparent; line-height:1;
   animation:exhaustPulse 1s ease-in-out infinite;
 }
 /* SR7 bonus disponible non utilisé — gris clair */
 .ri-circle.ri-bonus-active{
-  background-image:url('assets/background/indicator_circle_lgrey.png');
+  background-image:url('assets/background/indicator_circle_lgrey.webp');
 }
 @keyframes exhaustPulse{
   0%,100%{ opacity:0.75; }
@@ -2879,7 +2879,7 @@ body:has(#s-fight.active) .hp-circle-num img{
     padding:4px 6px !important; white-space:normal !important; text-align:center !important;
     border-radius:8px !important;
     z-index:53 !important; box-sizing:border-box !important;
-    background:url('assets/background/button_m_white.png') center/100% 100% no-repeat !important;
+    background:url('assets/background/button_m_white.webp') center/100% 100% no-repeat !important;
     box-shadow:none !important;
   }
   @keyframes endRoundPulsePlayerFlat{
@@ -2895,13 +2895,13 @@ body:has(#s-fight.active) .hp-circle-num img{
   }
   body:has(#s-fight.active) #hp-bar-you > #btn-end-round.turn-player{
     color:#8b0000 !important;
-    background:url('assets/background/button_m_white.png') center/100% 100% no-repeat !important;
+    background:url('assets/background/button_m_white.webp') center/100% 100% no-repeat !important;
     filter:drop-shadow(0 0 12px rgba(139,0,0,1)) drop-shadow(0 0 28px rgba(139,0,0,0.6)) !important;
     display:flex !important; align-items:center !important; justify-content:center !important;
   }
   body:has(#s-fight.active) #hp-bar-you > #btn-end-round.turn-ai{
     color:#c084fc !important;
-    background:url('assets/background/button_m_black.png') center/100% 100% no-repeat !important;
+    background:url('assets/background/button_m_black.webp') center/100% 100% no-repeat !important;
     filter:drop-shadow(0 0 12px rgba(192,132,252,1)) drop-shadow(0 0 28px rgba(192,132,252,0.6)) !important;
     animation:none !important;
     display:flex !important; align-items:center !important; justify-content:center !important;
@@ -3164,7 +3164,7 @@ body:has(#s-fight.active) .hp-circle-num img{
     padding:4px 6px !important; font-size:clamp(12px,calc(1.3 * var(--ls-1vw)),17px) !important;
     justify-content:center !important; border-radius:8px !important;
     z-index:55 !important; box-sizing:border-box !important;
-    background:url('assets/background/button_m_white.png') center/100% 100% no-repeat !important;
+    background:url('assets/background/button_m_white.webp') center/100% 100% no-repeat !important;
     box-shadow:none !important;
     filter:drop-shadow(0 0 12px rgba(139,0,0,1)) drop-shadow(0 0 28px rgba(139,0,0,0.6)) !important;
   }
@@ -3199,7 +3199,7 @@ body:has(#s-fight.active) .hp-circle-num img{
   body:has(#s-fight.active) .float-toolbar::before{
     content:'' !important; position:absolute !important; inset:0 !important;
     pointer-events:none !important; z-index:0 !important;
-    background:url('assets/background/texture_black.png') top left/1254px 1254px repeat !important;
+    background:url('assets/background/texture_black.webp') top left/1254px 1254px repeat !important;
     opacity:0.8;
   }
   body:has(#s-fight.active) .rc-panel > *,
@@ -3210,7 +3210,7 @@ body:has(#s-fight.active) .hp-circle-num img{
   }
   body:has(#s-fight.active) .hand-container:not(.ai-hand-container)::before{
     content:''; position:absolute; inset:0; pointer-events:none; z-index:0;
-    background:url('assets/background/texture_black.png') top left/1254px 1254px repeat;
+    background:url('assets/background/texture_black.webp') top left/1254px 1254px repeat;
     opacity:0.4;
   }
   body:has(#s-fight.active) .hand-container:not(.ai-hand-container) > *{
@@ -3224,7 +3224,7 @@ body:has(#s-fight.active) .hp-circle-num img{
   body:has(#s-fight.active) #round-indicators-you::after,
   body:has(#s-fight.active) #hp-bar-you::after{
     content:''; position:absolute; inset:0; pointer-events:none; z-index:-1;
-    background:url('assets/background/texture_black.png') top left/1254px 1254px repeat;
+    background:url('assets/background/texture_black.webp') top left/1254px 1254px repeat;
     opacity:0.8;
   }
   body:has(#s-fight.active) #rc-log{
@@ -3504,7 +3504,7 @@ body:has(#targeting-cancel) #btn-end-round{
   font-size:clamp(14px,3.5vw,18px);
   font-weight:700; letter-spacing:.06em;
   cursor:pointer; white-space:nowrap;
-  background:url('assets/background/button_m_white.png') center/100% 100% no-repeat;
+  background:url('assets/background/button_m_white.webp') center/100% 100% no-repeat;
   box-shadow:none;
   color:#8b0000;
   filter:drop-shadow(0 0 12px rgba(139,0,0,1)) drop-shadow(0 0 28px rgba(139,0,0,0.6));
@@ -3579,7 +3579,7 @@ body:has(#targeting-cancel) #btn-end-round{
 }
 #ext-link-box::before{
   content:'';position:absolute;inset:0;pointer-events:none;z-index:0;
-  background:url('assets/background/texture_black.png') top left/1254px 1254px repeat;
+  background:url('assets/background/texture_black.webp') top left/1254px 1254px repeat;
   opacity:0.6;
 }
 #ext-link-box > *{ position:relative; z-index:1; }
@@ -3629,7 +3629,7 @@ body:has(#targeting-cancel) #btn-end-round{
 }
 #save-panel::before{
   content:''; position:absolute; inset:0; pointer-events:none; z-index:0;
-  background:url('assets/background/texture_black.png') top left/1254px 1254px repeat;
+  background:url('assets/background/texture_black.webp') top left/1254px 1254px repeat;
   opacity:0.6;
 }
 #save-panel > *{ position:relative; z-index:1; }
@@ -3699,7 +3699,7 @@ body:has(#targeting-cancel) #btn-end-round{
 }
 #audio-panel::before{
   content:''; position:absolute; inset:0; pointer-events:none; z-index:0;
-  background:url('assets/background/texture_black.png') top left/1254px 1254px repeat;
+  background:url('assets/background/texture_black.webp') top left/1254px 1254px repeat;
   opacity:0.6;
 }
 #audio-panel > *{ position:relative; z-index:1; }
@@ -4050,7 +4050,7 @@ body:has(#s-mulligan.active) .float-toolbar .btn-icon-quit{ display:flex; }
 }
 .more-panel::before{
   content:''; position:absolute; inset:0; pointer-events:none; z-index:0;
-  background:url('assets/background/texture_black.png') top left/1254px 1254px repeat;
+  background:url('assets/background/texture_black.webp') top left/1254px 1254px repeat;
   opacity:0.6; border-radius:10px;
 }
 .more-panel > *{ position:relative; z-index:1; }
@@ -4131,7 +4131,7 @@ body:has(#s-mulligan.active) .float-toolbar .btn-icon-quit{ display:flex; }
    ═══════════════════════════════════════════════════════ */
 #deck-panel{
   display:none; position:fixed; inset:0; z-index:500;
-  background:url('assets/background/texture_black.png') top left/1254px 1254px repeat, rgba(0,0,0,0.92);
+  background:url('assets/background/texture_black.webp') top left/1254px 1254px repeat, rgba(0,0,0,0.92);
   flex-direction:column; align-items:stretch;
   font-family:'Cinzel',serif;
 }
@@ -4272,7 +4272,7 @@ body:has(#s-mulligan.active) .float-toolbar .btn-icon-quit{ display:flex; }
   flex:1; padding:clamp(12px,2.5vw,18px) 0; border:none; cursor:pointer;
   font-family:'Cinzel',serif; font-weight:700; font-size:clamp(12px,2vw,15px);
   text-transform:uppercase; letter-spacing:.08em;
-  background:url('assets/background/button_xl_black.png') center/100% 100% no-repeat;
+  background:url('assets/background/button_xl_black.webp') center/100% 100% no-repeat;
   color:#1fcc55; transition:transform .1s;
 }
 #dp-save-btn:active{ transform:scale(0.95); }
@@ -4284,7 +4284,7 @@ body:has(#s-mulligan.active) .float-toolbar .btn-icon-quit{ display:flex; }
   flex:1; padding:clamp(12px,2.5vw,18px) 0; border:none; cursor:pointer;
   font-family:'Cinzel',serif; font-weight:700;
   font-size:clamp(12px,2vw,15px); text-transform:uppercase; letter-spacing:.08em;
-  background:url('assets/background/button_xl_black.png') center/100% 100% no-repeat;
+  background:url('assets/background/button_xl_black.webp') center/100% 100% no-repeat;
   color:#cc2222; transition:transform .1s;
 }
 #dp-cancel-btn:active{ transform:scale(0.95); }
@@ -4315,11 +4315,11 @@ body:has(#deck-panel.open) .float-toolbar{ display:none !important; }
 }
 .btn-popup:active{ transform:scale(0.95); }
 .btn-popup-dark{
-  background:url('assets/background/button_l_black.png') center/100% 100% no-repeat;
+  background:url('assets/background/button_l_black.webp') center/100% 100% no-repeat;
   color:#cccccc;
 }
 .btn-popup-light{
-  background:url('assets/background/button_l_white.png') center/100% 100% no-repeat;
+  background:url('assets/background/button_l_white.webp') center/100% 100% no-repeat;
   color:#222222;
 }
 
@@ -4334,7 +4334,7 @@ body:has(#deck-panel.open) .float-toolbar{ display:none !important; }
   font-size:clamp(12px,3vw,16px);
   font-weight:700; letter-spacing:.08em; text-transform:uppercase;
   color:#222222;
-  background:url('assets/background/button_l_white.png') center/100% 100% no-repeat;
+  background:url('assets/background/button_l_white.webp') center/100% 100% no-repeat;
   border:none; cursor:pointer;
   width:clamp(220px,56vw,320px);
   aspect-ratio:5/1;
@@ -4420,7 +4420,7 @@ body:has(#deck-panel.open) .float-toolbar{ display:none !important; }
   font-family:'Cinzel',serif; font-size:clamp(9px,2vw,14px);
   font-weight:700; letter-spacing:.06em; text-transform:uppercase;
   border:none; cursor:pointer;
-  background:url('assets/background/button_l_black.png') center/100% 100% no-repeat;
+  background:url('assets/background/button_l_black.webp') center/100% 100% no-repeat;
   color:#cccccc; aspect-ratio:3/1;
   display:flex; align-items:center; justify-content:center;
   flex-direction:column; gap:2px;
@@ -4441,7 +4441,7 @@ body:has(#deck-panel.open) .float-toolbar{ display:none !important; }
 }
 #tut-puzzle-box::before{
   content:''; position:absolute; inset:0; pointer-events:none; z-index:0;
-  background:url('assets/background/texture_black.png') top left/1254px 1254px repeat;
+  background:url('assets/background/texture_black.webp') top left/1254px 1254px repeat;
   opacity:0.7;
 }
 #tut-puzzle-box > *{ position:relative; z-index:1; }
@@ -4615,7 +4615,7 @@ body:has(#deck-panel.open) .float-toolbar{ display:none !important; }
   left:0;
   margin:8px;
   z-index:500;
-  background:url('assets/background/button_s_white.png') center/100% 100% no-repeat;
+  background:url('assets/background/button_s_white.webp') center/100% 100% no-repeat;
   border:none;
   cursor:pointer;
   font-family:'Cinzel',serif;
@@ -4646,7 +4646,7 @@ body:has(#deck-panel.open) .float-toolbar{ display:none !important; }
   position:fixed; top:env(safe-area-inset-top,0px); right:0;
   margin:10px; z-index:9501;
   width:clamp(30px,6.5vw,40px); height:clamp(30px,6.5vw,40px);
-  background:url('assets/background/sqbutton_cross.png') center/100% 100% no-repeat;
+  background:url('assets/background/sqbutton_cross.webp') center/100% 100% no-repeat;
   border:none; cursor:pointer; -webkit-tap-highlight-color:transparent;
 }
 </style>
@@ -4700,7 +4700,7 @@ body:has(#deck-panel.open) .float-toolbar{ display:none !important; }
 }
 #rl-fights-grid::before, #rl-lives-grid::before{
   content:''; position:absolute; inset:0; pointer-events:none; z-index:0;
-  background:url('assets/background/texture_black.png') top left/1254px 1254px repeat;
+  background:url('assets/background/texture_black.webp') top left/1254px 1254px repeat;
   opacity:0.6;
 }
 .rl-fight-pip, .rl-life-pip{ position:relative; z-index:1; }
@@ -4752,7 +4752,7 @@ body:has(#deck-panel.open) .float-toolbar{ display:none !important; }
 }
 #rl-resume-box::before{
   content:''; position:absolute; inset:0; pointer-events:none; z-index:0;
-  background:url('assets/background/texture_black.png') top left/1254px 1254px repeat;
+  background:url('assets/background/texture_black.webp') top left/1254px 1254px repeat;
   opacity:0.8;
 }
 #rl-resume-box > *{ position:relative; z-index:1; }
@@ -4871,7 +4871,7 @@ body:has(#deck-panel.open) .float-toolbar{ display:none !important; }
 
 <!-- 1. ÉCRAN TITRE -->
 <div id="s-title" class="screen active">
-  <img src="assets/background/logo.png"
+  <img src="assets/background/logo.webp"
        alt="Primal Gambit"
        id="home-logo">
   <button class="btn-gold" onclick="sfx(SFX.click2);goTutorial()" data-i18n="btn_tutorial">TUTORIAL</button>
@@ -4915,8 +4915,8 @@ body:has(#deck-panel.open) .float-toolbar{ display:none !important; }
   <div class="hp-bar" id="hp-bar-foe">
     <div class="hp-img-anchor">
       <div class="hp-img-wrap" id="hp-circle-wrap-foe">
-        <img class="hp-img-empty" src="assets/background/hp_empty.png" alt="">
-        <img class="hp-img-full" id="hp-img-f" src="assets/background/hp_enemy.png" alt="">
+        <img class="hp-img-empty" src="assets/background/hp_empty.webp" alt="">
+        <img class="hp-img-full" id="hp-img-f" src="assets/background/hp_enemy.webp" alt="">
         <div class="hp-circle-num foe" id="hpv-f">50</div>
       </div>
     </div>
@@ -4939,8 +4939,8 @@ body:has(#deck-panel.open) .float-toolbar{ display:none !important; }
   <div class="hp-bar player" id="hp-bar-you">
     <div class="hp-img-anchor">
       <div class="hp-img-wrap" id="hp-img-wrap-you">
-        <img class="hp-img-empty" src="assets/background/hp_empty.png" alt="">
-        <img class="hp-img-full" id="hp-img-y" src="assets/background/hp_human.png" alt="">
+        <img class="hp-img-empty" src="assets/background/hp_empty.webp" alt="">
+        <img class="hp-img-full" id="hp-img-y" src="assets/background/hp_human.webp" alt="">
         <div class="hp-circle-num you" id="hpv-y">50</div>
       </div>
     </div>
@@ -5839,7 +5839,7 @@ function _rlShowAbandonModal(){
   overlay.style.cssText='position:fixed;inset:0;z-index:9999;background:rgba(0,0,0,0.85);display:flex;align-items:center;justify-content:center;padding:20px;box-sizing:border-box;';
   overlay.innerHTML=`
     <div style="background:rgba(10,12,18,0.98);border:1px solid rgba(219,44,44,0.5);border-radius:12px;padding:28px 24px;max-width:320px;width:100%;text-align:center;box-shadow:0 8px 40px rgba(0,0,0,0.9);position:relative;overflow:hidden;">
-      <div style="position:absolute;inset:0;background:url('assets/background/texture_black.png') top left/1254px 1254px repeat;opacity:0.8;pointer-events:none;z-index:0;"></div>
+      <div style="position:absolute;inset:0;background:url('assets/background/texture_black.webp') top left/1254px 1254px repeat;opacity:0.8;pointer-events:none;z-index:0;"></div>
       <div style="position:relative;z-index:1;">
         <div style="font-family:Cinzel,serif;color:#ff6060;font-size:18px;font-weight:700;margin-bottom:10px;">ROGUELIKE</div>
         <div style="color:#a8a095;font-size:14px;margin-bottom:20px;line-height:1.5;">Fight in progress.<br>Leaving will count as a <b style="color:#ff6060">LOSS</b> and cost you one life.<br><br>You cannot undo this.</div>
@@ -5870,7 +5870,7 @@ function exitFullscreen(){
 function _updateFullscreenBtn(){
   const isFs = !!(document.fullscreenElement || document.webkitFullscreenElement);
   // Update all fullscreen toggle buttons
-  const _fsSrc = isFs ? 'assets/background/sqbutton_minimize.png' : 'assets/background/sqbutton_maximize.png';
+  const _fsSrc = isFs ? 'assets/background/sqbutton_minimize.webp' : 'assets/background/sqbutton_maximize.webp';
   ['btn-fullscreen-img'].forEach(id => {
     const el = document.getElementById(id);
     if(el){ if(el.tagName==='IMG') el.src=_fsSrc; else { const img=el.querySelector('img'); if(img) img.src=_fsSrc; } }
@@ -5987,7 +5987,7 @@ function clickStart(){
   const levels = Object.keys(_DIFFICULTIES);
   const btns = levels.map(lvl => `
     <button onclick="startWithDifficulty('${lvl}')"
-      style="background:url('assets/background/button_m_black.png') center/100% 100% no-repeat;
+      style="background:url('assets/background/button_m_black.webp') center/100% 100% no-repeat;
              border:none;cursor:pointer;font-family:'Cinzel',serif;font-weight:700;
              font-size:clamp(11px,2.5vmin,14px);letter-spacing:.08em;text-transform:uppercase;
              color:#cccccc;
@@ -6007,7 +6007,7 @@ function clickStart(){
                 max-width:min(92vw,380px);max-height:92vh;width:100%;text-align:center;
                 box-shadow:0 8px 40px rgba(0,0,0,0.9);
                 position:relative;overflow:hidden;box-sizing:border-box;">
-      <div style="position:absolute;inset:0;background:url('assets/background/texture_black.png') top left/1254px 1254px repeat;opacity:0.6;pointer-events:none;z-index:0;"></div>
+      <div style="position:absolute;inset:0;background:url('assets/background/texture_black.webp') top left/1254px 1254px repeat;opacity:0.6;pointer-events:none;z-index:0;"></div>
       <div style="position:relative;z-index:1;">
         <div style="font-family:'Cinzel',serif;color:#d4af37;font-size:clamp(14px,3.5vw,20px);font-weight:700;letter-spacing:.12em;margin-bottom:5px;text-transform:uppercase;">${t('diff_panel_title')}</div>
         <div style="font-family:'Cinzel',serif;color:rgba(168,160,149,0.7);font-size:clamp(10px,2.2vw,12px);margin-bottom:16px;letter-spacing:.06em;">${t('diff_panel_subtitle')}</div>
@@ -6342,16 +6342,16 @@ function preloadAssets(urls, onProgress){
 function _cardArtUrl(card){
   const elDir = _elDir(card.el);
   const artTitle = (card.art || card.name).replace(/\s+/g,'_');
-  return `assets/illustrations/${elDir}/${artTitle}.png`;
+  return `assets/illustrations/${elDir}/${artTitle}.webp`;
 }
 function _allBorderUrls(){
-  return ['fire','water','nature','dust'].map(d => `assets/borders/big_${d}.png`);
+  return ['fire','water','nature','dust'].map(d => `assets/borders/big_${d}.webp`);
 }
 function _allIconUrls(){
   const slugs = new Set();
   POOL.forEach(c => { if(c.skill && c.skill !== 'none') slugs.add(c.skill); });
-  const urls = [...slugs].map(s => `assets/icons/${_skillSlug(s)}.png`);
-  ['fire','water','nature','dust'].forEach(d => urls.push(`assets/icons/empty_${d}.png`));
+  const urls = [...slugs].map(s => `assets/icons/${_skillSlug(s)}.webp`);
+  ['fire','water','nature','dust'].forEach(d => urls.push(`assets/icons/empty_${d}.webp`));
   return urls;
 }
 
@@ -8534,7 +8534,7 @@ function executeAiPlacementAction(){
     // Ghost IA : image dos de carte via <img> (contourne .card-fly-ghost > * { background:transparent !important }).
     // Le style visuel (bordure, fond de secours) est appliqué directement sur le nœud ghost via onStart.
     const html = _debugOn ? getCardInner(card)
-      : `<img src="assets/background/back.png" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;border-radius:inherit;pointer-events:none;" onerror="this.style.display='none'">`;
+      : `<img src="assets/background/back.webp" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;border-radius:inherit;pointer-events:none;" onerror="this.style.display='none'">`;
     const cls  = `el-${card.el}`;
     const onStartAi = _debugOn ? undefined : (ghostEl => {
       ghostEl.style.setProperty('background',    `linear-gradient(135deg,#0d1117,#1a2030)`, 'important');
@@ -8718,8 +8718,8 @@ function _rerenderArenaOnly(){
     // ── Indicateur ×2 : sur la lane désignée par G.multLaneIdx (sans la bande noire) ──
     let indicatorsHtml = `<div class="lane-indicators">`;
     if(isMultLane){
-      if(G.multOwner===0) indicatorsHtml+=`<div class="arrow-x2 arrow-danger"><img class="x2-base" src="assets/background/circle_up.png"><img class="x2-green" src="assets/background/circle_green.png"><img class="x2-red" src="assets/background/circle_red.png"></div>`;
-      else                indicatorsHtml+=`<div class="arrow-x2 arrow-adv"><img class="x2-base" src="assets/background/circle_up.png"><img class="x2-green" src="assets/background/circle_green.png"><img class="x2-red" src="assets/background/circle_red.png"></div>`;
+      if(G.multOwner===0) indicatorsHtml+=`<div class="arrow-x2 arrow-danger"><img class="x2-base" src="assets/background/circle_up.webp"><img class="x2-green" src="assets/background/circle_green.webp"><img class="x2-red" src="assets/background/circle_red.webp"></div>`;
+      else                indicatorsHtml+=`<div class="arrow-x2 arrow-adv"><img class="x2-base" src="assets/background/circle_up.webp"><img class="x2-green" src="assets/background/circle_green.webp"><img class="x2-red" src="assets/background/circle_red.webp"></div>`;
     }
     indicatorsHtml += `</div>`;
 
@@ -8956,7 +8956,7 @@ const TARGET_ARC_DURATION = 420; // calé sur la durée de vie du tracé dans _d
 
 // ─── ANIMATION "STORE" : CHANGEMENT D'ÉLÉMENT D'UNE CARTE ───────────────────
 // Quand un skill ou une fonction debug change card.el, la bordure élémentaire
-// (assets/borders/big_{elDir}.png) change visuellement dès le renderFight()
+// (assets/borders/big_{elDir}.webp) change visuellement dès le renderFight()
 // suivant — sans transition. On veut un effet "store/rideau" : l'ANCIENNE
 // bordure glisse vers le bas pour révéler la NOUVELLE déjà en place dessous.
 //
@@ -9028,7 +9028,7 @@ function _playElementStoreTransitions(prevSnap){
 
     const img = document.createElement('img');
     img.className = 'el-store-img';
-    img.src = `assets/borders/big_${_elDirFromClass(prev.elClass)}.png`;
+    img.src = `assets/borders/big_${_elDirFromClass(prev.elClass)}.webp`;
     wrap.appendChild(img);
     document.body.appendChild(wrap);
 
@@ -10240,7 +10240,7 @@ function openCardDetail(card){
 
   // Couche 1 (bas) : illustration principale 500×500 centrée à (316, 328)
   svg.appendChild(svgImg(
-    `assets/illustrations/${elDir}/${artTitle}.png`,
+    `assets/illustrations/${elDir}/${artTitle}.webp`,
     316, 328, 500, 500
   ));
 
@@ -10266,8 +10266,8 @@ function openCardDetail(card){
 
   // Couche 2 : icône de skill 230×230 centrée à (138, 486)
   const skillIconPath = (card.skill && card.skill !== 'none')
-    ? `assets/icons/${skillSlug}.png`
-    : `assets/icons/empty_${curElDir}.png`;
+    ? `assets/icons/${skillSlug}.webp`
+    : `assets/icons/empty_${curElDir}.webp`;
   const skillIconEl = svgImg(skillIconPath, 138, 486, 230, 230);
   if(card._skillUsed || card._skillVoided){
     const filterId2 = 'f_' + (card.uid||card.id||Math.random().toString(36).slice(2));
@@ -10277,7 +10277,7 @@ function openCardDetail(card){
 
   // Couche 3 (haut) : bordure élémentaire courante 625×625
   svg.appendChild(svgImg(
-    `assets/borders/big_${curElDir}.png`,
+    `assets/borders/big_${curElDir}.webp`,
     312.5, 312.5, 625, 625
   ));
 
@@ -11285,7 +11285,7 @@ function _executeSkillLogicReal(card, laneIdx, isPlayer, targetLaneIdx, targetIs
         card.risk    = 2;
         card.name    = 'Rat';
         card.art     = 'Rat';
-        card.skill   = 'none';        // pas de skill — icône assets/icons/empty_dust.png, texte "Aucune compétence"
+        card.skill   = 'none';        // pas de skill — icône assets/icons/empty_dust.webp, texte "Aucune compétence"
         card._origEl = EL.D;
         card._skillUsed   = false;
         card._skillVoided = false;
@@ -11515,8 +11515,8 @@ function _triggerDeathThenEnd(){
       hpNum.classList.add('hp-death-morph-out');
       setTimeout(() => {
         const skullSrc = loserIsPlayer
-          ? 'assets/background/skull_human.png'
-          : 'assets/background/skull_monster.png';
+          ? 'assets/background/skull_human.webp'
+          : 'assets/background/skull_monster.webp';
         hpNum.innerHTML = `<img src="${skullSrc}" style="width:1.2em;height:1.2em;object-fit:contain;display:block;max-width:100%;max-height:100%;animation:skullGrow 1.5s cubic-bezier(0.22,1,0.36,1) forwards;">`;
         hpNum.classList.remove('hp-death-morph-out');
         hpNum.classList.add('hp-death-morph-in');
@@ -11570,8 +11570,8 @@ function _cardSvg(c, isPlayerCard, laneIdx, glowOverride = null){
   const skillSlug = _skillSlug(c.skill);
 
   const skillIconPath = (c.skill && c.skill !== 'none')
-    ? `assets/icons/${skillSlug}.png`
-    : `assets/icons/empty_${curElDir}.png`;
+    ? `assets/icons/${skillSlug}.webp`
+    : `assets/icons/empty_${curElDir}.webp`;
 
   const skillVoided  = c._skillVoided;
   const skillUsed    = c._skillUsed && !c._skillVoided;
@@ -11627,11 +11627,11 @@ function _cardSvg(c, isPlayerCard, laneIdx, glowOverride = null){
   return `<svg viewBox="0 0 625 625" xmlns="http://www.w3.org/2000/svg" class="${glow ? 'skill-ready-knock' : ''}" style="width:100%;height:100%;display:block;position:absolute;top:0;left:0;overflow:visible;">
     ${defsBlock}
     <!-- Couche 1 : illustration -->
-    <image href="assets/illustrations/${elDir}/${artTitle}.png" x="66" y="78" width="500" height="500" preserveAspectRatio="xMidYMid meet"/>
+    <image href="assets/illustrations/${elDir}/${artTitle}.webp" x="66" y="78" width="500" height="500" preserveAspectRatio="xMidYMid meet"/>
     <!-- Couche 2 : icône skill -->
     <image href="${skillIconPath}" x="23" y="371" width="230" height="230" preserveAspectRatio="xMidYMid meet"${gsAttr}/>
     <!-- Couche 3 : bordure (solide, non affectée par le glow) -->
-    <image href="assets/borders/big_${curElDir}.png" x="0" y="0" width="625" height="625" preserveAspectRatio="xMidYMid meet"/>
+    <image href="assets/borders/big_${curElDir}.webp" x="0" y="0" width="625" height="625" preserveAspectRatio="xMidYMid meet"/>
     <!-- Cercle badge skill -->
     ${badgeSvg}
     <!-- Textes -->
@@ -12195,8 +12195,8 @@ function renderFight(){
     // ── Indicateur ×2 : sur la lane désignée par G.multLaneIdx (sans la bande noire) ──
     let indicatorsHtml = `<div class="lane-indicators">`;
     if(isMultLane){
-      if(G.multOwner === 0) indicatorsHtml += `<div class="arrow-x2 arrow-danger"><img class="x2-base" src="assets/background/circle_up.png"><img class="x2-green" src="assets/background/circle_green.png"><img class="x2-red" src="assets/background/circle_red.png"></div>`;
-      else                   indicatorsHtml += `<div class="arrow-x2 arrow-adv"><img class="x2-base" src="assets/background/circle_up.png"><img class="x2-green" src="assets/background/circle_green.png"><img class="x2-red" src="assets/background/circle_red.png"></div>`;
+      if(G.multOwner === 0) indicatorsHtml += `<div class="arrow-x2 arrow-danger"><img class="x2-base" src="assets/background/circle_up.webp"><img class="x2-green" src="assets/background/circle_green.webp"><img class="x2-red" src="assets/background/circle_red.webp"></div>`;
+      else                   indicatorsHtml += `<div class="arrow-x2 arrow-adv"><img class="x2-base" src="assets/background/circle_up.webp"><img class="x2-green" src="assets/background/circle_green.webp"><img class="x2-red" src="assets/background/circle_red.webp"></div>`;
     }
     indicatorsHtml += `</div>`;
 
@@ -12965,8 +12965,8 @@ function resolveLaneStep(laneIdx){
           // Lane multipliée : on réaffiche l'indicateur x2 (ne pas le laisser vide)
           infoPanel.innerHTML = `<div class="lane-indicators">${
             G.multOwner === 0
-              ? '<div class="arrow-x2 arrow-danger"><img class="x2-base" src="assets/background/circle_up.png"><img class="x2-green" src="assets/background/circle_green.png"><img class="x2-red" src="assets/background/circle_red.png"></div>'
-              : '<div class="arrow-x2 arrow-adv"><img class="x2-base" src="assets/background/circle_up.png"><img class="x2-green" src="assets/background/circle_green.png"><img class="x2-red" src="assets/background/circle_red.png"></div>'
+              ? '<div class="arrow-x2 arrow-danger"><img class="x2-base" src="assets/background/circle_up.webp"><img class="x2-green" src="assets/background/circle_green.webp"><img class="x2-red" src="assets/background/circle_red.webp"></div>'
+              : '<div class="arrow-x2 arrow-adv"><img class="x2-base" src="assets/background/circle_up.webp"><img class="x2-green" src="assets/background/circle_green.webp"><img class="x2-red" src="assets/background/circle_red.webp"></div>'
           }</div>`;
         } else if(infoPanel){
           infoPanel.innerHTML = '';
@@ -14121,7 +14121,7 @@ function _updateToolbarRulesIcon(){
   const img = document.getElementById('btn-rules-tb-img');
   if(!img) return;
   const fightActive = document.getElementById('s-fight') && document.getElementById('s-fight').classList.contains('active');
-  img.src = fightActive ? 'assets/background/sqbutton_merchant.png' : 'assets/background/sqbutton_rules.png';
+  img.src = fightActive ? 'assets/background/sqbutton_merchant.webp' : 'assets/background/sqbutton_rules.webp';
   img.alt = fightActive ? 'Hint' : 'Rules';
   if(!fightActive) _clearHintWiggle();
 }
@@ -14872,7 +14872,7 @@ function _showResumeModal(savedAt, onResume, onNew, extraWarning=''){
 
   overlay.innerHTML = `
     <div style="background:rgba(10,12,18,0.98);border:1px solid rgba(212,175,55,0.4);border-radius:12px;padding:28px 24px;max-width:min(90vw,380px);width:100%;text-align:center;box-shadow:0 8px 40px rgba(0,0,0,0.8);position:relative;overflow:hidden;">
-      <div style="position:absolute;inset:0;background:url('assets/background/texture_black.png') top left/1254px 1254px repeat;opacity:0.8;pointer-events:none;z-index:0;"></div>
+      <div style="position:absolute;inset:0;background:url('assets/background/texture_black.webp') top left/1254px 1254px repeat;opacity:0.8;pointer-events:none;z-index:0;"></div>
       <div style="position:relative;z-index:1;">
         <div style="font-family:Cinzel,serif;color:#d4af37;font-size:20px;font-weight:700;margin-bottom:8px;">⚔ Partie en cours</div>
         <div style="color:#a8a095;font-size:14px;margin-bottom:24px;line-height:1.5;">Sauvegardée ${label}<br>Reprendre où vous en étiez ?${extraWarning}</div>
@@ -15048,11 +15048,11 @@ if(document.readyState !== 'loading'){
 
 <!-- ═══════════════ FLOATING TOOLBAR ═══════════════ -->
 <div class="float-toolbar" id="float-toolbar">
-  <button class="btn-icon btn-icon-more" id="btn-more" onclick="toggleMorePanel()" title="More"><img src="assets/background/sqbutton_more.png" alt="More"></button>
-  <button class="btn-icon btn-icon-rules rules-wiggle" id="btn-rules-tb" onclick="_toolbarRulesOrHintClick()" title="Rules"><img id="btn-rules-tb-img" src="assets/background/sqbutton_rules.png" alt="Rules"></button>
-  <button class="btn-icon btn-icon-audio" id="btn-audio" onclick="openAudioPanel()" title="Audio"><img src="assets/background/sqbutton_soundfxon.png" alt="Audio"></button>
-  <button class="btn-icon btn-icon-fullscreen" id="btn-fullscreen-toggle" onclick="sfx(SFX.tock);document.fullscreenElement||document.webkitFullscreenElement?exitFullscreen():enterFullscreen()" title="Fullscreen"><img id="btn-fullscreen-img" src="assets/background/sqbutton_maximize.png" alt="⛶"></button>
-  <button class="btn-icon btn-icon-quit" id="btn-quit" onclick="sfx(SFX.click2);goTitle()" title="Quit"><img src="assets/background/sqbutton_cross.png" alt="✕"></button>
+  <button class="btn-icon btn-icon-more" id="btn-more" onclick="toggleMorePanel()" title="More"><img src="assets/background/sqbutton_more.webp" alt="More"></button>
+  <button class="btn-icon btn-icon-rules rules-wiggle" id="btn-rules-tb" onclick="_toolbarRulesOrHintClick()" title="Rules"><img id="btn-rules-tb-img" src="assets/background/sqbutton_rules.webp" alt="Rules"></button>
+  <button class="btn-icon btn-icon-audio" id="btn-audio" onclick="openAudioPanel()" title="Audio"><img src="assets/background/sqbutton_soundfxon.webp" alt="Audio"></button>
+  <button class="btn-icon btn-icon-fullscreen" id="btn-fullscreen-toggle" onclick="sfx(SFX.tock);document.fullscreenElement||document.webkitFullscreenElement?exitFullscreen():enterFullscreen()" title="Fullscreen"><img id="btn-fullscreen-img" src="assets/background/sqbutton_maximize.webp" alt="⛶"></button>
+  <button class="btn-icon btn-icon-quit" id="btn-quit" onclick="sfx(SFX.click2);goTitle()" title="Quit"><img src="assets/background/sqbutton_cross.webp" alt="✕"></button>
 </div>
 
 <!-- ═══════════════ LANG SELECTOR (title screen) ═══════════════ -->
@@ -15080,24 +15080,24 @@ if(document.readyState !== 'loading'){
 <div id="more-panel" class="more-panel">
   <div class="more-panel-header">
     <span class="more-panel-title" data-i18n="ttl_more">More…</span>
-    <button class="btn-icon" onclick="toggleMorePanel()" style="width:28px;height:28px;flex-shrink:0;"><img src="assets/background/sqbutton_more.png" alt="✕"></button>
+    <button class="btn-icon" onclick="toggleMorePanel()" style="width:28px;height:28px;flex-shrink:0;"><img src="assets/background/sqbutton_more.webp" alt="✕"></button>
   </div>
   <div class="more-panel-rows">
     <div class="more-row">
       <span class="more-label" data-i18n="lbl_debug">Debug</span>
-      <button class="btn-icon btn-icon-debug" id="btn-debug" onclick="toggleDebug()" title="Debug"><img src="assets/background/sqbutton_bug.png" alt="[D]"></button>
+      <button class="btn-icon btn-icon-debug" id="btn-debug" onclick="toggleDebug()" title="Debug"><img src="assets/background/sqbutton_bug.webp" alt="[D]"></button>
     </div>
     <div class="more-row">
       <span class="more-label" data-i18n="lbl_rules">Rules</span>
-      <button class="btn-icon btn-icon-rules rules-wiggle" id="btn-rules" onclick="closeMorePanel();openRulesPanel();" title="Rules"><img src="assets/background/sqbutton_rules.png" alt="Rules"></button>
+      <button class="btn-icon btn-icon-rules rules-wiggle" id="btn-rules" onclick="closeMorePanel();openRulesPanel();" title="Rules"><img src="assets/background/sqbutton_rules.webp" alt="Rules"></button>
     </div>
     <div class="more-row">
       <span class="more-label" data-i18n="lbl_stats">Stats</span>
-      <button class="btn-icon btn-icon-stats" id="btn-stats" onclick="closeMorePanel();openStatsPanel();" title="Stats"><img src="assets/background/sqbutton_stats.png" alt="Stats"></button>
+      <button class="btn-icon btn-icon-stats" id="btn-stats" onclick="closeMorePanel();openStatsPanel();" title="Stats"><img src="assets/background/sqbutton_stats.webp" alt="Stats"></button>
     </div>
     <div class="more-row">
       <span class="more-label" data-i18n="lbl_log">Log</span>
-      <button class="btn-icon" onclick="closeMorePanel();toggleLog();" title="Log"><img src="assets/background/sqbutton_log.png" alt="Log"></button>
+      <button class="btn-icon" onclick="closeMorePanel();toggleLog();" title="Log"><img src="assets/background/sqbutton_log.webp" alt="Log"></button>
     </div>
     <!-- BUGFIX (signalé par l'utilisateur) : le bouton du log verbose n'était
          accessible qu'APRÈS avoir ouvert le tiroir de log (via ce bouton
@@ -15109,15 +15109,15 @@ if(document.readyState !== 'loading'){
     </div>
     <div class="more-row">
       <span class="more-label" data-i18n="lbl_save">Save / Load</span>
-      <button class="btn-icon btn-icon-save" id="btn-save" onclick="closeMorePanel();openSavePanel();" title="Save / Load"><img src="assets/background/sqbutton_save.png" alt="Save"></button>
+      <button class="btn-icon btn-icon-save" id="btn-save" onclick="closeMorePanel();openSavePanel();" title="Save / Load"><img src="assets/background/sqbutton_save.webp" alt="Save"></button>
     </div>
     <div class="more-row">
       <span class="more-label" data-i18n="lbl_online">Online</span>
-      <button class="btn-icon btn-icon-online" id="btn-online" onclick="closeMorePanel();openExtLink('online');" title="Online"><img src="assets/background/sqbutton_online.png" alt="Online"></button>
+      <button class="btn-icon btn-icon-online" id="btn-online" onclick="closeMorePanel();openExtLink('online');" title="Online"><img src="assets/background/sqbutton_online.webp" alt="Online"></button>
     </div>
     <div class="more-row">
       <span class="more-label" data-i18n="lbl_download">Get Latest</span>
-      <button class="btn-icon btn-icon-download" id="btn-download" onclick="closeMorePanel();openExtLink('download');" title="Download"><img src="assets/background/sqbutton_download.png" alt="Download"></button>
+      <button class="btn-icon btn-icon-download" id="btn-download" onclick="closeMorePanel();openExtLink('download');" title="Download"><img src="assets/background/sqbutton_download.webp" alt="Download"></button>
     </div>
     <div class="more-row more-row-lang" style="border-top:1px solid var(--bdr);margin-top:4px;padding-top:6px;">
       <span class="more-label" data-i18n="ttl_lang">Language</span>
@@ -15169,12 +15169,12 @@ if(document.readyState !== 'loading'){
     </div>
     <div class="save-section">
       <div class="save-section-title" data-i18n="lbl_export">Export</div>
-      <button onclick="sfx(SFX.click2);saveExport()" style="width:80%;margin:0 auto;display:block;background:none;border:none;cursor:pointer;padding:0;position:relative;"><img src="assets/background/button_l_black.png" style="width:100%;height:auto;display:block;" alt=""><span style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-family:Cinzel,serif;font-size:clamp(9px,2.2vw,12px);letter-spacing:.08em;color:#fff;pointer-events:none;" data-i18n="btn_save_progress">SAVE PROGRESS</span></button>
+      <button onclick="sfx(SFX.click2);saveExport()" style="width:80%;margin:0 auto;display:block;background:none;border:none;cursor:pointer;padding:0;position:relative;"><img src="assets/background/button_l_black.webp" style="width:100%;height:auto;display:block;" alt=""><span style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-family:Cinzel,serif;font-size:clamp(9px,2.2vw,12px);letter-spacing:.08em;color:#fff;pointer-events:none;" data-i18n="btn_save_progress">SAVE PROGRESS</span></button>
       <div class="save-info" id="save-export-info"></div>
     </div>
     <div class="save-section">
       <div class="save-section-title" data-i18n="lbl_import">Import</div>
-      <button onclick="sfx(SFX.click2);document.getElementById('save-file-input').click()" style="width:80%;margin:0 auto;display:block;background:none;border:none;cursor:pointer;padding:0;position:relative;"><img src="assets/background/button_l_white.png" style="width:100%;height:auto;display:block;" alt=""><span style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-family:Cinzel,serif;font-size:clamp(9px,2.2vw,12px);letter-spacing:.08em;color:#000;pointer-events:none;" data-i18n="btn_load_file">LOAD FROM FILE</span></button>
+      <button onclick="sfx(SFX.click2);document.getElementById('save-file-input').click()" style="width:80%;margin:0 auto;display:block;background:none;border:none;cursor:pointer;padding:0;position:relative;"><img src="assets/background/button_l_white.webp" style="width:100%;height:auto;display:block;" alt=""><span style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-family:Cinzel,serif;font-size:clamp(9px,2.2vw,12px);letter-spacing:.08em;color:#000;pointer-events:none;" data-i18n="btn_load_file">LOAD FROM FILE</span></button>
       <input id="save-file-input" type="file" accept=".json,.txt" style="display:none" onchange="saveImportFromFile(this)">
     </div>
     <div class="save-section">
@@ -15182,8 +15182,8 @@ if(document.readyState !== 'loading'){
       <p style="margin-bottom:6px;" data-i18n="save_text_desc">If your browser does not open a file picker, save your progress using the text below — copy it and store it in a file or note of your choice.</p>
       <textarea id="save-paste-area" placeholder="Your save data appears here after export. Paste saved text here to reload it." data-i18n-ph="save_paste_ph" style="width:100%;height:90px;background:rgba(0,0,0,0.4);border:1px solid var(--bdr);color:var(--text);font-size:9px;padding:6px;border-radius:4px;box-sizing:border-box;resize:none;font-family:monospace;line-height:1.3;"></textarea>
       <div style="display:flex;gap:8px;margin-top:8px;">
-        <button onclick="sfx(SFX.click2);document.getElementById('save-paste-area').select()" style="flex:1;background:none;border:none;cursor:pointer;padding:0;position:relative;"><img src="assets/background/button_m_white.png" style="width:100%;height:auto;display:block;" alt=""><span style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-family:Cinzel,serif;font-size:clamp(8px,1.8vw,10px);letter-spacing:.06em;color:#000;pointer-events:none;" data-i18n="btn_select_all">SELECT ALL</span></button>
-        <button onclick="sfx(SFX.click2);saveImportFromPaste()" style="flex:1;background:none;border:none;cursor:pointer;padding:0;position:relative;"><img src="assets/background/button_m_black.png" style="width:100%;height:auto;display:block;" alt=""><span style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-family:Cinzel,serif;font-size:clamp(8px,1.8vw,10px);letter-spacing:.06em;color:#fff;pointer-events:none;" data-i18n="btn_load_text">LOAD TEXT</span></button>
+        <button onclick="sfx(SFX.click2);document.getElementById('save-paste-area').select()" style="flex:1;background:none;border:none;cursor:pointer;padding:0;position:relative;"><img src="assets/background/button_m_white.webp" style="width:100%;height:auto;display:block;" alt=""><span style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-family:Cinzel,serif;font-size:clamp(8px,1.8vw,10px);letter-spacing:.06em;color:#000;pointer-events:none;" data-i18n="btn_select_all">SELECT ALL</span></button>
+        <button onclick="sfx(SFX.click2);saveImportFromPaste()" style="flex:1;background:none;border:none;cursor:pointer;padding:0;position:relative;"><img src="assets/background/button_m_black.webp" style="width:100%;height:auto;display:block;" alt=""><span style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-family:Cinzel,serif;font-size:clamp(8px,1.8vw,10px);letter-spacing:.06em;color:#fff;pointer-events:none;" data-i18n="btn_load_text">LOAD TEXT</span></button>
       </div>
       <div class="save-info" id="save-import-info"></div>
     </div>
@@ -15198,17 +15198,17 @@ if(document.readyState !== 'loading'){
       <button id="audio-close" onclick="closeAudioPanel()">✕</button>
     </div>
     <div class="audio-row">
-      <button style="background:none;border:none;cursor:default;padding:0;flex-shrink:0;"><img src="assets/background/sqbutton_sound.png" style="width:42px;height:42px;object-fit:contain;" alt="Master"></button>
+      <button style="background:none;border:none;cursor:default;padding:0;flex-shrink:0;"><img src="assets/background/sqbutton_sound.webp" style="width:42px;height:42px;object-fit:contain;" alt="Master"></button>
       <input id="audio-master-slider" type="range" min="0" max="100" value="100" oninput="audioSetMaster(this.value)">
       <span id="audio-master-val" class="audio-val">100%</span>
     </div>
     <div class="audio-row">
-      <button onclick="audioToggleFx()" id="audio-btn-fx" style="background:none;border:none;cursor:pointer;padding:0;flex-shrink:0;" title="Toggle FX"><img id="audio-img-fx" src="assets/background/sqbutton_soundfxon.png" style="width:42px;height:42px;object-fit:contain;" alt="FX"></button>
+      <button onclick="audioToggleFx()" id="audio-btn-fx" style="background:none;border:none;cursor:pointer;padding:0;flex-shrink:0;" title="Toggle FX"><img id="audio-img-fx" src="assets/background/sqbutton_soundfxon.webp" style="width:42px;height:42px;object-fit:contain;" alt="FX"></button>
       <input id="audio-fx-slider" type="range" min="0" max="100" value="30" oninput="audioSetFx(this.value)">
       <span id="audio-fx-val" class="audio-val">30%</span>
     </div>
     <div class="audio-row">
-      <button onclick="audioToggleMusic()" id="audio-btn-music" style="background:none;border:none;cursor:pointer;padding:0;flex-shrink:0;" title="Toggle Music"><img id="audio-img-music" src="assets/background/sqbutton_musicon.png" style="width:42px;height:42px;object-fit:contain;" alt="Music"></button>
+      <button onclick="audioToggleMusic()" id="audio-btn-music" style="background:none;border:none;cursor:pointer;padding:0;flex-shrink:0;" title="Toggle Music"><img id="audio-img-music" src="assets/background/sqbutton_musicon.webp" style="width:42px;height:42px;object-fit:contain;" alt="Music"></button>
       <input id="audio-mu-slider" type="range" min="0" max="100" value="19" oninput="audioSetMusic(this.value)">
       <span id="audio-mu-val" class="audio-val">19%</span>
     </div>
@@ -15293,7 +15293,7 @@ if(document.readyState !== 'loading'){
           </ul>
           <p data-i18n="rule_012">A lane resolves once both slots are filled: the winning element makes the loser's card hit the discard, and the opponent loses HP equal to the lane's accumulated Risk (see ch.4). On a tie, both cards stay in the lane and nothing is lost — Risk keeps building for next time.</p>
           <div class="rules-shot">
-            <img src="assets/screenshots/01.png" loading="lazy" alt="">
+            <img src="assets/screenshots/01.webp" loading="lazy" alt="">
             <div class="rules-shot-cap" data-i18n="cap_01">01 — Element predation diagram: Fire beats Earth, Earth beats Water, Water beats Fire. Dust loses to all elements.</div>
           </div>
           <div class="rules-shot">
@@ -15383,11 +15383,11 @@ if(document.readyState !== 'loading'){
             <div class="rules-chapter-body">
               <table class="rules-skill-table">
                 <tr><th></th><th data-i18n="rule_032">Power &amp; Effect</th></tr>
-                <tr><td class="rsk-icon-cell"><img src="assets/icons/Backstab.png" alt=""></td><td><div class="rsk-name-desc"><span class="rsk-name-cell" data-i18n="skn_backstab">Backstab</span><span class="rsk-desc-cell" data-i18n="skill_d_backstab">At resolution, on Deadlock: deals 6 dmg to opponent.</span></div></td></tr>
-                <tr><td class="rsk-icon-cell"><img src="assets/icons/Vendetta.png" alt=""></td><td><div class="rsk-name-desc"><span class="rsk-name-cell" data-i18n="skn_vendetta">Vendetta</span><span class="rsk-desc-cell" data-i18n="skill_d_vendetta">At resolution, if this card loses: deals 4 dmg to opponent.</span></div></td></tr>
-                <tr><td class="rsk-icon-cell"><img src="assets/icons/Torment.png" alt=""></td><td><div class="rsk-name-desc"><span class="rsk-name-cell" data-i18n="skn_torment">Torment</span><span class="rsk-desc-cell" data-i18n="skill_d_torment">At resolution, win vs lower Risk: +7 dmg to opponent.</span></div></td></tr>
-                <tr><td class="rsk-icon-cell"><img src="assets/icons/Determined.png" alt=""></td><td><div class="rsk-name-desc"><span class="rsk-name-cell" data-i18n="skn_determined">Determined</span><span class="rsk-desc-cell" data-i18n="skill_d_determined">At resolution, on Deadlock: leaves play without leaving Risk behind.</span></div></td></tr>
-                <tr><td class="rsk-icon-cell"><img src="assets/icons/Flow_Change.png" alt=""></td><td><div class="rsk-name-desc"><span class="rsk-name-cell" data-i18n="skn_flowChange">Flow Change</span><span class="rsk-desc-cell" data-i18n="skill_d_flowChange">At resolution: if an adjacent ally is Water, the opposite card becomes Water.</span></div></td></tr>
+                <tr><td class="rsk-icon-cell"><img src="assets/icons/Backstab.webp" alt=""></td><td><div class="rsk-name-desc"><span class="rsk-name-cell" data-i18n="skn_backstab">Backstab</span><span class="rsk-desc-cell" data-i18n="skill_d_backstab">At resolution, on Deadlock: deals 6 dmg to opponent.</span></div></td></tr>
+                <tr><td class="rsk-icon-cell"><img src="assets/icons/Vendetta.webp" alt=""></td><td><div class="rsk-name-desc"><span class="rsk-name-cell" data-i18n="skn_vendetta">Vendetta</span><span class="rsk-desc-cell" data-i18n="skill_d_vendetta">At resolution, if this card loses: deals 4 dmg to opponent.</span></div></td></tr>
+                <tr><td class="rsk-icon-cell"><img src="assets/icons/Torment.webp" alt=""></td><td><div class="rsk-name-desc"><span class="rsk-name-cell" data-i18n="skn_torment">Torment</span><span class="rsk-desc-cell" data-i18n="skill_d_torment">At resolution, win vs lower Risk: +7 dmg to opponent.</span></div></td></tr>
+                <tr><td class="rsk-icon-cell"><img src="assets/icons/Determined.webp" alt=""></td><td><div class="rsk-name-desc"><span class="rsk-name-cell" data-i18n="skn_determined">Determined</span><span class="rsk-desc-cell" data-i18n="skill_d_determined">At resolution, on Deadlock: leaves play without leaving Risk behind.</span></div></td></tr>
+                <tr><td class="rsk-icon-cell"><img src="assets/icons/Flow_Change.webp" alt=""></td><td><div class="rsk-name-desc"><span class="rsk-name-cell" data-i18n="skn_flowChange">Flow Change</span><span class="rsk-desc-cell" data-i18n="skill_d_flowChange">At resolution: if an adjacent ally is Water, the opposite card becomes Water.</span></div></td></tr>
               </table>
             </div>
           </details>
@@ -15397,9 +15397,9 @@ if(document.readyState !== 'loading'){
             <div class="rules-chapter-body">
               <table class="rules-skill-table">
                 <tr><th></th><th data-i18n="rule_032">Power &amp; Effect</th></tr>
-                <tr><td class="rsk-icon-cell"><img src="assets/icons/Judgement.png" alt=""></td><td><div class="rsk-name-desc"><span class="rsk-name-cell" data-i18n="skn_judgement">Judgement</span><span class="rsk-desc-cell" data-i18n="skill_d_judgement">At resolution: loser of the element match → Dust (both if tied).</span></div></td></tr>
-                <tr><td class="rsk-icon-cell"><img src="assets/icons/Refresh.png" alt=""></td><td><div class="rsk-name-desc"><span class="rsk-name-cell" data-i18n="skn_refresh">Refresh</span><span class="rsk-desc-cell" data-i18n="skill_d_refresh">When placed: restores all used manual powers on your cards.</span></div></td></tr>
-                <tr><td class="rsk-icon-cell"><img src="assets/icons/Mimic.png" alt=""></td><td><div class="rsk-name-desc"><span class="rsk-name-cell" data-i18n="skn_mimic">Mimic</span><span class="rsk-desc-cell" data-i18n="skill_d_mimic">When placed: copies the opposite card's power. Ready to use immediately.</span></div></td></tr>
+                <tr><td class="rsk-icon-cell"><img src="assets/icons/Judgement.webp" alt=""></td><td><div class="rsk-name-desc"><span class="rsk-name-cell" data-i18n="skn_judgement">Judgement</span><span class="rsk-desc-cell" data-i18n="skill_d_judgement">At resolution: loser of the element match → Dust (both if tied).</span></div></td></tr>
+                <tr><td class="rsk-icon-cell"><img src="assets/icons/Refresh.webp" alt=""></td><td><div class="rsk-name-desc"><span class="rsk-name-cell" data-i18n="skn_refresh">Refresh</span><span class="rsk-desc-cell" data-i18n="skill_d_refresh">When placed: restores all used manual powers on your cards.</span></div></td></tr>
+                <tr><td class="rsk-icon-cell"><img src="assets/icons/Mimic.webp" alt=""></td><td><div class="rsk-name-desc"><span class="rsk-name-cell" data-i18n="skn_mimic">Mimic</span><span class="rsk-desc-cell" data-i18n="skill_d_mimic">When placed: copies the opposite card's power. Ready to use immediately.</span></div></td></tr>
               </table>
             </div>
           </details>
@@ -15409,37 +15409,37 @@ if(document.readyState !== 'loading'){
             <div class="rules-chapter-body">
               <table class="rules-skill-table">
                 <tr><th></th><th data-i18n="rule_032">Power &amp; Effect</th></tr>
-                <tr><td class="rsk-icon-cell"><img src="assets/icons/Defend.png" alt=""></td><td><div class="rsk-name-desc"><span class="rsk-name-cell" data-i18n="skn_defend">Defend</span><span class="rsk-desc-cell" data-i18n="skill_d_defend">Adjacent allies: −3 accumulated Risk in their lane slot (min 0). Does not affect the card's own Risk value.</span></div></td></tr>
-                <tr><td class="rsk-icon-cell"><img src="assets/icons/Regroup.png" alt=""></td><td><div class="rsk-name-desc"><span class="rsk-name-cell" data-i18n="skn_regroup">Regroup</span><span class="rsk-desc-cell" data-i18n="skill_d_regroup">Replaces your whole hand with random cards from your deck.</span></div></td></tr>
-                <tr><td class="rsk-icon-cell"><img src="assets/icons/Retreat.png" alt=""></td><td><div class="rsk-name-desc"><span class="rsk-name-cell" data-i18n="skn_retreat">Retreat</span><span class="rsk-desc-cell" data-i18n="skill_d_retreat">Replaces this card with a random one from your deck.</span></div></td></tr>
-                <tr><td class="rsk-icon-cell"><img src="assets/icons/Terrify.png" alt=""></td><td><div class="rsk-name-desc"><span class="rsk-name-cell" data-i18n="skn_terrify">Terrify</span><span class="rsk-desc-cell" data-i18n="skill_d_terrify">Replaces the opposite card with a random one from the enemy deck.</span></div></td></tr>
-                <tr><td class="rsk-icon-cell"><img src="assets/icons/Crush.png" alt=""></td><td><div class="rsk-name-desc"><span class="rsk-name-cell" data-i18n="skn_crush">Crush</span><span class="rsk-desc-cell" data-i18n="skill_d_crush">Opposite card Risk ≤ 6 → Dust.</span></div></td></tr>
-                <tr><td class="rsk-icon-cell"><img src="assets/icons/Overpower.png" alt=""></td><td><div class="rsk-name-desc"><span class="rsk-name-cell" data-i18n="skn_overpower">Overpower</span><span class="rsk-desc-cell" data-i18n="skill_d_overpower">Opposite card Risk ≥ 9 → Dust.</span></div></td></tr>
-                <tr><td class="rsk-icon-cell"><img src="assets/icons/Intimidate.png" alt=""></td><td><div class="rsk-name-desc"><span class="rsk-name-cell" data-i18n="skn_intimidate">Intimidate</span><span class="rsk-desc-cell" data-i18n="skill_d_intimidate">Opposite card, same element &amp; lower Risk → Dust.</span></div></td></tr>
-                <tr><td class="rsk-icon-cell"><img src="assets/icons/Dust_Storm.png" alt=""></td><td><div class="rsk-name-desc"><span class="rsk-name-cell" data-i18n="skn_dustStorm">Dust Storm</span><span class="rsk-desc-cell" data-i18n="skill_d_dustStorm">Both cards in this lane → Dust.</span></div></td></tr>
-                <tr><td class="rsk-icon-cell"><img src="assets/icons/Mirror.png" alt=""></td><td><div class="rsk-name-desc"><span class="rsk-name-cell" data-i18n="skn_mirror">Mirror</span><span class="rsk-desc-cell" data-i18n="skill_d_mirror">Copies the opposite card's element.</span></div></td></tr>
-                <tr><td class="rsk-icon-cell"><img src="assets/icons/Morph.png" alt=""></td><td><div class="rsk-name-desc"><span class="rsk-name-cell" data-i18n="skn_morph">Morph</span><span class="rsk-desc-cell" data-i18n="skill_d_morph">Transforms into a Rat (Dust, Risk 2).</span></div></td></tr>
-                <tr><td class="rsk-icon-cell"><img src="assets/icons/Power_Reverse.png" alt=""></td><td><div class="rsk-name-desc"><span class="rsk-name-cell" data-i18n="skn_powerReverse">Power Reverse</span><span class="rsk-desc-cell" data-i18n="skill_d_powerReverse">Reverses the ×2 Risk Multiplier direction (▲↔▼).</span></div></td></tr>
-                <tr><td class="rsk-icon-cell"><img src="assets/icons/Purify.png" alt=""></td><td><div class="rsk-name-desc"><span class="rsk-name-cell" data-i18n="skn_purify">Purify</span><span class="rsk-desc-cell" data-i18n="skill_d_purify">Clears all Deadlock Risk from this slot.</span></div></td></tr>
-                <tr><td class="rsk-icon-cell"><img src="assets/icons/Strike.png" alt=""></td><td><div class="rsk-name-desc"><span class="rsk-name-cell" data-i18n="skn_strike">Strike</span><span class="rsk-desc-cell" data-i18n="skill_d_strike">Deals 5 direct damage to the opponent.</span></div></td></tr>
-                <tr><td class="rsk-icon-cell"><img src="assets/icons/Guard_Mark.png" alt=""></td><td><div class="rsk-name-desc"><span class="rsk-name-cell" data-i18n="skn_guardMark">Guard Mark</span><span class="rsk-desc-cell" data-i18n="skill_d_guardMark">Permanently applies −2 Risk to this slot.</span></div></td></tr>
-                <tr><td class="rsk-icon-cell"><img src="assets/icons/War_Mark.png" alt=""></td><td><div class="rsk-name-desc"><span class="rsk-name-cell" data-i18n="skn_warMark">War Mark</span><span class="rsk-desc-cell" data-i18n="skill_d_warMark">Permanently applies +3 Risk to the opposite slot.</span></div></td></tr>
-                <tr><td class="rsk-icon-cell"><img src="assets/icons/Betrayal.png" alt=""></td><td><div class="rsk-name-desc"><span class="rsk-name-cell" data-i18n="skn_betrayal">Betrayal</span><span class="rsk-desc-cell" data-i18n="skill_d_betrayal">This card's Risk → 2, then swaps places with the opposite card.</span></div></td></tr>
-                <tr><td class="rsk-icon-cell"><img src="assets/icons/Exhaust.png" alt=""></td><td><div class="rsk-name-desc"><span class="rsk-name-cell" data-i18n="skn_exhaust">Exhaust</span><span class="rsk-desc-cell" data-i18n="skill_d_exhaust">Opponent cannot activate any power during their <b>next</b> sub-round.</span></div></td></tr>
-                <tr><td class="rsk-icon-cell"><img src="assets/icons/Cede_and_Seed.png" alt=""></td><td><div class="rsk-name-desc"><span class="rsk-name-cell">Cede &amp; Seed</span><span class="rsk-desc-cell">Self → Dust; chosen adjacent ally → Earth.</span></div></td></tr>
-                <tr><td class="rsk-icon-cell"><img src="assets/icons/Chameleon.png" alt=""></td><td><div class="rsk-name-desc"><span class="rsk-name-cell" data-i18n="skn_chameleon">Chameleon</span><span class="rsk-desc-cell" data-i18n="skill_d_chameleon">Copies an adjacent ally's element.</span></div></td></tr>
-                <tr><td class="rsk-icon-cell"><img src="assets/icons/Doppelganger.png" alt=""></td><td><div class="rsk-name-desc"><span class="rsk-name-cell" data-i18n="skn_doppelganger">Doppelganger</span><span class="rsk-desc-cell" data-i18n="skill_d_doppelganger">Becomes an exact copy of an adjacent ally (element + Risk + power).</span></div></td></tr>
-                <tr><td class="rsk-icon-cell"><img src="assets/icons/Maneuver.png" alt=""></td><td><div class="rsk-name-desc"><span class="rsk-name-cell" data-i18n="skn_maneuver">Maneuver</span><span class="rsk-desc-cell" data-i18n="skill_d_maneuver">Swaps places with an adjacent ally.</span></div></td></tr>
-                <tr><td class="rsk-icon-cell"><img src="assets/icons/Dustshot.png" alt=""></td><td><div class="rsk-name-desc"><span class="rsk-name-cell" data-i18n="skn_dustshot">Dustshot</span><span class="rsk-desc-cell" data-i18n="skill_d_dustshot">Self → Dust; chosen non-opposite enemy → Dust.</span></div></td></tr>
-                <tr><td class="rsk-icon-cell"><img src="assets/icons/Extinguish.png" alt=""></td><td><div class="rsk-name-desc"><span class="rsk-name-cell" data-i18n="skn_extinguish">Extinguish</span><span class="rsk-desc-cell" data-i18n="skill_d_extinguish">Chosen Fire enemy → Dust.</span></div></td></tr>
-                <tr><td class="rsk-icon-cell"><img src="assets/icons/Void.png" alt=""></td><td><div class="rsk-name-desc"><span class="rsk-name-cell" data-i18n="skn_void">Void</span><span class="rsk-desc-cell" data-i18n="skill_d_void">Permanently disables a chosen enemy card's manual power.</span></div></td></tr>
-                <tr><td class="rsk-icon-cell"><img src="assets/icons/Ignite.png" alt=""></td><td><div class="rsk-name-desc"><span class="rsk-name-cell" data-i18n="skn_ignite">Ignite</span><span class="rsk-desc-cell" data-i18n="skill_d_ignite">Chosen ally → Fire element.</span></div></td></tr>
-                <tr><td class="rsk-icon-cell"><img src="assets/icons/Vampire_Kiss.png" alt=""></td><td><div class="rsk-name-desc"><span class="rsk-name-cell" data-i18n="skn_vampireKiss">Vampire Kiss</span><span class="rsk-desc-cell" data-i18n="skill_d_vampireKiss">Chosen ally becomes an exact copy of this card (element + Risk + power).</span></div></td></tr>
-                <tr><td class="rsk-icon-cell"><img src="assets/icons/Disguise_Ally.png" alt=""></td><td><div class="rsk-name-desc"><span class="rsk-name-cell" data-i18n="skn_disguiseAlly">Disguise Ally</span><span class="rsk-desc-cell" data-i18n="skill_d_disguiseAlly">This card becomes Dust. A chosen adjacent ally becomes a copy of a chosen enemy card on its lane.</span></div></td></tr>
-                <tr><td class="rsk-icon-cell"><img src="assets/icons/Seal.png" alt=""></td><td><div class="rsk-name-desc"><span class="rsk-name-cell" data-i18n="skn_seal">Seal</span><span class="rsk-desc-cell" data-i18n="skill_d_seal">Passive. If this card loses a battle, you only take damage equal to its own Risk — not the full accumulated Risk.</span></div></td></tr>
-                <tr><td class="rsk-icon-cell"><img src="assets/icons/Leap.png" alt=""></td><td><div class="rsk-name-desc"><span class="rsk-name-cell" data-i18n="skn_leap">Leap</span><span class="rsk-desc-cell" data-i18n="skill_d_leap">Moves this card to a chosen empty ally slot.</span></div></td></tr>
-                <tr><td class="rsk-icon-cell"><img src="assets/icons/Overgrowth.png" alt=""></td><td><div class="rsk-name-desc"><span class="rsk-name-cell" data-i18n="skn_overgrowth">Overgrowth</span><span class="rsk-desc-cell" data-i18n="skill_d_overgrowth">Every card sharing a chosen element → Earth.</span></div></td></tr>
-                <tr><td class="rsk-icon-cell"><img src="assets/icons/Power_Shift.png" alt=""></td><td><div class="rsk-name-desc"><span class="rsk-name-cell" data-i18n="skn_powerShift">Power Shift</span><span class="rsk-desc-cell" data-i18n="skill_d_powerShift">Moves the ×2 Risk Multiplier to a chosen column.</span></div></td></tr>
+                <tr><td class="rsk-icon-cell"><img src="assets/icons/Defend.webp" alt=""></td><td><div class="rsk-name-desc"><span class="rsk-name-cell" data-i18n="skn_defend">Defend</span><span class="rsk-desc-cell" data-i18n="skill_d_defend">Adjacent allies: −3 accumulated Risk in their lane slot (min 0). Does not affect the card's own Risk value.</span></div></td></tr>
+                <tr><td class="rsk-icon-cell"><img src="assets/icons/Regroup.webp" alt=""></td><td><div class="rsk-name-desc"><span class="rsk-name-cell" data-i18n="skn_regroup">Regroup</span><span class="rsk-desc-cell" data-i18n="skill_d_regroup">Replaces your whole hand with random cards from your deck.</span></div></td></tr>
+                <tr><td class="rsk-icon-cell"><img src="assets/icons/Retreat.webp" alt=""></td><td><div class="rsk-name-desc"><span class="rsk-name-cell" data-i18n="skn_retreat">Retreat</span><span class="rsk-desc-cell" data-i18n="skill_d_retreat">Replaces this card with a random one from your deck.</span></div></td></tr>
+                <tr><td class="rsk-icon-cell"><img src="assets/icons/Terrify.webp" alt=""></td><td><div class="rsk-name-desc"><span class="rsk-name-cell" data-i18n="skn_terrify">Terrify</span><span class="rsk-desc-cell" data-i18n="skill_d_terrify">Replaces the opposite card with a random one from the enemy deck.</span></div></td></tr>
+                <tr><td class="rsk-icon-cell"><img src="assets/icons/Crush.webp" alt=""></td><td><div class="rsk-name-desc"><span class="rsk-name-cell" data-i18n="skn_crush">Crush</span><span class="rsk-desc-cell" data-i18n="skill_d_crush">Opposite card Risk ≤ 6 → Dust.</span></div></td></tr>
+                <tr><td class="rsk-icon-cell"><img src="assets/icons/Overpower.webp" alt=""></td><td><div class="rsk-name-desc"><span class="rsk-name-cell" data-i18n="skn_overpower">Overpower</span><span class="rsk-desc-cell" data-i18n="skill_d_overpower">Opposite card Risk ≥ 9 → Dust.</span></div></td></tr>
+                <tr><td class="rsk-icon-cell"><img src="assets/icons/Intimidate.webp" alt=""></td><td><div class="rsk-name-desc"><span class="rsk-name-cell" data-i18n="skn_intimidate">Intimidate</span><span class="rsk-desc-cell" data-i18n="skill_d_intimidate">Opposite card, same element &amp; lower Risk → Dust.</span></div></td></tr>
+                <tr><td class="rsk-icon-cell"><img src="assets/icons/Dust_Storm.webp" alt=""></td><td><div class="rsk-name-desc"><span class="rsk-name-cell" data-i18n="skn_dustStorm">Dust Storm</span><span class="rsk-desc-cell" data-i18n="skill_d_dustStorm">Both cards in this lane → Dust.</span></div></td></tr>
+                <tr><td class="rsk-icon-cell"><img src="assets/icons/Mirror.webp" alt=""></td><td><div class="rsk-name-desc"><span class="rsk-name-cell" data-i18n="skn_mirror">Mirror</span><span class="rsk-desc-cell" data-i18n="skill_d_mirror">Copies the opposite card's element.</span></div></td></tr>
+                <tr><td class="rsk-icon-cell"><img src="assets/icons/Morph.webp" alt=""></td><td><div class="rsk-name-desc"><span class="rsk-name-cell" data-i18n="skn_morph">Morph</span><span class="rsk-desc-cell" data-i18n="skill_d_morph">Transforms into a Rat (Dust, Risk 2).</span></div></td></tr>
+                <tr><td class="rsk-icon-cell"><img src="assets/icons/Power_Reverse.webp" alt=""></td><td><div class="rsk-name-desc"><span class="rsk-name-cell" data-i18n="skn_powerReverse">Power Reverse</span><span class="rsk-desc-cell" data-i18n="skill_d_powerReverse">Reverses the ×2 Risk Multiplier direction (▲↔▼).</span></div></td></tr>
+                <tr><td class="rsk-icon-cell"><img src="assets/icons/Purify.webp" alt=""></td><td><div class="rsk-name-desc"><span class="rsk-name-cell" data-i18n="skn_purify">Purify</span><span class="rsk-desc-cell" data-i18n="skill_d_purify">Clears all Deadlock Risk from this slot.</span></div></td></tr>
+                <tr><td class="rsk-icon-cell"><img src="assets/icons/Strike.webp" alt=""></td><td><div class="rsk-name-desc"><span class="rsk-name-cell" data-i18n="skn_strike">Strike</span><span class="rsk-desc-cell" data-i18n="skill_d_strike">Deals 5 direct damage to the opponent.</span></div></td></tr>
+                <tr><td class="rsk-icon-cell"><img src="assets/icons/Guard_Mark.webp" alt=""></td><td><div class="rsk-name-desc"><span class="rsk-name-cell" data-i18n="skn_guardMark">Guard Mark</span><span class="rsk-desc-cell" data-i18n="skill_d_guardMark">Permanently applies −2 Risk to this slot.</span></div></td></tr>
+                <tr><td class="rsk-icon-cell"><img src="assets/icons/War_Mark.webp" alt=""></td><td><div class="rsk-name-desc"><span class="rsk-name-cell" data-i18n="skn_warMark">War Mark</span><span class="rsk-desc-cell" data-i18n="skill_d_warMark">Permanently applies +3 Risk to the opposite slot.</span></div></td></tr>
+                <tr><td class="rsk-icon-cell"><img src="assets/icons/Betrayal.webp" alt=""></td><td><div class="rsk-name-desc"><span class="rsk-name-cell" data-i18n="skn_betrayal">Betrayal</span><span class="rsk-desc-cell" data-i18n="skill_d_betrayal">This card's Risk → 2, then swaps places with the opposite card.</span></div></td></tr>
+                <tr><td class="rsk-icon-cell"><img src="assets/icons/Exhaust.webp" alt=""></td><td><div class="rsk-name-desc"><span class="rsk-name-cell" data-i18n="skn_exhaust">Exhaust</span><span class="rsk-desc-cell" data-i18n="skill_d_exhaust">Opponent cannot activate any power during their <b>next</b> sub-round.</span></div></td></tr>
+                <tr><td class="rsk-icon-cell"><img src="assets/icons/Cede_and_Seed.webp" alt=""></td><td><div class="rsk-name-desc"><span class="rsk-name-cell">Cede &amp; Seed</span><span class="rsk-desc-cell">Self → Dust; chosen adjacent ally → Earth.</span></div></td></tr>
+                <tr><td class="rsk-icon-cell"><img src="assets/icons/Chameleon.webp" alt=""></td><td><div class="rsk-name-desc"><span class="rsk-name-cell" data-i18n="skn_chameleon">Chameleon</span><span class="rsk-desc-cell" data-i18n="skill_d_chameleon">Copies an adjacent ally's element.</span></div></td></tr>
+                <tr><td class="rsk-icon-cell"><img src="assets/icons/Doppelganger.webp" alt=""></td><td><div class="rsk-name-desc"><span class="rsk-name-cell" data-i18n="skn_doppelganger">Doppelganger</span><span class="rsk-desc-cell" data-i18n="skill_d_doppelganger">Becomes an exact copy of an adjacent ally (element + Risk + power).</span></div></td></tr>
+                <tr><td class="rsk-icon-cell"><img src="assets/icons/Maneuver.webp" alt=""></td><td><div class="rsk-name-desc"><span class="rsk-name-cell" data-i18n="skn_maneuver">Maneuver</span><span class="rsk-desc-cell" data-i18n="skill_d_maneuver">Swaps places with an adjacent ally.</span></div></td></tr>
+                <tr><td class="rsk-icon-cell"><img src="assets/icons/Dustshot.webp" alt=""></td><td><div class="rsk-name-desc"><span class="rsk-name-cell" data-i18n="skn_dustshot">Dustshot</span><span class="rsk-desc-cell" data-i18n="skill_d_dustshot">Self → Dust; chosen non-opposite enemy → Dust.</span></div></td></tr>
+                <tr><td class="rsk-icon-cell"><img src="assets/icons/Extinguish.webp" alt=""></td><td><div class="rsk-name-desc"><span class="rsk-name-cell" data-i18n="skn_extinguish">Extinguish</span><span class="rsk-desc-cell" data-i18n="skill_d_extinguish">Chosen Fire enemy → Dust.</span></div></td></tr>
+                <tr><td class="rsk-icon-cell"><img src="assets/icons/Void.webp" alt=""></td><td><div class="rsk-name-desc"><span class="rsk-name-cell" data-i18n="skn_void">Void</span><span class="rsk-desc-cell" data-i18n="skill_d_void">Permanently disables a chosen enemy card's manual power.</span></div></td></tr>
+                <tr><td class="rsk-icon-cell"><img src="assets/icons/Ignite.webp" alt=""></td><td><div class="rsk-name-desc"><span class="rsk-name-cell" data-i18n="skn_ignite">Ignite</span><span class="rsk-desc-cell" data-i18n="skill_d_ignite">Chosen ally → Fire element.</span></div></td></tr>
+                <tr><td class="rsk-icon-cell"><img src="assets/icons/Vampire_Kiss.webp" alt=""></td><td><div class="rsk-name-desc"><span class="rsk-name-cell" data-i18n="skn_vampireKiss">Vampire Kiss</span><span class="rsk-desc-cell" data-i18n="skill_d_vampireKiss">Chosen ally becomes an exact copy of this card (element + Risk + power).</span></div></td></tr>
+                <tr><td class="rsk-icon-cell"><img src="assets/icons/Disguise_Ally.webp" alt=""></td><td><div class="rsk-name-desc"><span class="rsk-name-cell" data-i18n="skn_disguiseAlly">Disguise Ally</span><span class="rsk-desc-cell" data-i18n="skill_d_disguiseAlly">This card becomes Dust. A chosen adjacent ally becomes a copy of a chosen enemy card on its lane.</span></div></td></tr>
+                <tr><td class="rsk-icon-cell"><img src="assets/icons/Seal.webp" alt=""></td><td><div class="rsk-name-desc"><span class="rsk-name-cell" data-i18n="skn_seal">Seal</span><span class="rsk-desc-cell" data-i18n="skill_d_seal">Passive. If this card loses a battle, you only take damage equal to its own Risk — not the full accumulated Risk.</span></div></td></tr>
+                <tr><td class="rsk-icon-cell"><img src="assets/icons/Leap.webp" alt=""></td><td><div class="rsk-name-desc"><span class="rsk-name-cell" data-i18n="skn_leap">Leap</span><span class="rsk-desc-cell" data-i18n="skill_d_leap">Moves this card to a chosen empty ally slot.</span></div></td></tr>
+                <tr><td class="rsk-icon-cell"><img src="assets/icons/Overgrowth.webp" alt=""></td><td><div class="rsk-name-desc"><span class="rsk-name-cell" data-i18n="skn_overgrowth">Overgrowth</span><span class="rsk-desc-cell" data-i18n="skill_d_overgrowth">Every card sharing a chosen element → Earth.</span></div></td></tr>
+                <tr><td class="rsk-icon-cell"><img src="assets/icons/Power_Shift.webp" alt=""></td><td><div class="rsk-name-desc"><span class="rsk-name-cell" data-i18n="skn_powerShift">Power Shift</span><span class="rsk-desc-cell" data-i18n="skill_d_powerShift">Moves the ×2 Risk Multiplier to a chosen column.</span></div></td></tr>
               </table>
               <div class="rules-shot">
                 <img src="assets/screenshots/07b.jpg" loading="lazy" alt="">
@@ -15515,22 +15515,22 @@ if(document.readyState !== 'loading'){
             <summary data-i18n="ch_fire_compendium">🔥 Fire</summary>
             <div class="rules-chapter-body">
               <div class="rsk-card-grid">
-                <div class="rsk-card-entry" data-card-id="007" style="cursor:pointer;"><img src="assets/icons/Ember_Sprite.png" alt="" onerror="this.style.display='none'"><div><span class="rsk-card-name">Ember Sprite</span><span class="rsk-card-meta">Risk 3 · No power</span></div></div>
-                <div class="rsk-card-entry" data-card-id="008" style="cursor:pointer;"><img src="assets/icons/Cinder_Imp.png" alt="" onerror="this.style.display='none'"><div><span class="rsk-card-name">Cinder Imp</span><span class="rsk-card-meta">Risk 4 · No power</span></div></div>
-                <div class="rsk-card-entry" data-card-id="009" style="cursor:pointer;"><img src="assets/icons/Char_Sprite.png" alt="" onerror="this.style.display='none'"><div><span class="rsk-card-name">Char Sprite</span><span class="rsk-card-meta">Risk 5 · No power</span></div></div>
-                <div class="rsk-card-entry" data-card-id="011" style="cursor:pointer;"><img src="assets/icons/Ash_Golem.png" alt="" onerror="this.style.display='none'"><div><span class="rsk-card-name">Ash Golem</span><span class="rsk-card-meta">Risk 5 · ◉ Crush</span></div></div>
-                <div class="rsk-card-entry" data-card-id="015" style="cursor:pointer;"><img src="assets/icons/Char_Wraith.png" alt="" onerror="this.style.display='none'"><div><span class="rsk-card-name">Char Wraith</span><span class="rsk-card-meta">Risk 7 · ◉ Intimidate</span></div></div>
-                <div class="rsk-card-entry" data-card-id="018" style="cursor:pointer;"><img src="assets/icons/Lava_Eye.png" alt="" onerror="this.style.display='none'"><div><span class="rsk-card-name">Lava Eye</span><span class="rsk-card-meta">Risk 4 · ◉ Morph</span></div></div>
-                <div class="rsk-card-entry" data-card-id="019" style="cursor:pointer;"><img src="assets/icons/Ash_Colossus.png" alt="" onerror="this.style.display='none'"><div><span class="rsk-card-name">Ash Colossus</span><span class="rsk-card-meta">Risk 8 · ◉ Overpower</span></div></div>
-                <div class="rsk-card-entry" data-card-id="022" style="cursor:pointer;"><img src="assets/icons/Cinder_Baron.png" alt="" onerror="this.style.display='none'"><div><span class="rsk-card-name">Cinder Baron</span><span class="rsk-card-meta">Risk 4 · ✦ Refresh</span></div></div>
-                <div class="rsk-card-entry" data-card-id="025" style="cursor:pointer;"><img src="assets/icons/Ember_Brawler.png" alt="" onerror="this.style.display='none'"><div><span class="rsk-card-name">Ember Brawler</span><span class="rsk-card-meta">Risk 6 · ◉ Strike</span></div></div>
-                <div class="rsk-card-entry" data-card-id="026" style="cursor:pointer;"><img src="assets/icons/Ash_Predator.png" alt="" onerror="this.style.display='none'"><div><span class="rsk-card-name">Ash Predator</span><span class="rsk-card-meta">Risk 5 · ◉ Terrify</span></div></div>
-                <div class="rsk-card-entry" data-card-id="027" style="cursor:pointer;"><img src="assets/icons/Void_Reaper.png" alt="" onerror="this.style.display='none'"><div><span class="rsk-card-name">Void Reaper</span><span class="rsk-card-meta">Risk 8 · ⚙ Torment</span></div></div>
-                <div class="rsk-card-entry" data-card-id="034" style="cursor:pointer;"><img src="assets/icons/Void_Shade.png" alt="" onerror="this.style.display='none'"><div><span class="rsk-card-name">Void Shade</span><span class="rsk-card-meta">Risk 9 · ◉ Doppelganger</span></div></div>
-                <div class="rsk-card-entry" data-card-id="036" style="cursor:pointer;"><img src="assets/icons/Forge_Guard.png" alt="" onerror="this.style.display='none'"><div><span class="rsk-card-name">Forge Guard</span><span class="rsk-card-meta">Risk 7 · ◉ Exhaust</span></div></div>
-                <div class="rsk-card-entry" data-card-id="039" style="cursor:pointer;"><img src="assets/icons/Ember_Eye.png" alt="" onerror="this.style.display='none'"><div><span class="rsk-card-name">Ember Eye</span><span class="rsk-card-meta">Risk 9 · ◉ Ignite</span></div></div>
-                <div class="rsk-card-entry" data-card-id="057" style="cursor:pointer;"><img src="assets/icons/Flame_Deity.png" alt="" onerror="this.style.display='none'"><div><span class="rsk-card-name">Flame Deity</span><span class="rsk-card-meta">Risk 9 · ◉ Vampire Kiss</span></div></div>
-                <div class="rsk-card-entry" data-card-id="053" style="cursor:pointer;"><img src="assets/icons/Dusk_Fiend.png" alt="" onerror="this.style.display='none'"><div><span class="rsk-card-name">Dusk Fiend</span><span class="rsk-card-meta">Risk 5 · ◉ Disguise Ally</span></div></div>
+                <div class="rsk-card-entry" data-card-id="007" style="cursor:pointer;"><img src="assets/icons/Ember_Sprite.webp" alt="" onerror="this.style.display='none'"><div><span class="rsk-card-name">Ember Sprite</span><span class="rsk-card-meta">Risk 3 · No power</span></div></div>
+                <div class="rsk-card-entry" data-card-id="008" style="cursor:pointer;"><img src="assets/icons/Cinder_Imp.webp" alt="" onerror="this.style.display='none'"><div><span class="rsk-card-name">Cinder Imp</span><span class="rsk-card-meta">Risk 4 · No power</span></div></div>
+                <div class="rsk-card-entry" data-card-id="009" style="cursor:pointer;"><img src="assets/icons/Char_Sprite.webp" alt="" onerror="this.style.display='none'"><div><span class="rsk-card-name">Char Sprite</span><span class="rsk-card-meta">Risk 5 · No power</span></div></div>
+                <div class="rsk-card-entry" data-card-id="011" style="cursor:pointer;"><img src="assets/icons/Ash_Golem.webp" alt="" onerror="this.style.display='none'"><div><span class="rsk-card-name">Ash Golem</span><span class="rsk-card-meta">Risk 5 · ◉ Crush</span></div></div>
+                <div class="rsk-card-entry" data-card-id="015" style="cursor:pointer;"><img src="assets/icons/Char_Wraith.webp" alt="" onerror="this.style.display='none'"><div><span class="rsk-card-name">Char Wraith</span><span class="rsk-card-meta">Risk 7 · ◉ Intimidate</span></div></div>
+                <div class="rsk-card-entry" data-card-id="018" style="cursor:pointer;"><img src="assets/icons/Lava_Eye.webp" alt="" onerror="this.style.display='none'"><div><span class="rsk-card-name">Lava Eye</span><span class="rsk-card-meta">Risk 4 · ◉ Morph</span></div></div>
+                <div class="rsk-card-entry" data-card-id="019" style="cursor:pointer;"><img src="assets/icons/Ash_Colossus.webp" alt="" onerror="this.style.display='none'"><div><span class="rsk-card-name">Ash Colossus</span><span class="rsk-card-meta">Risk 8 · ◉ Overpower</span></div></div>
+                <div class="rsk-card-entry" data-card-id="022" style="cursor:pointer;"><img src="assets/icons/Cinder_Baron.webp" alt="" onerror="this.style.display='none'"><div><span class="rsk-card-name">Cinder Baron</span><span class="rsk-card-meta">Risk 4 · ✦ Refresh</span></div></div>
+                <div class="rsk-card-entry" data-card-id="025" style="cursor:pointer;"><img src="assets/icons/Ember_Brawler.webp" alt="" onerror="this.style.display='none'"><div><span class="rsk-card-name">Ember Brawler</span><span class="rsk-card-meta">Risk 6 · ◉ Strike</span></div></div>
+                <div class="rsk-card-entry" data-card-id="026" style="cursor:pointer;"><img src="assets/icons/Ash_Predator.webp" alt="" onerror="this.style.display='none'"><div><span class="rsk-card-name">Ash Predator</span><span class="rsk-card-meta">Risk 5 · ◉ Terrify</span></div></div>
+                <div class="rsk-card-entry" data-card-id="027" style="cursor:pointer;"><img src="assets/icons/Void_Reaper.webp" alt="" onerror="this.style.display='none'"><div><span class="rsk-card-name">Void Reaper</span><span class="rsk-card-meta">Risk 8 · ⚙ Torment</span></div></div>
+                <div class="rsk-card-entry" data-card-id="034" style="cursor:pointer;"><img src="assets/icons/Void_Shade.webp" alt="" onerror="this.style.display='none'"><div><span class="rsk-card-name">Void Shade</span><span class="rsk-card-meta">Risk 9 · ◉ Doppelganger</span></div></div>
+                <div class="rsk-card-entry" data-card-id="036" style="cursor:pointer;"><img src="assets/icons/Forge_Guard.webp" alt="" onerror="this.style.display='none'"><div><span class="rsk-card-name">Forge Guard</span><span class="rsk-card-meta">Risk 7 · ◉ Exhaust</span></div></div>
+                <div class="rsk-card-entry" data-card-id="039" style="cursor:pointer;"><img src="assets/icons/Ember_Eye.webp" alt="" onerror="this.style.display='none'"><div><span class="rsk-card-name">Ember Eye</span><span class="rsk-card-meta">Risk 9 · ◉ Ignite</span></div></div>
+                <div class="rsk-card-entry" data-card-id="057" style="cursor:pointer;"><img src="assets/icons/Flame_Deity.webp" alt="" onerror="this.style.display='none'"><div><span class="rsk-card-name">Flame Deity</span><span class="rsk-card-meta">Risk 9 · ◉ Vampire Kiss</span></div></div>
+                <div class="rsk-card-entry" data-card-id="053" style="cursor:pointer;"><img src="assets/icons/Dusk_Fiend.webp" alt="" onerror="this.style.display='none'"><div><span class="rsk-card-name">Dusk Fiend</span><span class="rsk-card-meta">Risk 5 · ◉ Disguise Ally</span></div></div>
               </div>
             </div>
           </details>
@@ -15539,22 +15539,22 @@ if(document.readyState !== 'loading'){
             <summary data-i18n="ch_water_compendium">💧 Water</summary>
             <div class="rules-chapter-body">
               <div class="rsk-card-grid">
-                <div class="rsk-card-entry" data-card-id="001" style="cursor:pointer;"><img src="assets/icons/Orb_Wisp.png" alt="" onerror="this.style.display='none'"><div><span class="rsk-card-name">Orb Wisp</span><span class="rsk-card-meta">Risk 3 · No power</span></div></div>
-                <div class="rsk-card-entry" data-card-id="002" style="cursor:pointer;"><img src="assets/icons/Tide_Monk.png" alt="" onerror="this.style.display='none'"><div><span class="rsk-card-name">Tide Monk</span><span class="rsk-card-meta">Risk 4 · No power</span></div></div>
-                <div class="rsk-card-entry" data-card-id="003" style="cursor:pointer;"><img src="assets/icons/Deep_Scout.png" alt="" onerror="this.style.display='none'"><div><span class="rsk-card-name">Deep Scout</span><span class="rsk-card-meta">Risk 5 · No power</span></div></div>
-                <div class="rsk-card-entry" data-card-id="010" style="cursor:pointer;"><img src="assets/icons/Dusk_Guard.png" alt="" onerror="this.style.display='none'"><div><span class="rsk-card-name">Dusk Guard</span><span class="rsk-card-meta">Risk 4 · ⚙ Backstab</span></div></div>
-                <div class="rsk-card-entry" data-card-id="016" style="cursor:pointer;"><img src="assets/icons/Deep_Spirit.png" alt="" onerror="this.style.display='none'"><div><span class="rsk-card-name">Deep Spirit</span><span class="rsk-card-meta">Risk 4 · ✦ Judgement</span></div></div>
-                <div class="rsk-card-entry" data-card-id="017" style="cursor:pointer;"><img src="assets/icons/Orb_Scout.png" alt="" onerror="this.style.display='none'"><div><span class="rsk-card-name">Orb Scout</span><span class="rsk-card-meta">Risk 7 · ◉ Mirror</span></div></div>
-                <div class="rsk-card-entry" data-card-id="020" style="cursor:pointer;"><img src="assets/icons/Tidal_Mage.png" alt="" onerror="this.style.display='none'"><div><span class="rsk-card-name">Tidal Mage</span><span class="rsk-card-meta">Risk 4 · ◉ Power Reverse</span></div></div>
-                <div class="rsk-card-entry" data-card-id="024" style="cursor:pointer;"><img src="assets/icons/Tide_Raider.png" alt="" onerror="this.style.display='none'"><div><span class="rsk-card-name">Tide Raider</span><span class="rsk-card-meta">Risk 5 · ◉ Retreat</span></div></div>
-                <div class="rsk-card-entry" data-card-id="028" style="cursor:pointer;"><img src="assets/icons/Tide_Warrior.png" alt="" onerror="this.style.display='none'"><div><span class="rsk-card-name">Tide Warrior</span><span class="rsk-card-meta">Risk 4 · ⚙ Vendetta</span></div></div>
-                <div class="rsk-card-entry" data-card-id="030" style="cursor:pointer;"><img src="assets/icons/Rift_Sorceress.png" alt="" onerror="this.style.display='none'"><div><span class="rsk-card-name">Rift Sorceress</span><span class="rsk-card-meta">Risk 9 · ◉ Betrayal</span></div></div>
-                <div class="rsk-card-entry" data-card-id="032" style="cursor:pointer;"><img src="assets/icons/Deep_Witch.png" alt="" onerror="this.style.display='none'"><div><span class="rsk-card-name">Deep Witch</span><span class="rsk-card-meta">Risk 9 · ◉ Chameleon</span></div></div>
-                <div class="rsk-card-entry" data-card-id="035" style="cursor:pointer;"><img src="assets/icons/Frost_Archer.png" alt="" onerror="this.style.display='none'"><div><span class="rsk-card-name">Frost Archer</span><span class="rsk-card-meta">Risk 7 · ◉ Dustshot</span></div></div>
-                <div class="rsk-card-entry" data-card-id="037" style="cursor:pointer;"><img src="assets/icons/Deep_Stalker.png" alt="" onerror="this.style.display='none'"><div><span class="rsk-card-name">Deep Stalker</span><span class="rsk-card-meta">Risk 8 · ◉ Extinguish</span></div></div>
-                <div class="rsk-card-entry" data-card-id="038" style="cursor:pointer;"><img src="assets/icons/Abyss_Crone.png" alt="" onerror="this.style.display='none'"><div><span class="rsk-card-name">Abyss Crone</span><span class="rsk-card-meta">Risk 9 · ⚙ Flow Change</span></div></div>
-                <div class="rsk-card-entry" data-card-id="043" style="cursor:pointer;"><img src="assets/icons/Void_Kraken.png" alt="" onerror="this.style.display='none'"><div><span class="rsk-card-name">Void Kraken</span><span class="rsk-card-meta">Risk 8 · ◉ Void</span></div></div>
-                <div class="rsk-card-entry" data-card-id="056" style="cursor:pointer;"><img src="assets/icons/Void_Ray.png" alt="" onerror="this.style.display='none'"><div><span class="rsk-card-name">Void Ray</span><span class="rsk-card-meta">Risk 6 · ◉ Power Shift</span></div></div>
+                <div class="rsk-card-entry" data-card-id="001" style="cursor:pointer;"><img src="assets/icons/Orb_Wisp.webp" alt="" onerror="this.style.display='none'"><div><span class="rsk-card-name">Orb Wisp</span><span class="rsk-card-meta">Risk 3 · No power</span></div></div>
+                <div class="rsk-card-entry" data-card-id="002" style="cursor:pointer;"><img src="assets/icons/Tide_Monk.webp" alt="" onerror="this.style.display='none'"><div><span class="rsk-card-name">Tide Monk</span><span class="rsk-card-meta">Risk 4 · No power</span></div></div>
+                <div class="rsk-card-entry" data-card-id="003" style="cursor:pointer;"><img src="assets/icons/Deep_Scout.webp" alt="" onerror="this.style.display='none'"><div><span class="rsk-card-name">Deep Scout</span><span class="rsk-card-meta">Risk 5 · No power</span></div></div>
+                <div class="rsk-card-entry" data-card-id="010" style="cursor:pointer;"><img src="assets/icons/Dusk_Guard.webp" alt="" onerror="this.style.display='none'"><div><span class="rsk-card-name">Dusk Guard</span><span class="rsk-card-meta">Risk 4 · ⚙ Backstab</span></div></div>
+                <div class="rsk-card-entry" data-card-id="016" style="cursor:pointer;"><img src="assets/icons/Deep_Spirit.webp" alt="" onerror="this.style.display='none'"><div><span class="rsk-card-name">Deep Spirit</span><span class="rsk-card-meta">Risk 4 · ✦ Judgement</span></div></div>
+                <div class="rsk-card-entry" data-card-id="017" style="cursor:pointer;"><img src="assets/icons/Orb_Scout.webp" alt="" onerror="this.style.display='none'"><div><span class="rsk-card-name">Orb Scout</span><span class="rsk-card-meta">Risk 7 · ◉ Mirror</span></div></div>
+                <div class="rsk-card-entry" data-card-id="020" style="cursor:pointer;"><img src="assets/icons/Tidal_Mage.webp" alt="" onerror="this.style.display='none'"><div><span class="rsk-card-name">Tidal Mage</span><span class="rsk-card-meta">Risk 4 · ◉ Power Reverse</span></div></div>
+                <div class="rsk-card-entry" data-card-id="024" style="cursor:pointer;"><img src="assets/icons/Tide_Raider.webp" alt="" onerror="this.style.display='none'"><div><span class="rsk-card-name">Tide Raider</span><span class="rsk-card-meta">Risk 5 · ◉ Retreat</span></div></div>
+                <div class="rsk-card-entry" data-card-id="028" style="cursor:pointer;"><img src="assets/icons/Tide_Warrior.webp" alt="" onerror="this.style.display='none'"><div><span class="rsk-card-name">Tide Warrior</span><span class="rsk-card-meta">Risk 4 · ⚙ Vendetta</span></div></div>
+                <div class="rsk-card-entry" data-card-id="030" style="cursor:pointer;"><img src="assets/icons/Rift_Sorceress.webp" alt="" onerror="this.style.display='none'"><div><span class="rsk-card-name">Rift Sorceress</span><span class="rsk-card-meta">Risk 9 · ◉ Betrayal</span></div></div>
+                <div class="rsk-card-entry" data-card-id="032" style="cursor:pointer;"><img src="assets/icons/Deep_Witch.webp" alt="" onerror="this.style.display='none'"><div><span class="rsk-card-name">Deep Witch</span><span class="rsk-card-meta">Risk 9 · ◉ Chameleon</span></div></div>
+                <div class="rsk-card-entry" data-card-id="035" style="cursor:pointer;"><img src="assets/icons/Frost_Archer.webp" alt="" onerror="this.style.display='none'"><div><span class="rsk-card-name">Frost Archer</span><span class="rsk-card-meta">Risk 7 · ◉ Dustshot</span></div></div>
+                <div class="rsk-card-entry" data-card-id="037" style="cursor:pointer;"><img src="assets/icons/Deep_Stalker.webp" alt="" onerror="this.style.display='none'"><div><span class="rsk-card-name">Deep Stalker</span><span class="rsk-card-meta">Risk 8 · ◉ Extinguish</span></div></div>
+                <div class="rsk-card-entry" data-card-id="038" style="cursor:pointer;"><img src="assets/icons/Abyss_Crone.webp" alt="" onerror="this.style.display='none'"><div><span class="rsk-card-name">Abyss Crone</span><span class="rsk-card-meta">Risk 9 · ⚙ Flow Change</span></div></div>
+                <div class="rsk-card-entry" data-card-id="043" style="cursor:pointer;"><img src="assets/icons/Void_Kraken.webp" alt="" onerror="this.style.display='none'"><div><span class="rsk-card-name">Void Kraken</span><span class="rsk-card-meta">Risk 8 · ◉ Void</span></div></div>
+                <div class="rsk-card-entry" data-card-id="056" style="cursor:pointer;"><img src="assets/icons/Void_Ray.webp" alt="" onerror="this.style.display='none'"><div><span class="rsk-card-name">Void Ray</span><span class="rsk-card-meta">Risk 6 · ◉ Power Shift</span></div></div>
               </div>
             </div>
           </details>
@@ -15563,22 +15563,22 @@ if(document.readyState !== 'loading'){
             <summary data-i18n="ch_earth_compendium">🌿 Earth</summary>
             <div class="rules-chapter-body">
               <div class="rsk-card-grid">
-                <div class="rsk-card-entry" data-card-id="004" style="cursor:pointer;"><img src="assets/icons/Fern_Sprite.png" alt="" onerror="this.style.display='none'"><div><span class="rsk-card-name">Fern Sprite</span><span class="rsk-card-meta">Risk 3 · No power</span></div></div>
-                <div class="rsk-card-entry" data-card-id="005" style="cursor:pointer;"><img src="assets/icons/Lantern_Sprite.png" alt="" onerror="this.style.display='none'"><div><span class="rsk-card-name">Lantern Sprite</span><span class="rsk-card-meta">Risk 4 · No power</span></div></div>
-                <div class="rsk-card-entry" data-card-id="006" style="cursor:pointer;"><img src="assets/icons/Teal_Sprite.png" alt="" onerror="this.style.display='none'"><div><span class="rsk-card-name">Teal Sprite</span><span class="rsk-card-meta">Risk 5 · No power</span></div></div>
-                <div class="rsk-card-entry" data-card-id="012" style="cursor:pointer;"><img src="assets/icons/Living_Isle.png" alt="" onerror="this.style.display='none'"><div><span class="rsk-card-name">Living Isle</span><span class="rsk-card-meta">Risk 3 · ◉ Defend</span></div></div>
-                <div class="rsk-card-entry" data-card-id="013" style="cursor:pointer;"><img src="assets/icons/Marsh_Mage.png" alt="" onerror="this.style.display='none'"><div><span class="rsk-card-name">Marsh Mage</span><span class="rsk-card-meta">Risk 6 · ◉ Dust Storm</span></div></div>
-                <div class="rsk-card-entry" data-card-id="014" style="cursor:pointer;"><img src="assets/icons/Thorn_Warden.png" alt="" onerror="this.style.display='none'"><div><span class="rsk-card-name">Thorn Warden</span><span class="rsk-card-meta">Risk 4 · ◉ Guard Mark</span></div></div>
-                <div class="rsk-card-entry" data-card-id="021" style="cursor:pointer;"><img src="assets/icons/Glow_Stalker.png" alt="" onerror="this.style.display='none'"><div><span class="rsk-card-name">Glow Stalker</span><span class="rsk-card-meta">Risk 4 · ◉ Purify</span></div></div>
-                <div class="rsk-card-entry" data-card-id="023" style="cursor:pointer;"><img src="assets/icons/Dusk_Stag.png" alt="" onerror="this.style.display='none'"><div><span class="rsk-card-name">Dusk Stag</span><span class="rsk-card-meta">Risk 5 · ◉ Regroup</span></div></div>
-                <div class="rsk-card-entry" data-card-id="029" style="cursor:pointer;"><img src="assets/icons/Leaf_Serpent.png" alt="" onerror="this.style.display='none'"><div><span class="rsk-card-name">Leaf Serpent</span><span class="rsk-card-meta">Risk 4 · ◉ War Mark</span></div></div>
-                <div class="rsk-card-entry" data-card-id="031" style="cursor:pointer;"><img src="assets/icons/Bird_Mage.png" alt="" onerror="this.style.display='none'"><div><span class="rsk-card-name">Bird Mage</span><span class="rsk-card-meta">Risk 5 · ◉ Cede &amp; Seed</span></div></div>
-                <div class="rsk-card-entry" data-card-id="033" style="cursor:pointer;"><img src="assets/icons/Moon_Scout.png" alt="" onerror="this.style.display='none'"><div><span class="rsk-card-name">Moon Scout</span><span class="rsk-card-meta">Risk 3 · ⚙ Determined</span></div></div>
-                <div class="rsk-card-entry" data-card-id="040" style="cursor:pointer;"><img src="assets/icons/Vine_Stalker.png" alt="" onerror="this.style.display='none'"><div><span class="rsk-card-name">Vine Stalker</span><span class="rsk-card-meta">Risk 8 · ◉ Leap</span></div></div>
-                <div class="rsk-card-entry" data-card-id="041" style="cursor:pointer;"><img src="assets/icons/Moon_Leaper.png" alt="" onerror="this.style.display='none'"><div><span class="rsk-card-name">Moon Leaper</span><span class="rsk-card-meta">Risk 10 · ◉ Maneuver</span></div></div>
-                <div class="rsk-card-entry" data-card-id="042" style="cursor:pointer;"><img src="assets/icons/Ancient_Oak.png" alt="" onerror="this.style.display='none'"><div><span class="rsk-card-name">Ancient Oak</span><span class="rsk-card-meta">Risk 9 · ◉ Overgrowth</span></div></div>
-                <div class="rsk-card-entry" data-card-id="055" style="cursor:pointer;"><img src="assets/icons/Lotus_Monk.png" alt="" onerror="this.style.display='none'"><div><span class="rsk-card-name">Lotus Monk</span><span class="rsk-card-meta">Risk 5 · ✦ Mimic</span></div></div>
-                <div class="rsk-card-entry" data-card-id="054" style="cursor:pointer;"><img src="assets/icons/Thorn_Keeper.png" alt="" onerror="this.style.display='none'"><div><span class="rsk-card-name">Thorn Keeper</span><span class="rsk-card-meta">Risk 5 · ⚙ Seal</span></div></div>
+                <div class="rsk-card-entry" data-card-id="004" style="cursor:pointer;"><img src="assets/icons/Fern_Sprite.webp" alt="" onerror="this.style.display='none'"><div><span class="rsk-card-name">Fern Sprite</span><span class="rsk-card-meta">Risk 3 · No power</span></div></div>
+                <div class="rsk-card-entry" data-card-id="005" style="cursor:pointer;"><img src="assets/icons/Lantern_Sprite.webp" alt="" onerror="this.style.display='none'"><div><span class="rsk-card-name">Lantern Sprite</span><span class="rsk-card-meta">Risk 4 · No power</span></div></div>
+                <div class="rsk-card-entry" data-card-id="006" style="cursor:pointer;"><img src="assets/icons/Teal_Sprite.webp" alt="" onerror="this.style.display='none'"><div><span class="rsk-card-name">Teal Sprite</span><span class="rsk-card-meta">Risk 5 · No power</span></div></div>
+                <div class="rsk-card-entry" data-card-id="012" style="cursor:pointer;"><img src="assets/icons/Living_Isle.webp" alt="" onerror="this.style.display='none'"><div><span class="rsk-card-name">Living Isle</span><span class="rsk-card-meta">Risk 3 · ◉ Defend</span></div></div>
+                <div class="rsk-card-entry" data-card-id="013" style="cursor:pointer;"><img src="assets/icons/Marsh_Mage.webp" alt="" onerror="this.style.display='none'"><div><span class="rsk-card-name">Marsh Mage</span><span class="rsk-card-meta">Risk 6 · ◉ Dust Storm</span></div></div>
+                <div class="rsk-card-entry" data-card-id="014" style="cursor:pointer;"><img src="assets/icons/Thorn_Warden.webp" alt="" onerror="this.style.display='none'"><div><span class="rsk-card-name">Thorn Warden</span><span class="rsk-card-meta">Risk 4 · ◉ Guard Mark</span></div></div>
+                <div class="rsk-card-entry" data-card-id="021" style="cursor:pointer;"><img src="assets/icons/Glow_Stalker.webp" alt="" onerror="this.style.display='none'"><div><span class="rsk-card-name">Glow Stalker</span><span class="rsk-card-meta">Risk 4 · ◉ Purify</span></div></div>
+                <div class="rsk-card-entry" data-card-id="023" style="cursor:pointer;"><img src="assets/icons/Dusk_Stag.webp" alt="" onerror="this.style.display='none'"><div><span class="rsk-card-name">Dusk Stag</span><span class="rsk-card-meta">Risk 5 · ◉ Regroup</span></div></div>
+                <div class="rsk-card-entry" data-card-id="029" style="cursor:pointer;"><img src="assets/icons/Leaf_Serpent.webp" alt="" onerror="this.style.display='none'"><div><span class="rsk-card-name">Leaf Serpent</span><span class="rsk-card-meta">Risk 4 · ◉ War Mark</span></div></div>
+                <div class="rsk-card-entry" data-card-id="031" style="cursor:pointer;"><img src="assets/icons/Bird_Mage.webp" alt="" onerror="this.style.display='none'"><div><span class="rsk-card-name">Bird Mage</span><span class="rsk-card-meta">Risk 5 · ◉ Cede &amp; Seed</span></div></div>
+                <div class="rsk-card-entry" data-card-id="033" style="cursor:pointer;"><img src="assets/icons/Moon_Scout.webp" alt="" onerror="this.style.display='none'"><div><span class="rsk-card-name">Moon Scout</span><span class="rsk-card-meta">Risk 3 · ⚙ Determined</span></div></div>
+                <div class="rsk-card-entry" data-card-id="040" style="cursor:pointer;"><img src="assets/icons/Vine_Stalker.webp" alt="" onerror="this.style.display='none'"><div><span class="rsk-card-name">Vine Stalker</span><span class="rsk-card-meta">Risk 8 · ◉ Leap</span></div></div>
+                <div class="rsk-card-entry" data-card-id="041" style="cursor:pointer;"><img src="assets/icons/Moon_Leaper.webp" alt="" onerror="this.style.display='none'"><div><span class="rsk-card-name">Moon Leaper</span><span class="rsk-card-meta">Risk 10 · ◉ Maneuver</span></div></div>
+                <div class="rsk-card-entry" data-card-id="042" style="cursor:pointer;"><img src="assets/icons/Ancient_Oak.webp" alt="" onerror="this.style.display='none'"><div><span class="rsk-card-name">Ancient Oak</span><span class="rsk-card-meta">Risk 9 · ◉ Overgrowth</span></div></div>
+                <div class="rsk-card-entry" data-card-id="055" style="cursor:pointer;"><img src="assets/icons/Lotus_Monk.webp" alt="" onerror="this.style.display='none'"><div><span class="rsk-card-name">Lotus Monk</span><span class="rsk-card-meta">Risk 5 · ✦ Mimic</span></div></div>
+                <div class="rsk-card-entry" data-card-id="054" style="cursor:pointer;"><img src="assets/icons/Thorn_Keeper.webp" alt="" onerror="this.style.display='none'"><div><span class="rsk-card-name">Thorn Keeper</span><span class="rsk-card-meta">Risk 5 · ⚙ Seal</span></div></div>
               </div>
             </div>
           </details>
@@ -15587,7 +15587,7 @@ if(document.readyState !== 'loading'){
             <summary data-i18n="ch_dust_compendium">◈ Dust</summary>
             <div class="rules-chapter-body">
               <div class="rsk-card-grid">
-                <div class="rsk-card-entry" data-card-id="000" style="cursor:pointer;"><img src="assets/icons/Rat.png" alt="" onerror="this.style.display='none'"><div><span class="rsk-card-name">Rat</span><span class="rsk-card-meta">Risk 2 · No power</span></div></div>
+                <div class="rsk-card-entry" data-card-id="000" style="cursor:pointer;"><img src="assets/icons/Rat.webp" alt="" onerror="this.style.display='none'"><div><span class="rsk-card-name">Rat</span><span class="rsk-card-meta">Risk 2 · No power</span></div></div>
               </div>
             </div>
           </details>
@@ -15795,8 +15795,8 @@ function rlPlayEndAnimation(){
         h.style.transition = 'all 0.3s';
         h.classList.add('lost');
         h.innerHTML =
-          `<img src="assets/background/hp_empty.png" style="position:absolute;inset:0;width:100%;height:100%;object-fit:contain;pointer-events:none;">` +
-          `<img src="assets/background/skull_human.png" style="position:absolute;inset:0;width:100%;height:100%;object-fit:contain;pointer-events:none;opacity:0.85;">`;
+          `<img src="assets/background/hp_empty.webp" style="position:absolute;inset:0;width:100%;height:100%;object-fit:contain;pointer-events:none;">` +
+          `<img src="assets/background/skull_human.webp" style="position:absolute;inset:0;width:100%;height:100%;object-fit:contain;pointer-events:none;opacity:0.85;">`;
       }, 500 + i * 300);
     });
   }
@@ -15806,7 +15806,7 @@ function rlRenderHub(){
   if(!RL) return;
 
   const mkPipInner = (topSrc, topStyle='') =>
-    `<img src="assets/background/hp_empty.png" style="position:absolute;inset:0;width:100%;height:100%;object-fit:contain;pointer-events:none;">` +
+    `<img src="assets/background/hp_empty.webp" style="position:absolute;inset:0;width:100%;height:100%;object-fit:contain;pointer-events:none;">` +
     `<img src="${topSrc}" style="position:absolute;inset:0;width:100%;height:100%;object-fit:contain;pointer-events:none;${topStyle}">`;
 
   // Fights grid : skull_monster doré pour les victoires, hp_empty seul sinon
@@ -15818,14 +15818,14 @@ function rlRenderHub(){
     pip.style.position = 'relative';
     if(i < RL.wins){
       pip.classList.add('win');
-      pip.innerHTML = mkPipInner('assets/background/skull_monster.png',
+      pip.innerHTML = mkPipInner('assets/background/skull_monster.webp',
         'filter:sepia(1) saturate(4) hue-rotate(5deg) brightness(1.1);');
     } else if(i === RL.wins && !RL.gameOver){
       pip.classList.add('current');
-      pip.innerHTML = `<img src="assets/background/hp_empty.png" style="position:absolute;inset:0;width:100%;height:100%;object-fit:contain;pointer-events:none;">` +
+      pip.innerHTML = `<img src="assets/background/hp_empty.webp" style="position:absolute;inset:0;width:100%;height:100%;object-fit:contain;pointer-events:none;">` +
         `<span style="position:relative;z-index:1;font-size:clamp(12px,2.7vmin,18px);font-family:'Cinzel',serif;">${i+1}</span>`;
     } else {
-      pip.innerHTML = `<img src="assets/background/hp_empty.png" style="position:absolute;inset:0;width:100%;height:100%;object-fit:contain;pointer-events:none;">` +
+      pip.innerHTML = `<img src="assets/background/hp_empty.webp" style="position:absolute;inset:0;width:100%;height:100%;object-fit:contain;pointer-events:none;">` +
         `<span style="position:relative;z-index:1;font-size:clamp(12px,2.7vmin,18px);font-family:'Cinzel',serif;">${i+1}</span>`;
     }
     fg.appendChild(pip);
@@ -15841,9 +15841,9 @@ function rlRenderHub(){
     const isLost = (i >= RL_LIVES - RL.losses);
     if(isLost){
       pip.classList.add('lost');
-      pip.innerHTML = mkPipInner('assets/background/skull_human.png', 'opacity:0.85;');
+      pip.innerHTML = mkPipInner('assets/background/skull_human.webp', 'opacity:0.85;');
     } else {
-      pip.innerHTML = `<img src="assets/background/hp_human.png" style="position:absolute;inset:0;width:100%;height:100%;object-fit:contain;pointer-events:none;">`;
+      pip.innerHTML = `<img src="assets/background/hp_human.webp" style="position:absolute;inset:0;width:100%;height:100%;object-fit:contain;pointer-events:none;">`;
     }
     lg.appendChild(pip);
   }
@@ -16739,7 +16739,7 @@ function tutExecuteAiSR(){
 
   // Lancer l'animation de vol si les rects sont disponibles
   if(aiSrcRect && aiDstRect){
-    const ghostHtml = `<img src="assets/background/back.png" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;border-radius:inherit;pointer-events:none;" onerror="this.style.display='none'">`;
+    const ghostHtml = `<img src="assets/background/back.webp" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;border-radius:inherit;pointer-events:none;" onerror="this.style.display='none'">`;
     _flyGhost(ghostHtml, `el-${card.el}`, aiSrcRect, aiDstRect, 1, () => {
       afterFlight();
     }, ghostEl => {
@@ -23206,9 +23206,9 @@ function _renderAudioPanel(){
   const masterVal = document.getElementById('audio-master-val');
   if(masterVal) masterVal.textContent = Math.round((_masterVol||1)*100)+'%';
   const imgFx = document.getElementById('audio-img-fx');
-  if(imgFx) imgFx.src = 'assets/background/sqbutton_soundfx'+(_fxEnabled?'on':'off')+'.png';
+  if(imgFx) imgFx.src = 'assets/background/sqbutton_soundfx'+(_fxEnabled?'on':'off')+'.webp';
   const imgMu = document.getElementById('audio-img-music');
-  if(imgMu) imgMu.src = 'assets/background/sqbutton_music'+(_musicEnabled?'on':'off')+'.png';
+  if(imgMu) imgMu.src = 'assets/background/sqbutton_music'+(_musicEnabled?'on':'off')+'.webp';
 }
 function audioSetMaster(v){
   _masterVol = v/100;
@@ -23240,14 +23240,14 @@ function audioToggle(){
 function audioToggleFx(){
   _fxEnabled = !_fxEnabled;
   const img = document.getElementById('audio-img-fx');
-  if(img) img.src = 'assets/background/sqbutton_soundfx'+(_fxEnabled?'on':'off')+'.png';
+  if(img) img.src = 'assets/background/sqbutton_soundfx'+(_fxEnabled?'on':'off')+'.webp';
   if(!_fxEnabled) _stopAllHeartLoops();
   _audioPrefsSave();
 }
 function audioToggleMusic(){
   _musicEnabled = !_musicEnabled;
   const img = document.getElementById('audio-img-music');
-  if(img) img.src = 'assets/background/sqbutton_music'+(_musicEnabled?'on':'off')+'.png';
+  if(img) img.src = 'assets/background/sqbutton_music'+(_musicEnabled?'on':'off')+'.webp';
   if(_musicEl) _musicEl.volume = _musicEnabled ? _musicVol : 0;
   else if(_musicEnabled) _startTitleMusicOnce(); // relancer si rien ne joue
   _audioPrefsSave();
@@ -23400,8 +23400,8 @@ function _saveParseAndRestore(text, source){
       '<div style="margin-top:8px;">' +
       '<p style="font-size:11px;color:var(--text);margin-bottom:8px;">Load save from ' + date + '?<br><span style="color:var(--dim);font-size:10px;">' + summary + '</span></p>' +
       '<div style="display:flex;gap:8px;">' +
-      '<button onclick="sfx(SFX.click2);_saveDoRestore()" style="flex:1;background:none;border:none;cursor:pointer;padding:0;position:relative;"><img src="assets/background/button_s_black.png" style="width:100%;height:auto;display:block;" alt=""><span style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-family:Cinzel,serif;font-size:clamp(14px,3.2vw,18px);font-weight:700;color:#fff;pointer-events:none;">YES</span></button>' +
-      '<button onclick="sfx(SFX.click2);document.getElementById(\'save-import-info\').innerHTML=\'\'" style="flex:1;background:none;border:none;cursor:pointer;padding:0;position:relative;"><img src="assets/background/button_s_white.png" style="width:100%;height:auto;display:block;" alt=""><span style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-family:Cinzel,serif;font-size:clamp(14px,3.2vw,18px);font-weight:700;color:#000;pointer-events:none;">CANCEL</span></button>' +
+      '<button onclick="sfx(SFX.click2);_saveDoRestore()" style="flex:1;background:none;border:none;cursor:pointer;padding:0;position:relative;"><img src="assets/background/button_s_black.webp" style="width:100%;height:auto;display:block;" alt=""><span style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-family:Cinzel,serif;font-size:clamp(14px,3.2vw,18px);font-weight:700;color:#fff;pointer-events:none;">YES</span></button>' +
+      '<button onclick="sfx(SFX.click2);document.getElementById(\'save-import-info\').innerHTML=\'\'" style="flex:1;background:none;border:none;cursor:pointer;padding:0;position:relative;"><img src="assets/background/button_s_white.webp" style="width:100%;height:auto;display:block;" alt=""><span style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-family:Cinzel,serif;font-size:clamp(14px,3.2vw,18px);font-weight:700;color:#000;pointer-events:none;">CANCEL</span></button>' +
       '</div></div>';
   }
   // Stocker les données en attente
