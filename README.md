@@ -166,6 +166,19 @@ Bugs exist. The AI doesn't always make the right call. Some features are rougher
 
 ---
 
+## Contributing to the code
+
+If you send a patch, `node tools/check.mjs` runs a set of project-specific
+checks with no installation at all — broken asset paths, globals declared
+twice, translation keys missing in one of the seven languages, unclosed tags.
+With `npm install` you also get `npm run lint` (ESLint over the JavaScript
+inside `index.html`). Both run automatically on every pull request.
+
+They only ever report; nothing reformats `index.html`. See
+[tools/README.md](tools/README.md) for what each check exists to prevent.
+
+---
+
 ## Contributing
 
 - **Motivation** : Drop me a message here or an email (contact link in the game). Tell me what you like or don't like. Tell me your story. Just knowing other folks may enjoy this personnal project would be quite nice.

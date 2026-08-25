@@ -5874,8 +5874,11 @@ function _updateFullscreenBtn(){
     const el = document.getElementById(id);
     if(el){ if(el.tagName==='IMG') el.src=_fsSrc; else { const img=el.querySelector('img'); if(img) img.src=_fsSrc; } }
   });
-  if(btnEnter) btnEnter.style.display = isFs ? 'none' : '';
-  if(btnExit)  btnExit.style.display  = isFs ? '' : 'none';
+  // [v40 b06] Deux lignes référençaient ici btnEnter / btnExit, des éléments
+  // qui n'existent plus depuis que le plein écran est un bouton unique à
+  // bascule (#btn-fullscreen-toggle). Elles levaient une ReferenceError à
+  // chaque entrée et sortie de plein écran — la boucle ci-dessus fait déjà
+  // tout le travail.
 }
 document.addEventListener('fullscreenchange',       _updateFullscreenBtn);
 document.addEventListener('webkitfullscreenchange', _updateFullscreenBtn);
@@ -8065,7 +8068,11 @@ function executeAiPlacementAction(){
         const tgtIsEnemy = ec._aiTargetIsEnemy;
         delete ec._aiTargetLaneIdx; delete ec._aiTargetIsEnemy;
         const moveDescriptor = _captureSkillMoveRects(ec.skill, i, false, tgtLane);
-        const swapVisual = _captureSkillSwapVisual(ec.skill, i, false);
+        // Les emplacements touchés par Overgrowth se capturent AVANT que
+        // executeSkillLogic ne modifie le plateau (même ordre que dans
+        // tryAiSkillMidRound).
+        const overgrowthSlots = ec.skill === 'overgrowth'
+          ? _captureOvergrowthAffectedSlots(tgtLane, tgtIsEnemy) : null;
         executeSkillLogic(ec, i, false, tgtLane, tgtIsEnemy);
         G.aiSkillUsedThisRound = true;
         renderFight(); _flushX2FlipAnim();
@@ -8073,7 +8080,16 @@ function executeAiPlacementAction(){
         // Animer puis reprendre la pose de carte
         setTimeout(() => {
           _animateSkillActivate(i, false);
-          _drawAiArc();
+          // [v40 b06] Cette ligne appelait _drawAiArc(), une const locale de
+          // tryAiSkillMidRound — hors de portée ici. La ReferenceError
+          // interrompait le callback, donc _animateSkillMoveFly() juste en
+          // dessous ne tournait jamais : l'arc ET le vol de carte étaient
+          // escamotés à chaque skill pré-carte de l'IA. Mêmes branches que
+          // _drawAiArc, avec les variables disponibles dans cette portée.
+          if(overgrowthSlots)              _animateMultiSkillTargetLink(i, true, overgrowthSlots);
+          else if(ec.skill === 'powerShift') _animateSkillTargetLinkToIndicator(i, false);
+          else if(tgtLane !== undefined)   _animateSkillTargetLink(i, true, tgtLane, tgtIsEnemy);
+          else                             _animateImplicitOppositeTargetLink(i, false, ec.skill);
           _animateSkillMoveFly(moveDescriptor);
         }, 0);
         // Reprendre la pose après l'animation du skill
@@ -8087,6 +8103,9 @@ function executeAiPlacementAction(){
   }
 
   // Stratégie : contrer si possible, mais tenir compte des passifs Backstab/Vendetta
+  // bestVal reste undefined en mode glouton : seule la branche « recherche »
+  // lui donne une valeur, et le log verbeux plus bas s'en accommode.
+  let bestVal;
   let targetLane = availableLanes[Math.floor(Math.random()*availableLanes.length)];
   let cardIndex  = Math.floor(Math.random()*G.eHand.length);
 
@@ -8357,7 +8376,7 @@ function executeAiPlacementAction(){
       }
     };
 
-    let bestVal = -Infinity;
+    bestVal = -Infinity;
     const lanesSnap = G.lanes.map(l => ({...l}));
     const srCurrent = G.placeStep + 1;
     const srsLeft   = Math.max(0, 7 - srCurrent);
@@ -8399,12 +8418,12 @@ function executeAiPlacementAction(){
   } // end greedy/search
 
   // DEBUG : log verbose — trace la décision finale de placement de l'IA.
-  // BUGFIX (repéré pendant l'implémentation) : bestVal n'est déclarée QUE
-  // dans la branche avg3 ci-dessus, pas dans la branche gloutonne (portée de
-  // bloc) — référencer bestVal ici sans garde aurait levé une ReferenceError
-  // silencieusement avalée nulle part (pas de try/catch autour de cet appel),
-  // cassant potentiellement tout executeAiPlacementAction. Utilise
-  // typeof===... pour rester sûr quelle que soit la branche empruntée.
+  // [v40 b06] bestVal était déclarée avec `let` À L'INTÉRIEUR du bloc de la
+  // branche « recherche ». Hors de ce bloc elle n'existait pas : le garde
+  // typeof (correct, il évitait une ReferenceError) rendait donc le champ
+  // `val` systématiquement nul, y compris quand la recherche avait tourné.
+  // La déclaration est remontée au niveau de la fonction — le log dit
+  // désormais la valeur réellement retenue, et vaut undefined en glouton.
   if(typeof _vlogReal === 'function'){
     const chosenCard = G.eHand[cardIndex];
     _vlogReal({
@@ -8412,7 +8431,7 @@ function executeAiPlacementAction(){
       lane: targetLane, cardIndex: cardIndex,
       cardName: chosenCard ? chosenCard.name : null,
       cardSkill: chosenCard ? chosenCard.skill : null,
-      val: (typeof bestVal !== 'undefined' && isFinite(bestVal)) ? +bestVal.toFixed(3) : null,
+      val: (bestVal !== undefined && isFinite(bestVal)) ? +bestVal.toFixed(3) : null,
       board: _vlogBoardSnapshot()
     });
   }
@@ -16493,8 +16512,11 @@ function tutLaunchPuzzle(){
     round:1, placeStep:0, subRound:1,
     turnOwner:'ai', firstPlayer:'ai', // IA commence
     cardJustPlaced:false, playerCardPlacedThisSR:false, aiCardPlacedThisSR:false,
-    bonusPhase:false, firstCardLane:-1, firstCardOwner:'',
-    skillUsedThisRound:false, aiSkillUsedThisRound:false, pendingSkill:null,
+    // [v40 b06] firstCardLane / firstCardOwner / skillUsedThisRound étaient
+    // déclarés deux fois dans ce littéral ; les secondes valeurs gagnaient
+    // silencieusement. Seules celles-ci restent, alignées sur l'init normale
+    // d'une partie (firstCardOwner à null, jamais '').
+    bonusPhase:false, aiSkillUsedThisRound:false, pendingSkill:null,
     cardsToPlaceThisTurn:1, placeSeq:[], placeLeft:1,
     selectedCard:null,
     _pendingSwap:null, mullSet:new Set(),
@@ -16629,10 +16651,21 @@ function tutExecuteAiSR(){
       advancePlacementStructure();
       return;
     }
+    // [v40 b06] Cette boucle appelait laneValue(), une const locale de
+    // executeAiPlacementAction — hors de portée ici. Tout sous-round de
+    // tutoriel sans entrée dans aiScript levait donc une ReferenceError en
+    // pleine partie. On reprend l'heuristique rapide déjà utilisée ailleurs
+    // dans le fichier pour ce cas précis (élément, multiplicateur, risque).
+    const _quickLaneValue = (card, laneIdx) => {
+      const opp  = G.lanes[laneIdx].pc;
+      const mult = (laneIdx === G.multLaneIdx) ? 2 : 1;
+      const out  = opp ? beats(card.el, opp.el) : 'tie';
+      return (out === 'win' ? 2 : out === 'tie' ? 1 : 0) * mult + card.risk * 0.1;
+    };
     let bestVal = -Infinity, targetLane = availableLanes[0], cardIndex = 0;
     for(const li of availableLanes){
       for(let ci = 0; ci < G.eHand.length; ci++){
-        const v = laneValue(G.eHand[ci], li);
+        const v = _quickLaneValue(G.eHand[ci], li);
         if(v > bestVal){ bestVal = v; targetLane = li; cardIndex = ci; }
       }
     }

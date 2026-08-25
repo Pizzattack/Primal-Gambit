@@ -1,0 +1,71 @@
+# ═══════════════════════════════════════════════════════════════════════════
+# Contrôles automatiques — Primal Gambit
+# ───────────────────────────────────────────────────────────────────────────
+# Tourne à chaque push et à chaque pull request. Objectif : attraper avant la
+# mise en ligne le type de panne qui, dans ce projet, est passé inaperçu des
+# mois durant — une image qui n'existe pas, une fonction redéclarée qui en
+# écrase une autre, une variable qui n'a jamais existé, une langue oubliée.
+#
+# Ce workflow ne reformate RIEN et ne pousse jamais de commit. Il lit, il
+# signale, il refuse de valider. Le fichier reste celui de son auteur.
+# ═══════════════════════════════════════════════════════════════════════════
+
+name: Contrôles
+
+on:
+  push:
+    branches: ['**']
+  pull_request:
+  workflow_dispatch:
+
+# Un push qui suit de près un autre annule le contrôle précédent : inutile de
+# faire tourner deux fois la même chose.
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  controles:
+    name: Structure, assets, traductions, livraison
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      # Ces contrôles-là n'ont besoin d'aucune dépendance : Node standard.
+      # Ils tournent donc AVANT npm install, et un échec est signalé même si
+      # l'installation devait échouer.
+      - name: Contrôles du projet
+        run: node tools/check.mjs
+
+      - name: Installation d'ESLint
+        run: npm ci
+
+      - name: ESLint
+        run: node tools/lint.mjs
+
+  # Le jeu doit rester ouvrable directement depuis un dossier, sans serveur et
+  # sans réseau. Ce job vérifie qu'il n'a pas acquis de dépendance externe et
+  # que la page se charge réellement sans erreur dans un vrai navigateur —
+  # c'est le seul endroit où le service worker peut être testé pour de bon.
+  navigateur:
+    name: Chargement dans un vrai navigateur
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Installation de Playwright
+        run: |
+          npm ci
+          npm install --no-save playwright
+          npx playwright install --with-deps chromium
+
+      - name: Chargement de la page
+        run: node tools/check-browser.mjs

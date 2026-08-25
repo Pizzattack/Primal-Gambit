@@ -18,3 +18,6 @@ Desktop.ini
 *.zip
 index_v*.html
 ElementalFury_v*.html
+
+# Outillage de contrôle (npm) — le JEU lui-même n'a aucune dépendance
+node_modules/
