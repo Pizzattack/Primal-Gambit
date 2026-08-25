@@ -26,6 +26,7 @@ s'est réellement produit dans ce projet :
 | placeholder jamais remplacé | `{s}` s'affichait littéralement dans le sous-titre roguelike, dans les 7 langues |
 | ressource externe | un `<script src="https://cdn…">` casse l'ouverture en local et le hors-ligne |
 | cohérence de version | l'en-tête du fichier impose déjà « 3 endroits à mettre à jour ensemble » |
+| son livré sans crédit | le README promettait une liste de crédits qui n'existait pas, et le tableur qui l'alimente était décalé de trois lignes |
 
 ## Utilisation
 
@@ -67,6 +68,26 @@ C'est la seule preuve que la promesse de fonctionnement hors-ligne est tenue.
 `.github/workflows/ci.yml` lance tout cela à chaque push et chaque pull
 request. Le workflow ne pousse jamais de commit : il lit, il signale, il
 refuse de valider.
+
+## Crédits des sons
+
+`assets/sounds/sounds.xlsx` est la source de vérité : une ligne par fichier,
+avec son lien d'origine. `CREDITS.md` en est **généré** et ne se modifie pas à
+la main.
+
+```bash
+python3 tools/gen-credits.py
+```
+
+Le contrôle `check-credits` (dans `npm run check`) vérifie ensuite que chaque
+son livré figure bien dans `CREDITS.md`, et signale l'inverse — une ligne qui
+décrit un fichier absent, trace habituelle d'un renommage non reporté.
+
+Ce qu'il ne peut PAS vérifier : qu'une attribution est *juste*. Ça s'est fait
+une fois, en téléchargeant les aperçus publics Freesound et en les corrélant
+aux fichiers du dépôt — trois sons étaient attribués au mauvais auteur. C'est
+trop lourd pour une CI, et ça demande le réseau ; à refaire à la main si un
+doute revient.
 
 ## Ajouter un contrôle
 

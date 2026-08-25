@@ -21,6 +21,7 @@ import { checkStructure } from './check-structure.mjs';
 import { checkAssets } from './check-assets.mjs';
 import { checkI18n } from './check-i18n.mjs';
 import { checkRelease } from './check-release.mjs';
+import { checkCredits } from './check-credits.mjs';
 
 const html = readIndex();
 runAll([
@@ -28,4 +29,5 @@ runAll([
   checkAssets(html),
   checkI18n(html),
   checkRelease(html),
+  checkCredits(),
 ]);
