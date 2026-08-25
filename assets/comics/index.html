@@ -1,0 +1,1417 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Reader — mini-comic</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#1b1a17;
+    --bg-2:#141310;
+    --panel:rgba(35,32,25,.86);
+    --line:rgba(239,233,222,.12);
+    --text:#efe9de;
+    --muted:#948c7c;
+    --accent:#c1442d;
+    --accent-soft:rgba(193,68,45,.18);
+    --header-h:58px;
+    --scrub-h:4px;
+    --zoom:1;
+    --basis:600px; /* min(largeur, hauteur) de l'affichage — recalculé en JS */
+    --gap:14px; /* espacement entre images, dans la direction de défilement */
+    --img-border:#fff; /* bordure des images : blanche en dark mode */
+  }
+  body.light{
+    --bg:#e9e4d8;
+    --bg-2:#e2ddcf;
+    --panel:rgba(233,228,216,.9);
+    --line:rgba(27,26,23,.14);
+    --text:#1b1a17;
+    --muted:#6b6456;
+    --accent:#a8391f;
+    --accent-soft:rgba(168,57,31,.15);
+    --img-border:#000; /* bordure des images : noire en light mode */
+  }
+  *{box-sizing:border-box;}
+  html,body{
+    margin:0;padding:0;height:100%;
+    background:var(--bg);
+    color:var(--text);
+    font-family:'Oswald',sans-serif;
+    overflow:hidden;
+    -webkit-tap-highlight-color:transparent;
+  }
+  #app{
+    position:fixed;inset:0;
+    display:flex;flex-direction:column;
+    background:
+      radial-gradient(ellipse at 50% -10%, var(--bg-2), var(--bg) 60%);
+  }
+
+  /* ---------- HEADER ---------- */
+  header.toolbar{
+    position:relative;
+    height:var(--header-h);
+    flex:0 0 auto;
+    display:flex;align-items:center;justify-content:space-between;
+    gap:10px;
+    padding:0 14px;
+    background:var(--panel);
+    backdrop-filter:blur(10px);
+    border-bottom:1px solid var(--line);
+    z-index:20;
+  }
+
+  .brand{
+    display:flex;align-items:center;gap:10px;
+    min-width:0;
+  }
+  .counter{
+    display:flex;align-items:center;gap:6px;
+    font-family:'JetBrains Mono',monospace;
+    font-size:13px;letter-spacing:.03em;
+    color:var(--text);
+    white-space:nowrap;
+  }
+  .sprockets{
+    display:flex;gap:3px;
+  }
+  .sprockets span{
+    width:4px;height:10px;
+    background:repeating-linear-gradient(
+      to bottom,
+      var(--muted) 0 2px,
+      transparent 2px 4px
+    );
+    opacity:.7;
+  }
+  .counter b{color:var(--accent);font-weight:700;}
+  .counter .sep{color:var(--muted);}
+
+  /* mode tabs */
+  .modes{
+    display:flex;
+    background:rgba(0,0,0,.18);
+    border:1px solid var(--line);
+    border-radius:999px;
+    padding:3px;
+    gap:2px;
+    flex:0 0 auto;
+  }
+  body.light .modes{background:rgba(0,0,0,.06);}
+  .modes button{
+    appearance:none;border:none;background:transparent;
+    color:var(--muted);
+    font-family:'Oswald',sans-serif;
+    font-weight:500;
+    font-size:12.5px;
+    letter-spacing:.06em;
+    text-transform:uppercase;
+    padding:7px 16px;
+    border-radius:999px;
+    cursor:pointer;
+    transition:color .15s ease, background .15s ease;
+    white-space:nowrap;
+    display:flex;align-items:center;gap:6px;
+  }
+  .modes button svg{width:14px;height:14px;stroke:currentColor;fill:none;stroke-width:2;}
+  .modes button.active{
+    background:var(--accent);
+    color:#fff;
+  }
+  .modes button:not(.active):hover{color:var(--text);}
+
+  .controls{
+    display:flex;align-items:center;gap:6px;
+    flex:0 0 auto;
+  }
+  .iconbtn{
+    appearance:none;border:1px solid var(--line);background:transparent;
+    color:var(--text);
+    width:34px;height:34px;
+    border-radius:8px;
+    display:flex;align-items:center;justify-content:center;
+    cursor:pointer;
+    transition:background .15s ease, border-color .15s ease;
+    flex:0 0 auto;
+  }
+  .iconbtn:hover{background:var(--accent-soft);border-color:var(--accent);}
+  .iconbtn.off{color:var(--muted);}
+  .iconbtn.off svg{opacity:.5;}
+  .iconbtn svg{width:16px;height:16px;stroke:currentColor;fill:none;stroke-width:1.8;}
+
+  .zoomgroup{
+    display:flex;align-items:center;gap:2px;
+    border:1px solid var(--line);
+    border-radius:8px;
+    padding:2px;
+    flex:0 0 auto;
+  }
+  .zoomgroup button{
+    appearance:none;border:none;background:transparent;
+    color:var(--text);
+    width:26px;height:26px;
+    border-radius:6px;
+    display:flex;align-items:center;justify-content:center;
+    cursor:pointer;
+    font-size:15px;line-height:1;
+  }
+  .zoomgroup button:hover{background:var(--accent-soft);}
+  .zoomgroup button svg{width:13px;height:13px;stroke:currentColor;fill:none;stroke-width:2.2;}
+  #zoomLabel{
+    font-family:'JetBrains Mono',monospace;
+    font-size:11.5px;
+    color:var(--muted);
+    width:40px;
+    text-align:center;
+    cursor:pointer;
+    user-select:none;
+  }
+  #zoomLabel:hover{color:var(--accent);}
+
+  .jump{
+    display:flex;align-items:center;gap:2px;
+    border:1px solid var(--line);
+    border-radius:8px;
+    padding:2px;
+  }
+  .jump button{
+    appearance:none;border:none;background:transparent;
+    color:var(--text);
+    width:24px;height:26px;
+    border-radius:6px;
+    display:flex;align-items:center;justify-content:center;
+    cursor:pointer;
+    font-family:'JetBrains Mono',monospace;
+    font-size:13px;
+    line-height:1;
+    flex:0 0 auto;
+  }
+  .jump button:hover{background:var(--accent-soft);}
+  .jump input{
+    width:34px;
+    background:transparent;
+    border:none;
+    color:var(--text);
+    font-family:'JetBrains Mono',monospace;
+    font-size:12.5px;
+    text-align:center;
+    padding:6px 0;
+  }
+  .jump input:focus{outline:none;}
+
+  /* scrub bar under header */
+  .scrub{
+    position:relative;
+    height:var(--scrub-h);
+    flex:0 0 auto;
+    background:var(--line);
+    z-index:19;
+    cursor:pointer;
+  }
+  .scrub .fill{
+    position:absolute;top:0;left:0;bottom:0;
+    background:var(--accent);
+    width:0%;
+    transition:width .12s linear;
+  }
+  .scrub input[type=range]{
+    position:absolute;inset:-8px 0;
+    width:100%;height:20px;
+    margin:0;
+    opacity:0;
+    cursor:pointer;
+  }
+
+  /* ---------- VIEWER ---------- */
+  main#viewer{
+    position:relative;
+    flex:1 1 auto;
+    min-height:0;
+    background:var(--bg-2);
+  }
+
+  /* --- mode horizontal : bande continue --- */
+  .hscroll{
+    position:absolute;inset:0;
+    display:flex;
+    flex-direction:row;
+    align-items:stretch;
+    overflow:auto;
+    -webkit-overflow-scrolling:touch;
+    scroll-behavior:smooth;
+    scrollbar-width:none;
+    gap:var(--gap);
+    padding:0 2px;
+  }
+  .hscroll::-webkit-scrollbar{display:none;}
+  .hscroll .cell{
+    flex:0 0 auto;
+    height:100%;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    position:relative;
+  }
+  .hscroll .cell > img{
+    height:calc(var(--zoom) * var(--basis) * 0.912);
+    width:auto;
+    max-width:none;
+    max-height:none;
+    border:3px solid var(--img-border);
+    user-select:none;
+    -webkit-user-drag:none;
+    display:block;
+  }
+  /* case porteuse d'un effet motion comic : la case reste pleine taille
+     (comme une case normale) pour rester centrée par le flex du parent ;
+     c'est le .fx-frame interne, enfant normal du flux, qui porte le
+     gabarit réel de l'image et se fait centrer comme n'importe quel <img>. */
+  .hscroll .cell.fx{
+    overflow:visible;
+  }
+  .hscroll .cell .fx-frame{
+    position:relative;
+    height:calc(var(--zoom) * var(--basis) * 0.912);
+    width:auto;
+    overflow:hidden;
+    border:3px solid var(--img-border);
+  }
+
+  /* --- mode vertical : défilement continu façon manhwa --- */
+  .vscroll{
+    position:absolute;inset:0;
+    overflow:auto;
+    -webkit-overflow-scrolling:touch;
+    scroll-behavior:smooth;
+    scrollbar-width:none;
+  }
+  .vscroll::-webkit-scrollbar{display:none;}
+  .vscroll .row{
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    margin-bottom:var(--gap);
+    padding:0 2px;
+    position:relative;
+  }
+  .vscroll .row > img{
+    width:calc(var(--zoom) * var(--basis) * 0.912);
+    height:auto;
+    max-width:none;
+    max-height:none;
+    border:3px solid var(--img-border);
+    user-select:none;
+    -webkit-user-drag:none;
+    display:block;
+  }
+  .vscroll .row.fx{
+    overflow:visible;
+  }
+  .vscroll .row .fx-frame{
+    position:relative;
+    width:calc(var(--zoom) * var(--basis) * 0.912);
+    height:auto;
+    overflow:hidden;
+    border:3px solid var(--img-border);
+  }
+
+  /* --- couches d'un effet motion comic (imbriquées dans .fx-frame) --- */
+  .fx-seg{
+    position:absolute;inset:0;
+    width:100%;height:100%;
+  }
+  .fx-buffer{
+    position:absolute;inset:0;
+    width:100%;height:100%;
+    transform-origin:0 0;
+    will-change:transform;
+  }
+  .fx-buffer > img{
+    position:absolute;inset:0;
+    width:100%;height:100%;
+    max-width:none;max-height:none;
+    display:block;
+    user-select:none;
+    -webkit-user-drag:none;
+  }
+
+  /* ---------- barre de progression de chargement ---------- */
+  /* Affichée uniquement si le chargement d'une image dépasse 500ms
+     (voir attachLoadWatcher / loadPriorityImage en JS). Deux variantes :
+     - .loadbar.determinate : largeur pilotée en JS (progression réelle,
+       possible seulement quand fetch() est disponible, cf CAN_FETCH_PROGRESS)
+     - .loadbar.indeterminate : balayage animé (fallback, ex. fichier local) */
+  .loadbar{
+    position:absolute;
+    left:10px;right:10px;bottom:10px;
+    height:4px;
+    border-radius:2px;
+    background:rgba(0,0,0,.35);
+    overflow:hidden;
+    z-index:5;
+    pointer-events:none;
+    box-shadow:0 0 0 1px rgba(255,255,255,.06);
+  }
+  .loadbar .fill{
+    height:100%;width:0%;
+    background:var(--accent);
+    border-radius:2px;
+    transition:width .12s linear;
+  }
+  .loadbar.indeterminate .fill{
+    position:absolute;top:0;bottom:0;left:-35%;
+    width:35%;
+    animation:loadbar-sweep 1.1s ease-in-out infinite;
+  }
+  @keyframes loadbar-sweep{
+    0%{ left:-35%; }
+    50%{ left:65%; }
+    100%{ left:135%; }
+  }
+  @media (prefers-reduced-motion:reduce){
+    .loadbar.indeterminate .fill{ animation:none; left:0; width:100%; opacity:.5; }
+  }
+
+  /* empty state */
+  .empty{
+    display:flex;align-items:center;justify-content:center;
+    flex-direction:column;gap:8px;
+    color:var(--muted);
+    font-family:'JetBrains Mono',monospace;
+    font-size:12.5px;
+    text-align:center;
+    padding:24px;
+    height:100%;
+    width:100%;
+  }
+
+  /* bandeau de diagnostic de la lecture de CONFIG au démarrage */
+  .toast{
+    position:absolute;
+    left:50%;
+    bottom:18px;
+    transform:translateX(-50%);
+    max-width:min(560px, calc(100% - 32px));
+    background:var(--panel);
+    backdrop-filter:blur(10px);
+    border:1px solid var(--line);
+    border-left:3px solid var(--accent);
+    border-radius:8px;
+    padding:10px 14px;
+    font-family:'JetBrains Mono',monospace;
+    font-size:12px;
+    line-height:1.5;
+    color:var(--text);
+    z-index:30;
+    cursor:pointer;
+    box-shadow:0 8px 24px rgba(0,0,0,.35);
+  }
+  .toast.ok{ border-left-color:#5a9c6a; }
+  .toast.error{ border-left-color:var(--accent); }
+  .toast[hidden]{ display:none; }
+
+  @media (max-width:680px){
+    :root{--header-h:52px;}
+    .modes button{padding:6px 10px;font-size:11.5px;}
+    .modes button span.label{display:none;}
+    .jump{display:none;}
+  }
+
+  @media (prefers-reduced-motion:reduce){
+    .hscroll,.vscroll{scroll-behavior:auto;}
+    .modes button, .iconbtn{transition:none;}
+  }
+</style>
+</head>
+<body>
+
+<div id="app">
+  <header class="toolbar">
+    <div class="brand">
+      <div class="counter">
+        <span class="sprockets"><span></span><span></span></span>
+        <span><b id="cNum">01</b><span class="sep"> / </span><span id="cTotal">45</span></span>
+        <span class="sprockets"><span></span><span></span></span>
+      </div>
+    </div>
+
+    <div class="modes" role="tablist" aria-label="Reading mode">
+      <button data-mode="vscroll" class="active" role="tab" aria-selected="true">
+        <svg viewBox="0 0 24 24"><path d="M12 3v18M7 8l5-5 5 5M7 16l5 5 5-5"/></svg>
+        <span class="label">Vertical</span>
+      </button>
+      <button data-mode="hscroll" role="tab" aria-selected="false">
+        <svg viewBox="0 0 24 24"><path d="M3 12h18M8 7l-5 5 5 5M16 7l5 5-5 5"/></svg>
+        <span class="label">Horizontal</span>
+      </button>
+    </div>
+
+    <div class="controls">
+      <div class="jump">
+        <button id="firstBtn" aria-label="Jump to first frame" title="First frame">«</button>
+        <input id="jumpInput" type="number" min="1" max="45" value="1" aria-label="Go to frame">
+        <button id="lastBtn" aria-label="Jump to last frame" title="Last frame">»</button>
+      </div>
+      <div class="zoomgroup" aria-label="Zoom">
+        <button id="zoomOut" aria-label="Zoom out">
+          <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3M8 11h6"/></svg>
+        </button>
+        <span id="zoomLabel" title="Reset zoom">100%</span>
+        <button id="zoomIn" aria-label="Zoom in">
+          <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3M11 8v6M8 11h6"/></svg>
+        </button>
+      </div>
+      <button class="iconbtn" id="animateBtn" title="Enable / disable motion effects" aria-label="Toggle animations" aria-pressed="true">
+        <svg viewBox="0 0 24 24"><path d="M12 2v3M12 19v3M4.2 4.2l2.1 2.1M17.7 17.7l2.1 2.1M2 12h3M19 12h3M4.2 19.8l2.1-2.1M17.7 6.3l2.1-2.1"/></svg>
+      </button>
+      <button class="iconbtn" id="themeBtn" title="Light / dark background" aria-label="Toggle theme">
+        <svg viewBox="0 0 24 24"><path d="M12 3v2M12 19v2M4.2 4.2l1.4 1.4M18.4 18.4l1.4 1.4M3 12h2M19 12h2M4.2 19.8l1.4-1.4M18.4 5.6l1.4-1.4"/><circle cx="12" cy="12" r="4.5"/></svg>
+      </button>
+      <button class="iconbtn" id="fsBtn" title="Fullscreen" aria-label="Fullscreen">
+        <svg viewBox="0 0 24 24"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/></svg>
+      </button>
+    </div>
+  </header>
+
+  <div class="scrub">
+    <div class="fill" id="scrubFill"></div>
+    <input id="scrubRange" type="range" min="0" max="44" step="1" value="0" aria-label="Position in the comic">
+  </div>
+
+  <main id="viewer"></main>
+  <div id="configToast" class="toast" hidden></div>
+</div>
+
+<script>
+(function(){
+  "use strict";
+
+  /* ======================================================================
+     CONFIGURATION — edit the values below directly, then reload the
+     page. No external file needed: this also works in HTML viewers that
+     block fetch() on local files (e.g. HTML Viewer on iOS), with no
+     server or network connection required.
+
+     - total   : number of frames (01.png ... NN.png)
+     - effects : "motion comic" effects per image, stackable. By default
+                 all effects on the same image play simultaneously,
+                 starting together. Give an effect an explicit "delay"
+                 (ms) to stagger it instead.
+
+     Available effect types:
+       zoom-in  { focal:{x,y}, to,   duration }  — from 100% to "to"%
+       zoom-out { focal:{x,y}, from, duration }  — from "from"% to 100%
+       move     { angle, distance, duration }    — displacement, in % of the image
+       rotation { focal:{x,y}, angle, duration } — in degrees
+
+     focal.x / focal.y: focal point position, in % of the image (0-100).
+     easing (optional, per effect): linear | ease | ease-in |
+       ease-out (default) | ease-in-out.
+     loop (optional, per effect, default false): if true, the effect plays
+       forward then backward, back and forth, forever, instead of playing
+       once forward and staying on its final frame.
+
+     Example (simultaneous zoom + pan on frame 07):
+       "07": [
+         { type:"zoom-in", focal:{x:60,y:35}, to:130, duration:1800 },
+         { type:"move",    angle:15, distance:8, duration:1800 }
+       ]
+     ====================================================================== */
+
+  const CONFIG = {
+    total: 31,
+
+    effects: {
+      "01": [
+        { type:"zoom-in",  focal:{x:50,y:50}, to:105,   duration:5000 },
+        { type:"zoom-out", focal:{x:50,y:50}, from:100, duration:0 },
+        { type:"move",     angle:0, distance:0, duration:0 },
+        { type:"rotation", focal:{x:50,y:50}, angle:0,  duration:0 }],
+      "02": [
+        { type:"zoom-in",  focal:{x:50,y:50}, to:100,   duration:0 },
+        { type:"zoom-out", focal:{x:50,y:50}, from:110, duration:5000 },
+        { type:"move",     angle:0, distance:0, duration:0 },
+        { type:"rotation", focal:{x:50,y:50}, angle:0,  duration:0 }],
+      "04": [
+        { type:"zoom-in",  focal:{x:50,y:75}, to:105,   duration:5000 },
+        { type:"zoom-out", focal:{x:50,y:50}, from:100, duration:0 },
+        { type:"move",     angle:-90, distance:10, duration:5000 },
+        { type:"rotation", focal:{x:50,y:50}, angle:0,  duration:0 }],
+      "05": [
+        { type:"zoom-in",  focal:{x:50,y:50}, to:100,   duration:0 },
+        { type:"zoom-out", focal:{x:50,y:0}, from:120, duration:5000 },
+        { type:"move",     angle:0, distance:0, duration:0 },
+        { type:"rotation", focal:{x:50,y:50}, angle:0,  duration:0 }],
+      "08": [
+        { type:"zoom-in",  focal:{x:50,y:50}, to:100,   duration:0 },
+        { type:"zoom-out", focal:{x:50,y:0}, from:100, duration:0 },
+        { type:"move",     angle:-90, distance:5, duration:5000 },
+        { type:"rotation", focal:{x:50,y:50}, angle:0,  duration:0 }],
+      "15": [
+        { type:"zoom-in",  focal:{x:75,y:25}, to:100,   duration:0 },
+        { type:"zoom-out", focal:{x:50,y:50}, from:102, duration:20, loop:true },
+        { type:"move",     angle:0, distance:0, duration:0 },
+        { type:"rotation", focal:{x:50,y:50}, angle:0,  duration:0 }],
+      "18": [
+        { type:"zoom-in",  focal:{x:75,y:25}, to:100,   duration:0 },
+        { type:"zoom-out", focal:{x:75,y:25}, from:120, duration:5000 },
+        { type:"move",     angle:135, distance:25, duration:5000 },
+        { type:"rotation", focal:{x:50,y:50}, angle:0,  duration:0 }],
+      "19": [
+        { type:"zoom-in",  focal:{x:75,y:25}, to:100,   duration:0 },
+        { type:"zoom-out", focal:{x:50,y:75}, from:120, duration:5000 },
+        { type:"move",     angle:0, distance:0, duration:0 },
+        { type:"rotation", focal:{x:50,y:50}, angle:0,  duration:0 }],
+      "20": [
+        { type:"zoom-in",  focal:{x:75,y:25}, to:100,   duration:0 },
+        { type:"zoom-out", focal:{x:75,y:75}, from:120, duration:5000 },
+        { type:"move",     angle:45, distance:5, duration:5000 },
+        { type:"rotation", focal:{x:50,y:50}, angle:0,  duration:0 }],
+      "21": [
+        { type:"zoom-in",  focal:{x:75,y:25}, to:100,   duration:0 },
+        { type:"zoom-out", focal:{x:75,y:75}, from:100, duration:0 },
+        { type:"move",     angle:180, distance:20, duration:5000 },
+        { type:"rotation", focal:{x:50,y:50}, angle:0,  duration:0 }],
+      "22": [
+        { type:"zoom-in",  focal:{x:25,y:25}, to:100,   duration:0 },
+        { type:"zoom-out", focal:{x:25,y:25}, from:110, duration:5000 },
+        { type:"move",     angle:0, distance:0, duration:0 },
+        { type:"rotation", focal:{x:50,y:50}, angle:0,  duration:0 }],
+      "28": [
+        { type:"zoom-in",  focal:{x:25,y:25}, to:100,   duration:0 },
+        { type:"zoom-out", focal:{x:25,y:25}, from:110, duration:5000 },
+        { type:"move",     angle:0, distance:0, duration:0 },
+        { type:"rotation", focal:{x:50,y:0}, angle:0,  duration:0 }],
+      "31": [
+        { type:"zoom-in",  focal:{x:25,y:25}, to:100,   duration:0 },
+        { type:"zoom-out", focal:{x:25,y:25}, from:105, duration:2000 },
+        { type:"move",     angle:0, distance:0, duration:0 },
+        { type:"rotation", focal:{x:50,y:0}, angle:0,  duration:0 }]
+
+        
+      // Add more frames here, separated by commas:
+      // "12": [ { type:"move", angle:90, distance:6, duration:1500 } ],
+    }
+  };
+
+  const IMG_DIR = "";      // ex: "images/"
+  let   TOTAL   = 45;      // écrasé par CONFIG.total ci-dessus au démarrage
+  const EXT     = ".webp";
+  /* ================================= */
+
+  const pad = n => String(n).padStart(2,"0");
+  const srcOf = n => `${IMG_DIR}${pad(n)}${EXT}`; // n = 1..TOTAL
+  const clamp = (v,lo,hi) => Math.max(lo, Math.min(hi, v));
+
+  const viewer      = document.getElementById("viewer");
+  const cNum         = document.getElementById("cNum");
+  const cTotal        = document.getElementById("cTotal");
+  const modesEl        = document.querySelector(".modes");
+  const jumpInput        = document.getElementById("jumpInput");
+  const scrubRange         = document.getElementById("scrubRange");
+  const scrubFill            = document.getElementById("scrubFill");
+  const themeBtn               = document.getElementById("themeBtn");
+  const fsBtn                    = document.getElementById("fsBtn");
+  const zoomInBtn                  = document.getElementById("zoomIn");
+  const zoomOutBtn                   = document.getElementById("zoomOut");
+  const zoomLabel                      = document.getElementById("zoomLabel");
+  const firstBtn                         = document.getElementById("firstBtn");
+  const lastBtn                            = document.getElementById("lastBtn");
+  const animateBtn                           = document.getElementById("animateBtn");
+
+  let mode = "vscroll";        // 'vscroll' | 'hscroll'
+  let current = 0;              // index 0-based de l'image affichée
+  let io = null;                  // IntersectionObserver courant
+  let suppressObserver = false;    // évite les boucles pendant les scrolls programmés
+
+  /* Base de dimensionnement = min(largeur, hauteur) de la zone d'affichage réelle.
+     Recalculée à chaque changement de taille pour que ni le mode vertical ni le
+     mode horizontal ne surdimensionne les images selon l'orientation de l'écran. */
+  function updateBasis(){
+    const basis = Math.min(viewer.clientWidth, viewer.clientHeight);
+    document.documentElement.style.setProperty("--basis", basis + "px");
+  }
+
+  /* ---------- Zoom manuel ---------- */
+  const ZOOM_MIN = 0.5, ZOOM_MAX = 3, ZOOM_STEP = 0.15;
+  let zoom = 1;
+  function setZoom(z){
+    zoom = clamp(Math.round(z*100)/100, ZOOM_MIN, ZOOM_MAX);
+    document.documentElement.style.setProperty("--zoom", zoom);
+    zoomLabel.textContent = Math.round(zoom*100) + "%";
+  }
+  zoomInBtn.addEventListener("click", ()=> setZoom(zoom + ZOOM_STEP));
+  zoomOutBtn.addEventListener("click", ()=> setZoom(zoom - ZOOM_STEP));
+  zoomLabel.addEventListener("click", ()=> setZoom(1));
+  setZoom(1);
+
+  /* ============================================================
+     MOTEUR D'EFFETS « MOTION COMIC »
+     ============================================================
+     Chaque image peut porter une liste d'effets cumulables
+     (zoom-in, zoom-out, move, rotation), enchaînés dans l'ordre du
+     tableau CONFIG.effects (le suivant démarre quand le précédent se
+     termine, sauf s'il précise un "delay" en ms).
+     Le tampon de pixels nécessaire pour ne jamais révéler de vide
+     pendant un move/rotation/zoom-out est calculé automatiquement
+     par simulation numérique de la trajectoire complète. */
+
+  const ALLOWED_EASING = ["linear","ease","ease-in","ease-out","ease-in-out"];
+
+  // Petite matrice affine 2D : x' = a*x + c*y + e ; y' = b*x + d*y + f
+  class Mat{
+    constructor(a=1,b=0,c=0,d=1,e=0,f=0){ this.a=a;this.b=b;this.c=c;this.d=d;this.e=e;this.f=f; }
+    static translate(tx,ty){ return new Mat(1,0,0,1,tx,ty); }
+    static scale(s){ return new Mat(s,0,0,s,0,0); }
+    static rotate(deg){
+      const r = deg*Math.PI/180, cv=Math.cos(r), sv=Math.sin(r);
+      return new Mat(cv,sv,-sv,cv,0,0);
+    }
+    multiply(o){ // this ∘ o  (o appliqué en premier)
+      return new Mat(
+        this.a*o.a + this.c*o.b,  this.b*o.a + this.d*o.b,
+        this.a*o.c + this.c*o.d,  this.b*o.c + this.d*o.d,
+        this.a*o.e + this.c*o.f + this.e,  this.b*o.e + this.d*o.f + this.f
+      );
+    }
+    apply(x,y){ return [this.a*x + this.c*y + this.e, this.b*x + this.d*y + this.f]; }
+    invert(){
+      const det = this.a*this.d - this.b*this.c;
+      if(Math.abs(det) < 1e-9) return new Mat();
+      const ia= this.d/det, ib=-this.b/det, ic=-this.c/det, id= this.a/det;
+      return new Mat(ia,ib,ic,id, -(ia*this.e+ic*this.f), -(ib*this.e+id*this.f));
+    }
+  }
+
+  // Normalise la liste brute d'effets JSON d'une image en segments exploitables,
+  // avec calcul automatique des instants de départ (chaînage séquentiel par défaut).
+  function normalizeSegments(raw){
+    if(!Array.isArray(raw) || !raw.length) return null;
+    const segs = [];
+    for(const cfg of raw){
+      if(!cfg || typeof cfg.type !== "string") continue;
+      const duration = Math.max(0, Number(cfg.duration) || 0);
+      // Par défaut tous les effets démarrent ensemble (t=0) ; "delay" (ms)
+      // permet de décaler volontairement un effet particulier.
+      const start = (typeof cfg.delay === "number" && cfg.delay >= 0) ? cfg.delay : 0;
+      const easing = ALLOWED_EASING.includes(cfg.easing) ? cfg.easing : "ease-out";
+      const focal = { x: clamp(Number(cfg.focal?.x ?? 50), 0, 100), y: clamp(Number(cfg.focal?.y ?? 50), 0, 100) };
+      // "loop" (optionnel, défaut false) : si true, l'effet joue en boucle
+      // aller-retour (avant puis arrière, indéfiniment) au lieu d'une seule
+      // fois dans le sens normal.
+      const loop = cfg.loop === true;
+      let seg = { type: cfg.type, start, duration, easing, focal, loop };
+      if(cfg.type === "zoom-in"){
+        const to = Math.max(100, Number(cfg.to) || 100);
+        seg.scaleFrom = 1; seg.scaleTo = to/100;
+      } else if(cfg.type === "zoom-out"){
+        const from = Math.max(100, Number(cfg.from) || 100);
+        seg.scaleFrom = from/100; seg.scaleTo = 1;
+      } else if(cfg.type === "move"){
+        const angle = Number(cfg.angle) || 0;
+        const distance = Number(cfg.distance) || 0;
+        seg.dxPct = distance * Math.cos(angle*Math.PI/180);
+        seg.dyPct = distance * Math.sin(angle*Math.PI/180);
+      } else if(cfg.type === "rotation"){
+        seg.angleDeg = Number(cfg.angle) || 0;
+      } else {
+        continue; // type inconnu, ignoré silencieusement
+      }
+      segs.push(seg);
+    }
+    return segs.length ? segs : null;
+  }
+
+  // Transform (Mat) d'un segment à l'instant t (échelle de temps globale, en ms).
+  // La progression est volontairement échantillonnée de façon linéaire pour ce calcul :
+  // les easings autorisés (sans rebond) atteignent leurs extrêmes aux mêmes instants
+  // quelle que soit leur courbe, donc le tampon calculé reste valable pour l'easing réel.
+  function segMatrixAt(seg, t, refW, refH){
+    const p = seg.duration <= 0 ? 1 : clamp((t - seg.start) / seg.duration, 0, 1);
+    const fx = seg.focal.x/100 * refW, fy = seg.focal.y/100 * refH;
+    switch(seg.type){
+      case "zoom-in":
+      case "zoom-out": {
+        const s = seg.scaleFrom + (seg.scaleTo - seg.scaleFrom) * p;
+        return Mat.translate(fx,fy).multiply(Mat.scale(s)).multiply(Mat.translate(-fx,-fy));
+      }
+      case "move":
+        return Mat.translate(seg.dxPct/100*refW*p, seg.dyPct/100*refH*p);
+      case "rotation": {
+        const ang = seg.angleDeg * p;
+        return Mat.translate(fx,fy).multiply(Mat.rotate(ang)).multiply(Mat.translate(-fx,-fy));
+      }
+      default:
+        return new Mat();
+    }
+  }
+
+  function composedMatrixAt(segs, t, refW, refH){
+    let M = new Mat();
+    for(const seg of segs) M = M.multiply(segMatrixAt(seg, t, refW, refH));
+    return M;
+  }
+
+  // Calcule le tampon (pré-cadrage constant) nécessaire pour que la trajectoire
+  // complète ne révèle jamais de pixel hors de l'image source.
+  function computeBuffer(segs, aspectRatio){
+    const refW = aspectRatio, refH = 1;
+    const corners = [[0,0],[refW,0],[0,refH],[refW,refH]];
+    const total = Math.max(0, ...segs.map(s => s.start + s.duration));
+    const SAMPLES = 60;
+    let minX=0, maxX=refW, minY=0, maxY=refH;
+    for(let i=0;i<=SAMPLES;i++){
+      const t = total * (i/SAMPLES);
+      const Minv = composedMatrixAt(segs, t, refW, refH).invert();
+      for(const [cx,cy] of corners){
+        const [qx,qy] = Minv.apply(cx,cy);
+        if(qx<minX) minX=qx; if(qx>maxX) maxX=qx;
+        if(qy<minY) minY=qy; if(qy>maxY) maxY=qy;
+      }
+    }
+    const qW = maxX-minX, qH = maxY-minY;
+    const s = Math.max(qW/refW, qH/refH) * 1.06; // légère marge de sécurité
+    const cx = (minX+maxX)/2, cy = (minY+maxY)/2;
+    const tx = cx - (refW/2)*s, ty = cy - (refH/2)*s;
+    return { scale: s, translateXPct: (tx/refW)*100, translateYPct: (ty/refH)*100 };
+  }
+
+  // Chaîne CSS de la transformation finale d'un segment (pour l'état figé,
+  // reduced-motion, ou durée nulle).
+  function segFinalTransform(seg){
+    switch(seg.type){
+      case "zoom-in": case "zoom-out": return `scale(${seg.scaleTo})`;
+      case "move":     return `translate(${seg.dxPct}%, ${seg.dyPct}%)`;
+      case "rotation": return `rotate(${seg.angleDeg}deg)`;
+      default: return "none";
+    }
+  }
+  // État de repos, avant tout déclenchement : le premier keyframe de l'effet
+  // (ex. déjà zoomé pour un zoom-out), pas l'identité — pour que le
+  // déclenchement de l'animation n'ait jamais à "sauter" visuellement.
+  function segStartTransform(seg){
+    switch(seg.type){
+      case "zoom-in": case "zoom-out": return `scale(${seg.scaleFrom})`;
+      case "move":     return "translate(0%, 0%)";
+      case "rotation": return "rotate(0deg)";
+      default: return "none";
+    }
+  }
+  function segKeyframes(seg){
+    switch(seg.type){
+      case "zoom-in": case "zoom-out":
+        return [{transform:`scale(${seg.scaleFrom})`}, {transform:`scale(${seg.scaleTo})`}];
+      case "move":
+        return [{transform:"translate(0%,0%)"}, {transform:`translate(${seg.dxPct}%, ${seg.dyPct}%)`}];
+      case "rotation":
+        return [{transform:"rotate(0deg)"}, {transform:`rotate(${seg.angleDeg}deg)`}];
+      default:
+        return [{transform:"none"},{transform:"none"}];
+    }
+  }
+
+  // plans : Map "01".."45" -> { aspectRatio, segments, buffer }
+  const effectPlans = new Map();
+  let effectsReady = false;
+
+  function loadImageAspect(n){
+    return new Promise((resolve)=>{
+      const img = new Image();
+      img.onload  = ()=> resolve(img.naturalWidth && img.naturalHeight ? img.naturalWidth/img.naturalHeight : 1);
+      img.onerror = ()=> resolve(1);
+      img.src = srcOf(n);
+    });
+  }
+
+  async function prepareEffects(rawEffects){
+    if(!rawEffects || typeof rawEffects !== "object") return;
+    const entries = Object.entries(rawEffects);
+    await Promise.all(entries.map(async ([key, raw])=>{
+      const segments = normalizeSegments(raw);
+      if(!segments) return;
+      const n = parseInt(key,10);
+      if(!Number.isFinite(n) || n<1) return;
+      const aspectRatio = await loadImageAspect(n);
+      const buffer = computeBuffer(segments, aspectRatio);
+      effectPlans.set(pad(n), { aspectRatio, segments, buffer });
+    }));
+    effectsReady = true;
+  }
+
+  // Joue (ou rejoue) les effets de l'image "index" si elle en a, sur l'élément
+  // actuellement monté dans le DOM (mode courant).
+  let animationsEnabled = true;
+  function setAnimate(on){
+    animationsEnabled = on;
+    animateBtn.classList.toggle("off", !on);
+    animateBtn.setAttribute("aria-pressed", on ? "true" : "false");
+    const container = document.getElementById("container");
+    if(container) checkEffectsVisibility(container);
+  }
+
+  // ---------- Contrôle des animations : piloté par getBoundingClientRect --------
+  //
+  // Règles :
+  //   fullyOut  → annule l'animation, remet l'élément au premier keyframe.
+  //   fullyIn   → démarre l'animation UNIQUEMENT s'il n'en existe pas déjà
+  //               une vivante (running / pending / paused / finished).
+  //               Si une animation tourne déjà (l'image était partiellement
+  //               visible et l'animation en cours), on ne touche à rien.
+  //   partiel   → on ne touche à rien dans les deux sens, SAUF si on détecte
+  //               qu'on vient de "sauter" par-dessus l'état intégralement
+  //               visible (molette trop rapide, cf partialSideMap ci-dessous) :
+  //               dans ce cas on déclenche l'animation comme si l'état
+  //               "fullyIn" avait été observé.
+  //
+  // La source de vérité pour "une animation tourne déjà" est
+  // el.getAnimations() — pas une Map externe.
+
+  // Mémorise, pour chaque case actuellement partiellement visible, de quel
+  // côté elle est coupée ("near" = bord de départ du conteneur, "far" = bord
+  // d'arrivée). Une WeakMap suffit : les entrées des cases retirées du DOM
+  // (changement de mode / resize) sont nettoyées automatiquement.
+  const partialSideMap = new WeakMap();
+
+  // Démarre (si besoin) les animations d'une case, comme si elle venait de
+  // devenir intégralement visible. Factorisé pour être appelable à la fois
+  // depuis l'état "fullyIn" normal et depuis la détection de saut ci-dessous.
+  function startPlanAnimations(frame, plan){
+    const segEls = frame.querySelectorAll(".fx-seg");
+    segEls.forEach((el, i)=>{
+      const seg = plan.segments[i];
+      if(!seg) return;
+
+      if(!animationsEnabled){
+        // Animations désactivées : annule et laisse vide (état neutre).
+        el.getAnimations().forEach(a => a.cancel());
+        el.style.transform = "";
+        return;
+      }
+
+      // Une animation "vivante" = running, pending, paused, ou finished
+      // (finished = animation terminée mais élément figé sur le dernier
+      // keyframe grâce à fill:"both"). Dans tous ces cas on ne touche
+      // à rien : l'animation est dans l'état où elle se trouve.
+      const anims = el.getAnimations();
+      const hasLiveAnim = anims.some(a =>
+        a.playState === "running"  ||
+        a.playState === "pending"  ||
+        a.playState === "paused"   ||
+        a.playState === "finished"
+      );
+      if(hasLiveAnim) return;
+
+      // Pas d'animation vivante (première entrée ou retour après état 1) :
+      // on lance depuis le début.
+      el.style.transform = "";
+      if(seg.duration <= 0){
+        el.style.transform = segFinalTransform(seg);
+      } else {
+        el.animate(segKeyframes(seg), {
+          duration:   seg.duration,
+          delay:      seg.start,
+          easing:     seg.easing,
+          fill:       "both",
+          direction:  seg.loop ? "alternate" : "normal",
+          iterations: seg.loop ? Infinity : 1
+        });
+      }
+    });
+  }
+
+  function checkEffectsVisibility(container){
+    if(!effectPlans.size) return;
+    const cR = container.getBoundingClientRect();
+    const PX = 1; // tolérance sub-pixel
+    const isH = mode === "hscroll"; // axe de défilement pertinent
+
+    effectPlans.forEach((plan, key)=>{
+      const idx = parseInt(key, 10) - 1;
+      const sel = isH
+        ? `.cell[data-index="${idx}"]`
+        : `.row[data-index="${idx}"]`;
+      const frame = container.querySelector(sel);
+      if(!frame) return;
+
+      const r = frame.getBoundingClientRect();
+
+      const fullyOut = r.right  <= cR.left   + PX
+                    || r.left   >= cR.right   - PX
+                    || r.bottom <= cR.top     + PX
+                    || r.top    >= cR.bottom  - PX;
+
+      const fullyIn  = r.left   >= cR.left   - PX
+                    && r.right  <= cR.right   + PX
+                    && r.top    >= cR.top     - PX
+                    && r.bottom <= cR.bottom  + PX;
+
+      if(fullyOut){
+        // ── État 1 : complètement hors écran ──────────────────────────────
+        partialSideMap.delete(frame);
+        const segEls = frame.querySelectorAll(".fx-seg");
+        segEls.forEach((el, i)=>{
+          const seg = plan.segments[i];
+          if(!seg) return;
+          el.getAnimations().forEach(a => a.cancel());
+          el.style.transform = animationsEnabled ? segStartTransform(seg) : "";
+        });
+
+      } else if(fullyIn){
+        // ── État 2 : intégralement à l'écran ──────────────────────────────
+        partialSideMap.delete(frame);
+        startPlanAnimations(frame, plan);
+
+      } else {
+        // ── État 3 : partiellement visible ────────────────────────────────
+        // Cas normal : on ne touche à rien (l'animation continue si elle
+        // tournait, reste à l'état initial sinon).
+        //
+        // Cas "molette trop rapide" : entre deux appels de cette fonction
+        // (deux événements scroll consécutifs), la case peut avoir traversé
+        // toute la fenêtre "intégralement visible" sans qu'on l'observe —
+        // on la voit coupée d'un bord (ex. "near") lors d'un appel, puis
+        // coupée du bord opposé ("far") lors de l'appel suivant, sans
+        // jamais avoir été vue "fullyIn" entre les deux. On détecte ce
+        // basculement de bord et on déclenche alors l'animation comme si
+        // l'état "intégralement visible" avait bien été atteint.
+        const overNear = isH ? (r.left  < cR.left  - PX) : (r.top    < cR.top    - PX);
+        const overFar   = isH ? (r.right > cR.right + PX) : (r.bottom > cR.bottom + PX);
+        // Si les deux bords débordent à la fois (image zoomée plus grande
+        // que la zone visible), il n'y a pas de "côté" univoque : on ignore
+        // ce cas pour ne pas déclencher de faux positifs.
+        const side = (overNear && overFar) ? null : (overFar ? "far" : (overNear ? "near" : null));
+        const prevSide = partialSideMap.get(frame);
+
+        if(prevSide && side && prevSide !== side){
+          startPlanAnimations(frame, plan);
+        }
+        if(side) partialSideMap.set(frame, side);
+      }
+    });
+  }
+
+  function setCurrentSilently(i){
+    const next = clamp(i, 0, TOTAL-1);
+    current = next;
+    cNum.textContent = pad(current+1);
+    jumpInput.value = current+1;
+    scrubRange.value = current;
+    scrubFill.style.width = (current/(TOTAL-1))*100 + "%";
+    // Le déclenchement/reset des animations n'est plus lié au fait qu'une
+    // carte devienne "courante" : voir observeContainer(), qui reset une
+    // carte dès qu'elle est complètement invisible et déclenche sa lecture
+    // dès qu'elle est intégralement à l'écran.
+
+    // Recale le préchargement séquentiel d'arrière-plan sur la nouvelle
+    // case affichée (case courante puis les suivantes en priorité).
+    schedulePreload();
+  }
+
+  /* ============================================================
+     CHARGEMENT DES IMAGES — préchargement séquentiel + barre de progression
+     ============================================================
+     Contrainte importante : le lecteur doit rester utilisable sans réseau,
+     ouvert comme simple fichier HTML local, y compris dans des visionneuses
+     iOS qui bloquent fetch() (cf. commentaire sur CONFIG plus haut). On ne
+     peut donc pas supposer que fetch() fonctionne.
+
+     - Si fetch() est utilisable ET que la page est servie en http(s), les
+       images "prioritaires" (proches de la case affichée, cf isPriority)
+       sont chargées en streaming via fetch() : Content-Length + lecture par
+       morceaux donnent une vraie progression, affichée dans la barre.
+     - Sinon (fichier local, ou fetch qui échoue), on retombe sur un <img>
+       classique avec une barre "indéterminée" (balayage animé) si le
+       chargement dépasse 500ms.
+     Dans les deux cas, un pré-chargeur d'arrière-plan (préchargeMENT, pas
+     affichage) avance en tâche de fond dans l'ordre séquentiel de lecture
+     — la case affichée puis les suivantes — pour que les images soient déjà
+     en cache navigateur au moment où l'utilisateur y défile. Les images
+     prioritaires ne sont pas dupliquées dans cette file : elles sont déjà
+     prises en charge directement par createFrame(). */
+
+  const CAN_FETCH_PROGRESS = typeof fetch === "function" && /^https?:$/.test(location.protocol);
+  const LOADBAR_DELAY = 500; // ms avant d'afficher la barre (cf demande : > 0.5s)
+
+  function makeLoadBar(determinate){
+    const bar = document.createElement("div");
+    bar.className = "loadbar" + (determinate ? "" : " indeterminate");
+    const fill = document.createElement("div");
+    fill.className = "fill";
+    bar.appendChild(fill);
+    return {bar, fill};
+  }
+
+  // Barre "indéterminée" (pas de progression connue) : affichée seulement
+  // si le chargement natif de l'image dépasse LOADBAR_DELAY.
+  function attachIndeterminateWatcher(img, hostEl){
+    let shown = false;
+    const {bar} = makeLoadBar(false);
+    const showTimer = window.setTimeout(()=>{ shown = true; hostEl.appendChild(bar); }, LOADBAR_DELAY);
+    const cleanup = ()=>{
+      window.clearTimeout(showTimer);
+      if(shown) bar.remove();
+    };
+    img.addEventListener("load", cleanup, {once:true});
+    img.addEventListener("error", cleanup, {once:true});
+  }
+
+  // Affecte la source de <img> pour la case n (1-based), en superposant une
+  // barre de progression sur hostEl (élément position:relative de la taille
+  // réelle de l'image) si le chargement dépasse 500ms. "priority" indique si
+  // c'est une image proche de la case affichée (chargement immédiat requis).
+  function loadImageInto(img, n, hostEl, onerror, priority){
+    img.alt = `Frame ${n} / ${TOTAL}`;
+    img.onerror = onerror;
+    const url = srcOf(n);
+
+    // Déjà préchargée (cache navigateur, ou blob déjà résolu) : affectation
+    // directe, sans barre.
+    const cached = preloadCache.get(n);
+    if(cached){
+      img.src = cached === true ? url : cached;
+      return;
+    }
+
+    if(priority && CAN_FETCH_PROGRESS){
+      let shown = false, settled = false;
+      const {bar, fill} = makeLoadBar(true);
+      const showTimer = window.setTimeout(()=>{ shown = true; hostEl.appendChild(bar); }, LOADBAR_DELAY);
+      fetch(url).then(async (resp)=>{
+        if(!resp.ok || !resp.body) throw new Error("HTTP " + resp.status);
+        const total = Number(resp.headers.get("Content-Length")) || 0;
+        const reader = resp.body.getReader();
+        const chunks = [];
+        let received = 0;
+        for(;;){
+          const {done, value} = await reader.read();
+          if(done) break;
+          chunks.push(value);
+          received += value.length;
+          if(total) fill.style.width = Math.min(100, (received/total)*100) + "%";
+        }
+        const blobUrl = URL.createObjectURL(new Blob(chunks));
+        preloadCache.set(n, blobUrl);
+        settled = true;
+        img.src = blobUrl;
+      }).catch(()=>{
+        // Repli silencieux : chargement natif classique si fetch échoue
+        // (CORS, hors-ligne, etc.).
+        if(!settled) img.src = url;
+      }).finally(()=>{
+        window.clearTimeout(showTimer);
+        if(shown) bar.remove();
+      });
+    } else {
+      img.loading = priority ? "eager" : "lazy";
+      attachIndeterminateWatcher(img, hostEl);
+      img.src = url;
+    }
+  }
+
+  // ---------- Préchargement séquentiel d'arrière-plan ----------
+  const preloadCache = new Map(); // n -> true (natif) ou blobUrl (fetch)
+  const preloadState = new Map(); // n -> "loading" | "done"
+  const PRELOAD_CONCURRENCY = 2;  // évite de saturer une connexion 4G
+  let preloadInFlight = 0;
+  let preloadOrder = [];
+
+  // Ordre de préchargement : case affichée puis les suivantes (ordre de
+  // lecture), et seulement ensuite un rattrapage des cases précédentes.
+  function computePreloadOrder(){
+    const startN = current + 1; // 1-based
+    const order = [];
+    for(let n = startN; n <= TOTAL; n++) order.push(n);
+    for(let n = startN - 1; n >= 1; n--) order.push(n);
+    return order;
+  }
+
+  function pumpPreload(){
+    while(preloadInFlight < PRELOAD_CONCURRENCY){
+      const n = preloadOrder.find(x => !preloadState.has(x));
+      if(n === undefined) break;
+      preloadState.set(n, "loading");
+      preloadInFlight++;
+      const img = new Image();
+      img.onload = img.onerror = ()=>{
+        preloadState.set(n, "done");
+        preloadCache.set(n, true);
+        preloadInFlight--;
+        pumpPreload();
+      };
+      img.src = srcOf(n);
+    }
+  }
+
+  // Recalcule la file (appelé à l'init et à chaque changement de case
+  // affichée) et relance le pompage. Les images prioritaires sont exclues :
+  // elles sont déjà chargées directement par createFrame().
+  function schedulePreload(){
+    preloadOrder = computePreloadOrder().filter(n => !isPriority(n-1));
+    pumpPreload();
+  }
+
+  /* ---------- Construction des modes ---------- */
+
+  // Les images proches de l'index affiché doivent charger en priorité :
+  // c'est elles qui déterminent la position de défilement au changement de mode.
+  function isPriority(index){
+    return Math.abs(index - current) <= 2;
+  }
+
+  // Construit la case n° i (1-based). axisHorizontal=true pour le mode horizontal.
+  function createFrame(i, axisHorizontal){
+    const idx = i-1;
+    const key = pad(i);
+    const plan = effectPlans.get(key);
+    const frame = document.createElement("div");
+    frame.className = axisHorizontal ? "cell" : "row";
+    frame.dataset.index = idx;
+
+    if(plan){
+      frame.classList.add("fx");
+
+      const fxFrame = document.createElement("div");
+      fxFrame.className = "fx-frame";
+      fxFrame.style.aspectRatio = String(plan.aspectRatio);
+      frame.appendChild(fxFrame);
+
+      let host = fxFrame;
+      plan.segments.forEach((seg, si)=>{
+        const segEl = document.createElement("div");
+        segEl.className = "fx-seg";
+        segEl.dataset.seg = si;
+        segEl.style.transform = segStartTransform(seg);
+        if(seg.type === "zoom-in" || seg.type === "zoom-out" || seg.type === "rotation"){
+          segEl.style.transformOrigin = `${seg.focal.x}% ${seg.focal.y}%`;
+        }
+        host.appendChild(segEl);
+        host = segEl;
+      });
+
+      const bufferEl = document.createElement("div");
+      bufferEl.className = "fx-buffer";
+      bufferEl.style.transform = `translate(${plan.buffer.translateXPct}%, ${plan.buffer.translateYPct}%) scale(${plan.buffer.scale})`;
+      host.appendChild(bufferEl);
+
+      const img = document.createElement("img");
+      bufferEl.appendChild(img);
+      loadImageInto(img, i, fxFrame, ()=> showMissing(fxFrame, i), isPriority(idx));
+    } else {
+      const img = document.createElement("img");
+      frame.appendChild(img);
+      loadImageInto(img, i, frame, ()=> showMissing(frame, i), isPriority(idx));
+    }
+    return frame;
+  }
+
+  function buildHorizontal(){
+    updateBasis();
+    const wrap = document.createElement("div");
+    wrap.className = "hscroll";
+    wrap.id = "container";
+    for(let i=1;i<=TOTAL;i++) wrap.appendChild(createFrame(i, true));
+    viewer.appendChild(wrap);
+
+    // Convertit la molette verticale de la souris en défilement horizontal,
+    // sauf si l'image zoomée dépasse déjà verticalement (on laisse alors
+    // le scroll vertical natif faire défiler l'image zoomée).
+    wrap.addEventListener("wheel", (e)=>{
+      const overflowsVertically = wrap.scrollHeight > wrap.clientHeight + 1;
+      if(!overflowsVertically && Math.abs(e.deltaY) >= Math.abs(e.deltaX)){
+        wrap.scrollLeft += e.deltaY;
+        e.preventDefault();
+      }
+    }, {passive:false});
+
+    observeContainer(wrap, ".cell");
+    settlePosition(wrap, `.cell[data-index="${current}"]`, "horizontal");
+    // Le listener scroll pilote reset/lecture en temps réel.
+    wrap.addEventListener("scroll", ()=> checkEffectsVisibility(wrap), {passive:true});
+    // Évaluation initiale après stabilisation de la mise en page.
+    window.setTimeout(()=> checkEffectsVisibility(wrap), 50);
+    window.setTimeout(()=> checkEffectsVisibility(wrap), 420);
+  }
+
+  function buildVertical(){
+    updateBasis();
+    const wrap = document.createElement("div");
+    wrap.className = "vscroll";
+    wrap.id = "container";
+    for(let i=1;i<=TOTAL;i++) wrap.appendChild(createFrame(i, false));
+    viewer.appendChild(wrap);
+    observeContainer(wrap, ".row");
+    settlePosition(wrap, `.row[data-index="${current}"]`, "vertical");
+    wrap.addEventListener("scroll", ()=> checkEffectsVisibility(wrap), {passive:true});
+    window.setTimeout(()=> checkEffectsVisibility(wrap), 50);
+    window.setTimeout(()=> checkEffectsVisibility(wrap), 420);
+  }
+
+  // Repositionne sur la case courante de façon fiable même si les images
+  // (et donc les dimensions réelles de la piste) ne sont pas encore chargées :
+  // on corrige la position à plusieurs reprises pendant que la mise en page se stabilise.
+  function settlePosition(wrap, selector, axis){
+    const el = wrap.querySelector(selector);
+    if(!el) return;
+    const scrollOpts = axis === "horizontal"
+      ? {inline:"start", block:"nearest", behavior:"auto"}
+      : {block:"start", behavior:"auto"};
+    const apply = ()=>{
+      suppressObserver = true;
+      el.scrollIntoView(scrollOpts);
+      requestAnimationFrame(()=>{ suppressObserver = false; });
+    };
+    apply();
+    requestAnimationFrame(apply);
+    const img = el.querySelector("img");
+    if(img && !img.complete){
+      img.addEventListener("load", apply, {once:true});
+      img.addEventListener("error", apply, {once:true});
+    }
+    // Filet de sécurité : polices/images tardives, mise en page qui bouge encore.
+    window.setTimeout(apply, 150);
+    window.setTimeout(apply, 400);
+  }
+
+  function showMissing(container, n){
+    container.innerHTML = "";
+    const box = document.createElement("div");
+    box.className = "empty";
+    box.innerHTML = `<div>Image not found —</div><div style="color:var(--accent);font-family:'JetBrains Mono',monospace;">${pad(n)}${EXT}</div><div>Place this HTML file in the same folder as the images.</div>`;
+    container.appendChild(box);
+  }
+
+  /* ---------- Observers (suivi de la case affichée) ---------- */
+  function observeContainer(root, itemSelector){
+    if(io) io.disconnect();
+    const ratios = new Map();
+    io = new IntersectionObserver((entries)=>{
+      if(suppressObserver) return;
+      entries.forEach(e => ratios.set(e.target, e.intersectionRatio));
+      let best=null, bestR=0;
+      ratios.forEach((r, el) => { if(r > bestR){ bestR=r; best=el; } });
+      if(best && bestR > 0.35){
+        setCurrentSilently(+best.dataset.index);
+      }
+    }, {root, threshold:[0,0.25,0.35,0.5,0.75,1]});
+    root.querySelectorAll(itemSelector).forEach(el => io.observe(el));
+  }
+
+  /* ---------- Rendu / changement de mode ---------- */
+  function render(){
+    if(io){ io.disconnect(); io=null; }
+    viewer.innerHTML = "";
+    if(mode==="hscroll") buildHorizontal();
+    else buildVertical();
+  }
+
+  function setMode(newMode){
+    if(newMode===mode) return;
+    mode = newMode;
+    modesEl.querySelectorAll("button").forEach(b=>{
+      const on = b.dataset.mode===mode;
+      b.classList.toggle("active", on);
+      b.setAttribute("aria-selected", on?"true":"false");
+    });
+    render();
+  }
+
+  modesEl.addEventListener("click", (e)=>{
+    const btn = e.target.closest("button[data-mode]");
+    if(btn) setMode(btn.dataset.mode);
+  });
+
+  /* ---------- Contrôles additionnels ---------- */
+  jumpInput.addEventListener("change", ()=>{
+    let v = parseInt(jumpInput.value,10);
+    if(isNaN(v)) v=1;
+    v = Math.max(1, Math.min(TOTAL, v));
+    goTo(v-1, true);
+  });
+
+  scrubRange.addEventListener("input", ()=>{
+    goTo(parseInt(scrubRange.value,10), false);
+  });
+
+  function goTo(index, smooth){
+    index = Math.max(0, Math.min(TOTAL-1, index));
+    const container = document.getElementById("container");
+    const selector = mode==="hscroll" ? `.cell[data-index="${index}"]` : `.row[data-index="${index}"]`;
+    const target = container.querySelector(selector);
+    suppressObserver = true;
+    if(target){
+      if(mode==="hscroll") target.scrollIntoView({inline:"start", block:"nearest", behavior: smooth?"smooth":"auto"});
+      else target.scrollIntoView({block:"start", behavior: smooth?"smooth":"auto"});
+    }
+    setCurrentSilently(index);
+    window.clearTimeout(goTo._t);
+    goTo._t = window.setTimeout(()=>{ suppressObserver=false; }, smooth?420:60);
+  }
+
+  firstBtn.addEventListener("click", ()=> goTo(0, false));
+  lastBtn.addEventListener("click", ()=> goTo(TOTAL-1, false));
+
+  animateBtn.addEventListener("click", ()=> setAnimate(!animationsEnabled));
+
+  themeBtn.addEventListener("click", ()=>{
+    document.body.classList.toggle("light");
+  });
+
+  fsBtn.addEventListener("click", ()=>{
+    if(!document.fullscreenElement){
+      document.documentElement.requestFullscreen?.();
+    } else {
+      document.exitFullscreen?.();
+    }
+  });
+
+  document.addEventListener("keydown",(e)=>{
+    if(document.activeElement===jumpInput) return;
+    if(e.key==="ArrowRight" || e.key==="ArrowDown" || e.key===" "){ e.preventDefault(); goTo(current+1, true); }
+    else if(e.key==="ArrowLeft" || e.key==="ArrowUp"){ e.preventDefault(); goTo(current-1, true); }
+    else if(e.key==="Home"){ goTo(0,true); }
+    else if(e.key==="End"){ goTo(TOTAL-1,true); }
+    else if(e.key==="f"||e.key==="F"){ fsBtn.click(); }
+    else if(e.key==="+"||e.key==="="){ setZoom(zoom+ZOOM_STEP); }
+    else if(e.key==="-"||e.key==="_"){ setZoom(zoom-ZOOM_STEP); }
+    else if(e.key==="0"){ setZoom(1); }
+  });
+
+  window.addEventListener("resize", ()=>{ render(); });
+  document.addEventListener("fullscreenchange", ()=>{ render(); });
+
+  /* ---------- Lecture de CONFIG puis démarrage ---------- */
+  const configToast = document.getElementById("configToast");
+  function showToast(msg, kind){
+    configToast.textContent = msg + "  (click to dismiss)";
+    configToast.className = "toast " + (kind||"");
+    configToast.hidden = false;
+    configToast.onclick = ()=>{ configToast.hidden = true; };
+  }
+
+  async function loadConfig(){
+    try{
+      if(Number.isInteger(CONFIG.total) && CONFIG.total > 0) TOTAL = CONFIG.total;
+      await prepareEffects(CONFIG.effects);
+    }catch(err){
+      console.warn("Erreur dans l'objet CONFIG :", err);
+      showToast(`Error in CONFIG (${err.message}) — ${TOTAL} pages by default, no effects.`, "error");
+    }
+  }
+
+  (async function init(){
+    await loadConfig();
+    cTotal.textContent = TOTAL;
+    jumpInput.max = TOTAL;
+    scrubRange.max = TOTAL - 1;
+    updateBasis();
+    setCurrentSilently(0);
+    render();
+  })();
+})();
+</script>
+</body>
+</html>
