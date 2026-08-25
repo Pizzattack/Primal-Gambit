@@ -1,0 +1,23 @@
+# macOS
+.DS_Store
+._*
+.Spotlight-V100
+.Trashes
+
+# Windows
+Thumbs.db
+Desktop.ini
+
+# Éditeurs
+.vscode/
+.idea/
+*.swp
+*~
+
+# Sorties de build / archives locales
+*.zip
+index_v*.html
+ElementalFury_v*.html
+
+# Outillage de contrôle (npm) — le JEU lui-même n'a aucune dépendance
+node_modules/

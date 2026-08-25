@@ -1,0 +1,17 @@
+{
+  "name": "primal-gambit",
+  "version": "0.40.6",
+  "private": true,
+  "description": "Outillage de contrôle qualité. Le jeu lui-même n'a AUCUNE dépendance : index.html s'ouvre directement dans un navigateur.",
+  "license": "CC-BY-NC-SA-4.0",
+  "type": "module",
+  "scripts": {
+    "check": "node tools/check.mjs",
+    "lint": "node tools/lint.mjs",
+    "test": "npm run check && npm run lint"
+  },
+  "devDependencies": {
+    "eslint": "^9.39.5",
+    "globals": "^17.11.0"
+  }
+}
